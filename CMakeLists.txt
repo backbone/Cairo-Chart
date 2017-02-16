@@ -1,9 +1,9 @@
-PROJECT (GtkChart C)
+PROJECT (CairoChart C)
 
 CMAKE_MINIMUM_REQUIRED (VERSION 2.8)
 
-SET (PROJECT_LOWERCASE_NAME "gtk-chart")
-SET (PROJECT_DESCRIPTION "GtkChart for Gtk.DrawingArea.")
+SET (PROJECT_LOWERCASE_NAME "cairo-chart")
+SET (PROJECT_DESCRIPTION "GtkChart for Gtk.DrawingArea (Cairo).")
 
 SET (MAJOR 0)
 SET (MINOR 0)
