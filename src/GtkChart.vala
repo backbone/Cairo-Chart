@@ -13,7 +13,7 @@ namespace Gtk.CairoChart {
 		public Color bg_color;
 		public bool show_legend = true;
 		public Text title = new Text ("Cairo Chart");
-		public Color border_color = new Color(0, 0, 0, 0.3);
+		public Color border_color = Color(0, 0, 0, 0.3);
 
 		public class Legend {
 			public enum Position {
@@ -23,13 +23,13 @@ namespace Gtk.CairoChart {
 				BOTTOM
 			}
 			public Position position = Position.TOP;
-			public FontStyle font_style = new FontStyle();
-			public Color bg_color = new Color(1, 1, 1);
+			public FontStyle font_style = FontStyle();
+			public Color bg_color = Color(1, 1, 1);
 			public LineStyle border_style = new LineStyle ();
 			public double indent = 5;
 
 			public Legend () {
-				border_style.color = new Color (0, 0, 0, 0.3);
+				border_style.color = Color (0, 0, 0, 0.3);
 			}
 		}
 
@@ -40,7 +40,7 @@ namespace Gtk.CairoChart {
 		protected LineStyle selection_style = new LineStyle ();
 
 		public Chart () {
-			bg_color = new Color (1, 1, 1);
+			bg_color = Color (1, 1, 1);
 		}
 
 		protected Double128 cur_x_min = 0.0;
@@ -108,7 +108,7 @@ namespace Gtk.CairoChart {
 			if (context != null) {
 				set_source_rgba (bg_color);
 				context.paint();
-				set_source_rgba (new Color (0, 0, 0, 1));
+				set_source_rgba (Color (0, 0, 0, 1));
 			}
 		}
 

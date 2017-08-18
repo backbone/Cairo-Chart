@@ -61,8 +61,8 @@ namespace Gtk.CairoChart {
 	[Compact]
 	public class Text {
 		public string text = "";
-		public FontStyle style = new FontStyle ();
-		public Color color = new Color();
+		public FontStyle style = FontStyle ();
+		public Color color = Color();
 
 		TextExtents get_extents (Cairo.Context context) {
 			context.select_font_face (style.family,
@@ -99,8 +99,8 @@ namespace Gtk.CairoChart {
 		}
 
 		public Text (string text = "",
-		             FontStyle style = new FontStyle(),
-		             Color color = new Color()) {
+		             FontStyle style = FontStyle(),
+		             Color color = Color()) {
 			this.text = text;
 			this.style = style;
 			this.color = color;

@@ -82,8 +82,8 @@ namespace Gtk.CairoChart {
 				}
 				default = 2;
 			}
-			public FontStyle font_style = new FontStyle ();
-			public Color color = new Color ();
+			public FontStyle font_style = FontStyle ();
+			public Color color = Color ();
 			public LineStyle line_style = new LineStyle ();
 			public double font_indent = 5;
 
@@ -153,17 +153,17 @@ namespace Gtk.CairoChart {
 				grid.line_style.color = _color;
 				grid.line_style.color.alpha = 0.5;
 			}
-			default = new Color (0.0, 0.0, 0.0, 1.0);
+			default = Color (0.0, 0.0, 0.0, 1.0);
 		}
 
 		public Series () {
 		}
 
 		public class LabelStyle {
-			FontStyle font_style = new FontStyle();
+			FontStyle font_style = FontStyle();
 			LineStyle frame_line_style = new LineStyle();
-			Color bg_color = new Color();
-			Color frame_color = new Color();
+			Color bg_color = Color();
+			Color frame_color = Color();
 		}
 	}
 }
