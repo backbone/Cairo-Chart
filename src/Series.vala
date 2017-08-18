@@ -5,10 +5,10 @@ namespace Gtk.CairoChart {
 	public class Series {
 
 		public struct Point {
-			Double128 x;
-			Double128 y;
+			Float128 x;
+			Float128 y;
 
-			public Point (Double128 x, Double128 y) {
+			public Point (Float128 x, Float128 y) {
 				this.x = x; this.y = y;
 			}
 		}
@@ -25,8 +25,8 @@ namespace Gtk.CairoChart {
 		// then draw separate axis for each/all series
 		// or specify series name near the axis
 		public class Axis {
-			public Double128 min = 0;
-			public Double128 max = 1;
+			public Float128 min = 0;
+			public Float128 max = 1;
 			public Text title = new Text ("");
 			public enum Type {
 				NUMBERS = 0,
@@ -137,7 +137,7 @@ namespace Gtk.CairoChart {
 
 		public Grid grid = new Grid ();
 
-		public GLib.List<Double128?> cursors = new List<Double128?> ();
+		public GLib.List<Float128?> cursors = new List<Float128?> ();
 		public LineStyle line_style = new LineStyle ();
 
 		protected Color _color = Color (0.0, 0.0, 0.0, 1.0);

@@ -43,8 +43,8 @@ namespace Gtk.CairoChart {
 			bg_color = Color (1, 1, 1);
 		}
 
-		protected Double128 cur_x_min = 0.0;
-		protected Double128 cur_x_max = 0.0;
+		protected Float128 cur_x_min = 0.0;
+		protected Float128 cur_x_max = 0.0;
 		protected double cur_y_min = 0.0;
 		protected double cur_y_max = 0.0;
 
@@ -402,10 +402,10 @@ namespace Gtk.CairoChart {
 		protected virtual void calc_axis_rec_sizes (Series.Axis axis, out double max_rec_width, out double max_rec_height, bool is_horizontal = true) {
 			max_rec_width = max_rec_height = 0;
 			for (var i = 0; i < axis_rec_npoints; ++i) {
-				Double128 x = axis.min + (axis.max - axis.min) / axis_rec_npoints * i;
+				Float128 x = axis.min + (axis.max - axis.min) / axis_rec_npoints * i;
 				switch (axis.type) {
 				case Series.Axis.Type.NUMBERS:
-					var text = new Text (axis.format.printf(x) + (is_horizontal ? "_" : ""));
+					var text = new Text (axis.format.printf((LongDouble)x) + (is_horizontal ? "_" : ""));
 					text.style = axis.font_style;
 					max_rec_width = double.max (max_rec_width, text.get_width(context));
 					max_rec_height = double.max (max_rec_height, text.get_height(context));
@@ -435,8 +435,8 @@ namespace Gtk.CairoChart {
 			}
 		}
 
-		protected virtual Double128 calc_round_step (Double128 aver_step, bool date_time = false) {
-			Double128 step = 1.0;
+		protected virtual Float128 calc_round_step (Float128 aver_step, bool date_time = false) {
+			Float128 step = 1.0;
 
 			if (aver_step > 1.0) {
 				if (date_time) while (step < aver_step) step *= 60;
@@ -463,7 +463,7 @@ namespace Gtk.CairoChart {
 		bool common_x_axes = false;
 		bool common_y_axes = false;
 
-		bool are_intersect (Double128 a_min, Double128 a_max, Double128 b_min, Double128 b_max) {
+		bool are_intersect (Float128 a_min, Float128 a_max, Float128 b_min, Float128 b_max) {
 			if (   a_min < a_max <= b_min < b_max
 			    || b_min < b_max <= a_min < a_max)
 				return false;
@@ -594,8 +594,8 @@ namespace Gtk.CairoChart {
 			}
 		}
 
-		bool point_belong (Double128 p, Double128 a, Double128 b) {
-			if (a > b) { Double128 tmp = a; a = b; b = tmp; }
+		bool point_belong (Float128 p, Float128 a, Float128 b) {
+			if (a > b) { Float128 tmp = a; a = b; b = tmp; }
 			if (a <= p <= b) return true;
 			return false;
 		}
@@ -612,12 +612,12 @@ namespace Gtk.CairoChart {
 				long max_nrecs = (long) ((plot_area_x_max - plot_area_x_min) * (s.place.x_high - s.place.x_low) / max_rec_width);
 
 				// 3. Calculate grid step.
-				Double128 step = calc_round_step ((s.axis_x.max - s.axis_x.min) / max_nrecs, s.axis_x.type == Series.Axis.Type.DATE_TIME);
+				Float128 step = calc_round_step ((s.axis_x.max - s.axis_x.min) / max_nrecs, s.axis_x.type == Series.Axis.Type.DATE_TIME);
 				if (step > s.axis_x.max - s.axis_x.min)
 					step = s.axis_x.max - s.axis_x.min;
 
 				// 4. Calculate x_min (s.axis_x.min / step, round, multiply on step, add step if < s.axis_x.min).
-				Double128 x_min = 0.0;
+				Float128 x_min = 0.0;
 				if (step >= 1) {
 					int64 x_min_nsteps = (int64) (s.axis_x.min / step);
 					x_min = x_min_nsteps * step;
@@ -652,18 +652,19 @@ namespace Gtk.CairoChart {
 					}
 
 				// 5. Draw records, update cur_{x,y}_{min,max}.
-				for (Double128 x = x_min, x_max = s.axis_x.max; point_belong (x, x_min, x_max); x += step) {
+				for (Float128 x = x_min, x_max = s.axis_x.max; point_belong (x, x_min, x_max); x += step) {
 					if (common_x_axes) set_source_rgba(Color(0,0,0,1));
 					else set_source_rgba(s.axis_x.color);
 					string text = "", time_text = "";
 					switch (s.axis_x.type) {
 					case Series.Axis.Type.NUMBERS:
-						text = s.axis_x.format.printf(x);
+						text = s.axis_x.format.printf((LongDouble)x);
 						break;
 					case Series.Axis.Type.DATE_TIME:
 						var dt = new DateTime.from_unix_utc((int64)x);
 						text = dt.format(s.axis_x.date_format);
-						var dsec_str = ("%."+(s.axis_x.dsec_signs.to_string())+"Lf").printf((x - (int64)x)).offset(1);
+						var dsec_str =
+							("%."+(s.axis_x.dsec_signs.to_string())+"Lf").printf((LongDouble)(x - (int64)x)).offset(1);
 						time_text = dt.format(s.axis_x.time_format) + dsec_str;
 						break;
 					default:
@@ -799,12 +800,12 @@ namespace Gtk.CairoChart {
 				long max_nrecs = (long) ((plot_area_y_max - plot_area_y_min) * (s.place.y_high - s.place.y_low) / max_rec_height);
 
 				// 3. Calculate grid step.
-				Double128 step = calc_round_step ((s.axis_y.max - s.axis_y.min) / max_nrecs);
+				Float128 step = calc_round_step ((s.axis_y.max - s.axis_y.min) / max_nrecs);
 				if (step > s.axis_y.max - s.axis_y.min)
 					step = s.axis_y.max - s.axis_y.min;
 
 				// 4. Calculate y_min (s.axis_y.min / step, round, multiply on step, add step if < s.axis_y.min).
-				Double128 y_min = 0.0;
+				Float128 y_min = 0.0;
 				if (step >= 1) {
 					int64 y_min_nsteps = (int64) (s.axis_y.min / step);
 					y_min = y_min_nsteps * step;
@@ -839,10 +840,10 @@ namespace Gtk.CairoChart {
 					}
 
 				// 5. Draw records, update cur_{x,y}_{min,max}.
-				for (Double128 y = y_min, y_max = s.axis_y.max; point_belong (y, y_min, y_max); y += step) {
+				for (Float128 y = y_min, y_max = s.axis_y.max; point_belong (y, y_min, y_max); y += step) {
 					if (common_y_axes) set_source_rgba(Color(0,0,0,1));
 					else set_source_rgba(s.axis_y.color);
-					var text = s.axis_y.format.printf(y);
+					var text = s.axis_y.format.printf((LongDouble)y);
 					var scr_y = plot_area_y_max - (plot_area_y_max - plot_area_y_min)
 					            * (s.place.y_low + (s.place.y_high - s.place.y_low) / (s.axis_y.max - s.axis_y.min) * (y - s.axis_y.min));
 					var text_t = new Text(text, s.axis_y.font_style, s.axis_y.color);
@@ -936,12 +937,12 @@ namespace Gtk.CairoChart {
 			context.stroke ();
 		}
 
-		protected virtual double get_scr_x (Series s, Double128 x) {
+		protected virtual double get_scr_x (Series s, Float128 x) {
 				return plot_area_x_min + (plot_area_x_max - plot_area_x_min) * (s.place.x_low + (x - s.axis_x.min)
 				                         / (s.axis_x.max - s.axis_x.min) * (s.place.x_high - s.place.x_low));
 		}
 
-		protected virtual double get_scr_y (Series s, Double128 y) {
+		protected virtual double get_scr_y (Series s, Float128 y) {
 				return plot_area_y_max - (plot_area_y_max - plot_area_y_min) * (s.place.y_low + (y - s.axis_y.min)
 				                         / (s.axis_y.max - s.axis_y.min) * (s.place.y_high - s.place.y_low));
 		}
