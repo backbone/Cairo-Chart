@@ -379,7 +379,6 @@ int main (string[] args) {
 
 	window.show_all();
 
-Double128 d = 5.5;
 	Gtk.main();
 	return 0;
 }
