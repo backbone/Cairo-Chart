@@ -25,7 +25,7 @@ namespace Gtk.CairoChart {
 			PRICLE_TRIANGLE
 		}
 
-		public Place place = Place();
+		public Place place = new Place();
 		public Text title = new Text ();
 		public MarkerType marker_type = MarkerType.SQUARE;
 
@@ -59,7 +59,7 @@ namespace Gtk.CairoChart {
 			series.grid = this.grid.copy ();
 			series.line_style = this.line_style;
 			series.marker_type = this.marker_type;
-			series.place = this.place;
+			series.place = this.place.copy();
 			series.points = this.points.copy();
 			series.sort = this.sort;
 			series.title = this.title.copy();
