@@ -130,6 +130,12 @@ namespace Gtk.CairoChart {
 			return true;
 		}
 
+		// TODO:
+		public virtual bool scroll_notify_event (Gdk.EventScroll event) {
+			//stdout.puts ("scroll_notify_event\n");
+			return true;
+		}
+
 		protected double title_width = 0.0;
 		protected double title_height = 0.0;
 

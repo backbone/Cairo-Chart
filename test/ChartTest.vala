@@ -353,6 +353,18 @@ int main (string[] args) {
 	    // user's post motion_notify_event operations here...
 		return ret;
 	});
+	da.add_events(Gdk.EventMask.SCROLL_MASK);
+	da.scroll_event.connect((event) => {
+	    // user's pre scroll_notify_event operations here...
+	    stdout.puts("pre_scroll\n");
+
+		var ret = chart.scroll_notify_event(event);
+
+	    // user's post scroll_notify_event operations here...
+	    stdout.puts("post_scroll\n");
+
+		return ret;
+	});
 
 	var vbox2 = new Box(Orientation.VERTICAL, 0);
 	vbox2.pack_start(button1, false, false, 0);
