@@ -6,14 +6,14 @@ void plot_chart1 (Chart chart) {
 	var s3 = new Series ();
 
 	s1.title = new Text("Series 1"); s1.color = new Color (1, 0, 0);
-	s1.points = {new Series.Point(0, 0), new Series.Point(2, 1), new Series.Point(1, 3)};
-	s1.axis_x.position = Series.Axis.Position.HIGH;
+	s1.points = {new Point(0, 0), new Point(2, 1), new Point(1, 3)};
+	s1.axis_x.position = Axis.Position.HIGH;
 	s1.axis_x.format = "%.3Lf";
 	s2.title = new Text("Series 2"); s2.color = new Color (0, 1, 0);
-	s2.points = {new Series.Point(5, -3), new Series.Point(25, -18), new Series.Point(-11, 173)};
+	s2.points = {new Point(5, -3), new Point(25, -18), new Point(-11, 173)};
 	s3.title = new Text("Series 3"); s3.color = new Color (0, 0, 1);
-	s3.points = {new Series.Point(9, 17), new Series.Point(2, 10), new Series.Point(122, 31)};
-	s3.axis_y.position = Series.Axis.Position.HIGH;
+	s3.points = {new Point(9, 17), new Point(2, 10), new Point(122, 31)};
+	s3.axis_y.position = Axis.Position.HIGH;
 
 	s1.axis_x.min = 0; s1.axis_x.max = 2;
 	s1.axis_y.min = 0; s1.axis_y.max = 3;
@@ -49,14 +49,14 @@ void plot_chart2 (Chart chart) {
 	var s3 = new Series ();
 
 	s1.title = new Text("Series 1"); s1.color = new Color (1, 0, 0);
-	s1.points = {new Series.Point(-12, 0), new Series.Point(2, 1), new Series.Point(20, 3)};
-	s2.axis_y.position = Series.Axis.Position.HIGH;
+	s1.points = {new Point(-12, 0), new Point(2, 1), new Point(20, 3)};
+	s2.axis_y.position = Axis.Position.HIGH;
 	s1.axis_x.format = "%.3Lf";
 	s2.title = new Text("Series 2"); s2.color = new Color (0, 1, 0);
-	s2.points = {new Series.Point(5, -3), new Series.Point(25, -18), new Series.Point(-11, 173)};
+	s2.points = {new Point(5, -3), new Point(25, -18), new Point(-11, 173)};
 	s3.title = new Text("Series 3"); s3.color = new Color (0, 0, 1);
-	s3.points = {new Series.Point(9, 17), new Series.Point(2, 10), new Series.Point(-15, 31)};
-	s3.axis_y.position = Series.Axis.Position.HIGH;
+	s3.points = {new Point(9, 17), new Point(2, 10), new Point(-15, 31)};
+	s3.axis_y.position = Axis.Position.HIGH;
 
 	s1.axis_x.min = -15; s1.axis_x.max = 30;
 	s1.axis_y.min = 0; s1.axis_y.max = 3;
@@ -92,16 +92,16 @@ void plot_chart3 (Chart chart) {
 	var s3 = new Series ();
 
 	s1.title = new Text("Series 1"); s1.color = new Color (1, 0, 0);
-	s1.points = {new Series.Point(0, 70), new Series.Point(2, 155), new Series.Point(1, -3)};
-	s1.axis_x.position = Series.Axis.Position.HIGH;
-	s1.axis_y.position = Series.Axis.Position.HIGH;
+	s1.points = {new Point(0, 70), new Point(2, 155), new Point(1, -3)};
+	s1.axis_x.position = Axis.Position.HIGH;
+	s1.axis_y.position = Axis.Position.HIGH;
 	s1.axis_x.format = "%.3Lf";
 	s2.title = new Text("Series 2"); s2.color = new Color (0, 1, 0);
-	s2.points = {new Series.Point(5, -3), new Series.Point(25, -18), new Series.Point(-11, 173)};
-	s2.axis_y.position = Series.Axis.Position.HIGH;
+	s2.points = {new Point(5, -3), new Point(25, -18), new Point(-11, 173)};
+	s2.axis_y.position = Axis.Position.HIGH;
 	s3.title = new Text("Series 3"); s3.color = new Color (0, 0, 1);
-	s3.points = {new Series.Point(9, -17), new Series.Point(2, 10), new Series.Point(122, 31)};
-	s3.axis_y.position = Series.Axis.Position.HIGH;
+	s3.points = {new Point(9, -17), new Point(2, 10), new Point(122, 31)};
+	s3.axis_y.position = Axis.Position.HIGH;
 
 	s1.axis_x.min = 0; s1.axis_x.max = 2;
 	s1.axis_y.min = -20; s1.axis_y.max = 200;
@@ -137,27 +137,27 @@ void plot_chart4 (Chart chart) {
 	var s3 = new Series ();
 	var s4 = new Series ();
 
-	s1.axis_x.type = Series.Axis.Type.DATE_TIME;
-	s3.axis_x.type = Series.Axis.Type.DATE_TIME;
-	s4.axis_x.type = Series.Axis.Type.DATE_TIME;
+	s1.axis_x.type = Axis.Type.DATE_TIME;
+	s3.axis_x.type = Axis.Type.DATE_TIME;
+	s4.axis_x.type = Axis.Type.DATE_TIME;
 	s4.axis_x.dsec_signs = 5;
 
 	var now = new DateTime.now_local().to_unix();
 	var high = (uint64) (253000000000L);
 
 	s1.title = new Text("Series 1"); s1.color = new Color (1, 0, 0);
-	s1.points = {new Series.Point(now, 70), new Series.Point(now - 100000, 155), new Series.Point(now + 100000, 30)};
-	s1.axis_x.position = Series.Axis.Position.HIGH;
-	s1.axis_y.position = Series.Axis.Position.HIGH;
+	s1.points = {new Point(now, 70), new Point(now - 100000, 155), new Point(now + 100000, 30)};
+	s1.axis_x.position = Axis.Position.HIGH;
+	s1.axis_y.position = Axis.Position.HIGH;
 	s2.title = new Text("Series 2"); s2.color = new Color (0, 1, 0);
-	s2.points = {new Series.Point(5, -3), new Series.Point(25, -18), new Series.Point(-11, 173)};
-	s2.axis_y.position = Series.Axis.Position.HIGH;
+	s2.points = {new Point(5, -3), new Point(25, -18), new Point(-11, 173)};
+	s2.axis_y.position = Axis.Position.HIGH;
 	s3.title = new Text("Series 3"); s3.color = new Color (0, 0, 1);
-	s3.points = {new Series.Point(high - 2 + 0.73, -17), new Series.Point(high - 1 + 0.234, 10), new Series.Point(high + 1 + 0.411, 31)};
-	s3.axis_y.position = Series.Axis.Position.HIGH;
+	s3.points = {new Point(high - 2 + 0.73, -17), new Point(high - 1 + 0.234, 10), new Point(high + 1 + 0.411, 31)};
+	s3.axis_y.position = Axis.Position.HIGH;
 	s4.title = new Text("Series 4"); s4.color = new Color (0.5, 0.3, 0.9);
-	s4.points = {new Series.Point(high + 0.005, -19.05), new Series.Point(high + 0.0051, 28), new Series.Point(high + 0.0052, 55), new Series.Point(high + 0.0053, 44)};
-	s4.axis_y.position = Series.Axis.Position.HIGH;
+	s4.points = {new Point(high + 0.005, -19.05), new Point(high + 0.0051, 28), new Point(high + 0.0052, 55), new Point(high + 0.0053, 44)};
+	s4.axis_y.position = Axis.Position.HIGH;
 
 	s1.axis_x.min = now - 100000; s1.axis_x.max = now + 100000;
 	s1.axis_y.min = -20; s1.axis_y.max = 200;
@@ -239,40 +239,40 @@ int main (string[] args) {
 	button1.clicked.connect (() => {
 			chart = chart1; da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 			switch (chart.legend.position) {
-			case Chart.Legend.Position.TOP: radio_button1.set_active(true); break;
-			case Chart.Legend.Position.RIGHT: radio_button2.set_active(true); break;
-			case Chart.Legend.Position.LEFT: radio_button3.set_active(true); break;
-			case Chart.Legend.Position.BOTTOM: radio_button4.set_active(true); break;
+			case Legend.Position.TOP: radio_button1.set_active(true); break;
+			case Legend.Position.RIGHT: radio_button2.set_active(true); break;
+			case Legend.Position.LEFT: radio_button3.set_active(true); break;
+			case Legend.Position.BOTTOM: radio_button4.set_active(true); break;
 			default: break;
 			}
 	});
 	button2.clicked.connect (() => {
 			chart = chart2; da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 			switch (chart.legend.position) {
-			case Chart.Legend.Position.TOP: radio_button1.set_active(true); break;
-			case Chart.Legend.Position.RIGHT: radio_button2.set_active(true); break;
-			case Chart.Legend.Position.LEFT: radio_button3.set_active(true); break;
-			case Chart.Legend.Position.BOTTOM: radio_button4.set_active(true); break;
+			case Legend.Position.TOP: radio_button1.set_active(true); break;
+			case Legend.Position.RIGHT: radio_button2.set_active(true); break;
+			case Legend.Position.LEFT: radio_button3.set_active(true); break;
+			case Legend.Position.BOTTOM: radio_button4.set_active(true); break;
 			default: break;
 			}
 	});
 	button3.clicked.connect (() => {
 			chart = chart3; da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 			switch (chart.legend.position) {
-			case Chart.Legend.Position.TOP: radio_button1.set_active(true); break;
-			case Chart.Legend.Position.RIGHT: radio_button2.set_active(true); break;
-			case Chart.Legend.Position.LEFT: radio_button3.set_active(true); break;
-			case Chart.Legend.Position.BOTTOM: radio_button4.set_active(true); break;
+			case Legend.Position.TOP: radio_button1.set_active(true); break;
+			case Legend.Position.RIGHT: radio_button2.set_active(true); break;
+			case Legend.Position.LEFT: radio_button3.set_active(true); break;
+			case Legend.Position.BOTTOM: radio_button4.set_active(true); break;
 			default: break;
 			}
 	});
 	button4.clicked.connect (() => {
 			chart = chart4; da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 			switch (chart.legend.position) {
-			case Chart.Legend.Position.TOP: radio_button1.set_active(true); break;
-			case Chart.Legend.Position.RIGHT: radio_button2.set_active(true); break;
-			case Chart.Legend.Position.LEFT: radio_button4.set_active(true); break;
-			case Chart.Legend.Position.BOTTOM: radio_button4.set_active(true); break;
+			case Legend.Position.TOP: radio_button1.set_active(true); break;
+			case Legend.Position.RIGHT: radio_button2.set_active(true); break;
+			case Legend.Position.LEFT: radio_button4.set_active(true); break;
+			case Legend.Position.BOTTOM: radio_button4.set_active(true); break;
 			default: break;
 			}
 	});
@@ -303,25 +303,25 @@ int main (string[] args) {
 
 	radio_button1.toggled.connect ((button) => {
 		if (button.get_active()) {
-			chart.legend.position = Chart.Legend.Position.TOP;
+			chart.legend.position = Legend.Position.TOP;
 			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 		}
 	});
 	radio_button2.toggled.connect ((button) => {
 		if (button.get_active()) {
-			chart.legend.position = Chart.Legend.Position.RIGHT;
+			chart.legend.position = Legend.Position.RIGHT;
 			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 		}
 	});
 	radio_button3.toggled.connect ((button) => {
 		if (button.get_active()) {
-			chart.legend.position = Chart.Legend.Position.LEFT;
+			chart.legend.position = Legend.Position.LEFT;
 			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 		}
 	});
 	radio_button4.toggled.connect ((button) => {
 		if (button.get_active()) {
-			chart.legend.position = Chart.Legend.Position.BOTTOM;
+			chart.legend.position = Legend.Position.BOTTOM;
 			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 		}
 	});
