@@ -16,7 +16,7 @@ namespace Gtk.CairoChart {
 
 		public Series[] series = {};
 
-		protected LineStyle selection_style = new LineStyle ();
+		protected LineStyle selection_style = LineStyle ();
 
 		public Chart () {
 			bg_color = Color (1, 1, 1);
@@ -956,6 +956,47 @@ namespace Gtk.CairoChart {
 
 		// TODO:
 		protected virtual void draw_cursors () {
+		}
+
+		public Chart copy () {
+			var chart = new Chart ();
+			chart.axis_rec_npoints = this.axis_rec_npoints;
+			chart.bg_color = this.bg_color;
+			chart.border_color = this.border_color;
+			chart.common_x_axes = this.common_x_axes;
+			chart.common_y_axes = this.common_y_axes;
+			chart.context = this.context;
+			chart.cur_x_max = this.cur_x_max;
+			chart.cur_x_min = this.cur_x_min;
+			chart.cur_y_max = this.cur_y_max;
+			chart.cur_y_min = this.cur_y_min;
+			chart.height = this.height;
+			chart.legend = this.legend.copy();
+			chart.legend_height = this.legend_height;
+			chart.legend_line_length = this.legend_line_length;
+			chart.legend_text_hspace = this.legend_text_hspace;
+			chart.legend_text_vspace = this.legend_text_vspace;
+			chart.legend_width = this.legend_width;
+			chart.marker_size = this.marker_size;
+			chart.max_font_heights = this.max_font_heights.copy();
+			chart.plot_area_x_max = this.plot_area_x_max;
+			chart.plot_area_x_min = this.plot_area_x_min;
+			chart.plot_area_y_max = this.plot_area_y_max;
+			chart.plot_area_y_min = this.plot_area_y_min;
+			chart.selection_style = this.selection_style;
+			chart.series = this.series.copy();
+			chart.show_legend = this.show_legend;
+			chart.title = this.title.copy().copy();
+			chart.title_height = this.title_height;
+			chart.title_vindent = this.title_vindent;
+			chart.title_width = this.title_width;
+			chart.width = this.width;
+			chart.zoom = this.zoom;
+			chart.zoom_x0 = this.zoom_x0;
+			chart.zoom_x1 = this.zoom_x1;
+			chart.zoom_y0 = this.zoom_y0;
+			chart.zoom_y1 = this.zoom_y1;
+			return chart;
 		}
 	}
 }

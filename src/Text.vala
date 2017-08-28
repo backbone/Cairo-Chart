@@ -47,10 +47,12 @@ namespace Gtk.CairoChart {
 			this.color = color;
 		}
 
-		public Text.by_instance (Text text) {
-			this.text = text.text;
-			this.style = text.style;
-			this.color = text.color;
+		public Text copy () {
+			var text = new Text ();
+			text.text = this.text;
+			text.style = this.style;
+			text.color = this.color;
+			return text;
 		}
 	}
 }

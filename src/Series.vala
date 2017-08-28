@@ -25,14 +25,14 @@ namespace Gtk.CairoChart {
 			PRICLE_TRIANGLE
 		}
 
-		public Place place = new Place();
+		public Place place = Place();
 		public Text title = new Text ();
 		public MarkerType marker_type = MarkerType.SQUARE;
 
 		public Grid grid = new Grid ();
 
 		public GLib.List<Float128?> cursors = new List<Float128?> ();
-		public LineStyle line_style = new LineStyle ();
+		public LineStyle line_style = LineStyle ();
 
 		protected Color _color = Color (0.0, 0.0, 0.0, 1.0);
 		public Color color {
@@ -50,8 +50,23 @@ namespace Gtk.CairoChart {
 			default = Color (0.0, 0.0, 0.0, 1.0);
 		}
 
-		public Series () {
+		public Series copy () {
+			var series = new Series ();
+			series._color = this._color;
+			series.axis_x = this.axis_x.copy ();
+			series.axis_y = this.axis_y.copy ();
+			series.cursors = this.cursors.copy ();
+			series.grid = this.grid.copy ();
+			series.line_style = this.line_style;
+			series.marker_type = this.marker_type;
+			series.place = this.place;
+			series.points = this.points.copy();
+			series.sort = this.sort;
+			series.title = this.title.copy();
+			return series;
 		}
 
+		public Series () {
+		}
 	}
 }

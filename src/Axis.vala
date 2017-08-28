@@ -62,8 +62,27 @@ namespace Gtk.CairoChart {
 		}
 		public FontStyle font_style = FontStyle ();
 		public Color color = Color ();
-		public LineStyle line_style = new LineStyle ();
+		public LineStyle line_style = LineStyle ();
 		public double font_indent = 5;
+
+		public Axis copy () {
+			var axis = new Axis ();
+			axis._date_format = this._date_format;
+			axis._dsec_signs = this._dsec_signs;
+			axis._format = this._format;
+			axis._time_format = this._time_format;
+			axis.color = this.color;
+			axis.font_indent = this.font_indent;
+			axis.font_style = this.font_style;
+			axis.line_style = this.line_style;
+			axis.max = this.max;
+			axis.min = this.min;
+			axis.position = this.position;
+			axis.scale_type = this.scale_type;
+			axis.title = this.title.copy();
+			axis.type = this.type;
+			return axis;
+		}
 
 		public Axis () {}
 	}
