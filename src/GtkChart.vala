@@ -43,8 +43,8 @@ namespace Gtk.CairoChart {
 			bg_color = Color (1, 1, 1);
 		}
 
-		protected Float128 cur_x_min = 0.0;
-		protected Float128 cur_x_max = 0.0;
+		protected double cur_x_min = 0.0;
+		protected double cur_x_max = 0.0;
 		protected double cur_y_min = 0.0;
 		protected double cur_y_max = 0.0;
 
@@ -463,7 +463,7 @@ namespace Gtk.CairoChart {
 		bool common_x_axes = false;
 		bool common_y_axes = false;
 
-		bool are_intersect (Float128 a_min, Float128 a_max, Float128 b_min, Float128 b_max) {
+		bool are_intersect (double a_min, double a_max, double b_min, double b_max) {
 			if (   a_min < a_max <= b_min < b_max
 			    || b_min < b_max <= a_min < a_max)
 				return false;
