@@ -908,6 +908,39 @@ namespace Gtk.CairoChart {
 				                         / (s.axis_y.max - s.axis_y.min) * (s.place.y_high - s.place.y_low));
 		}
 
+		protected virtual bool point_in_rect (Point p, double x0, double x1, double y0, double y1) {
+			if (   (x0 <= p.x <= x1 || x1 <= p.x <= x0)
+			    && (y0 <= p.y <= y1 || y1 <= p.y <= y0))
+				return true;
+			return false;
+		}
+
+		protected virtual bool point_in_plot_area (Point p) {
+			if (point_in_rect (p, plot_area_x_min, plot_area_x_max, plot_area_y_min, plot_area_y_max))
+				return true;
+			return false;
+		}
+
+		protected virtual bool hcross (Point a1, Point a2, Float128 h_x1, Float128 h_x2, Float128 h_y, out Float128 x) {
+			x = 0;
+			if (a1.y == a2.y) return false;
+			if (a1.y >= h_y && a2.y >= h_y || a1.y <= h_y && a2.y <= h_y) return false;
+			x = a1.x + (a2.x - a1.x) * (h_y - a1.y) / (a2.y - a1.y);
+			if (h_x1 <= x <= h_x2 || h_x2 <= x <= h_x1)
+				return true;
+			return false;
+		}
+
+		protected virtual bool vcross (Point a1, Point a2, Float128 v_x, Float128 v_y1, Float128 v_y2, out Float128 y) {
+			y = 0;
+			if (a1.x == a2.x) return false;
+			if (a1.x >= v_x && a2.x >= v_x || a1.x <= v_x && a2.x <= v_x) return false;
+			y = a1.y + (a2.y - a1.y) * (v_x - a1.x) / (a2.x - a1.x);
+			if (v_y1 <= y <= v_y2 || v_y2 <= y <= v_y1)
+				return true;
+			return false;
+		}
+
 		delegate int PointComparator(Point a, Point b);
 		void sort_points(Point[] points, PointComparator compare) {
 			for(var i = 0; i < points.length; ++i) {
@@ -919,6 +952,43 @@ namespace Gtk.CairoChart {
 					}
 				}
 			}
+		}
+
+		protected virtual bool cut_line (Point a, Point b, out Point c, out Point d) {
+			int ncross = 0;
+			Float128 x = 0, y = 0;
+			Point pc[4];
+			if (hcross(a, b, plot_area_x_min, plot_area_x_max, plot_area_y_min, out x))
+				pc[ncross++] = Point(x, plot_area_y_min);
+			if (hcross(a, b, plot_area_x_min, plot_area_x_max, plot_area_y_max, out x))
+				pc[ncross++] = Point(x, plot_area_y_max);
+			if (vcross(a, b, plot_area_x_min, plot_area_y_min, plot_area_y_max, out y))
+				pc[ncross++] = Point(plot_area_x_min, y);
+			if (vcross(a, b, plot_area_x_max, plot_area_y_min, plot_area_y_max, out y))
+				pc[ncross++] = Point(plot_area_x_max, y);
+			c = a;
+			d = b;
+			if (ncross == 0) {
+				if (point_in_plot_area (a) && point_in_plot_area (b))
+					return true;
+				return false;
+			}
+			if (ncross >= 2) {
+				c = pc[0]; d = pc[1];
+				return true;
+			}
+			if (ncross == 1) {
+				if (point_in_plot_area (a)) {
+					c = a;
+					d = pc[0];
+					return true;
+				} else if (point_in_plot_area (b)) {
+					c = b;
+					d = pc[0];
+					return true;
+				}
+			}
+			return false;
 		}
 
 		protected virtual void draw_series () {
@@ -943,14 +1013,23 @@ namespace Gtk.CairoChart {
 					break;
 				}
 				set_line_style(s.line_style);
-				// move to s.points[0]
-				context.move_to (get_scr_x(s, points[0].x), get_scr_y(s, points[0].y));
 				// draw series line
-				for (int i = 1; i < points.length; ++i)
-					context.line_to (get_scr_x(s, points[i].x), get_scr_y(s, points[i].y));
+				for (int i = 1; i < points.length; ++i) {
+					Point c, d;
+					if (cut_line (Point(get_scr_x(s, points[i - 1].x), get_scr_y(s, points[i - 1].y)),
+					              Point(get_scr_x(s, points[i].x), get_scr_y(s, points[i].y)),
+					              out c, out d)) {
+						context.move_to (c.x, c.y);
+						context.line_to (d.x, d.y);
+					}
+				}
 				context.stroke();
-				for (int i = 0; i < points.length; ++i)
-					draw_marker_at_pos(s.marker_type, get_scr_x(s, points[i].x), get_scr_y(s, points[i].y));
+				for (int i = 0; i < points.length; ++i) {
+					var x = get_scr_x(s, points[i].x);
+					var y = get_scr_y(s, points[i].y);
+					if (point_in_plot_area (Point (x, y)))
+						draw_marker_at_pos(s.marker_type, x, y);
+				}
 			}
 		}
 
