@@ -1070,11 +1070,6 @@ namespace Gtk.CairoChart {
 			chart.title_vindent = this.title_vindent;
 			chart.title_width = this.title_width;
 			chart.width = this.width;
-			chart.zoom = this.zoom;
-			chart.zoom_x0 = this.zoom_x0;
-			chart.zoom_x1 = this.zoom_x1;
-			chart.zoom_y0 = this.zoom_y0;
-			chart.zoom_y1 = this.zoom_y1;
 			return chart;
 		}
 	}

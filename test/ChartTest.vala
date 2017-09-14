@@ -337,19 +337,19 @@ int main (string[] args) {
 
 	da.button_release_event.connect((event) => {
 	    // user's pre button_release_event operations here...
-		var ret = chart.button_release_event(event);
+		var ret = true;//chart.button_release_event(event);
 	    // user's post button_release_event operations here...
 		return ret;
 	});
 	da.button_press_event.connect((event) => {
 	    // user's pre button_press_event operations here...
-		var ret = chart.button_press_event(event);
+		var ret = true;//chart.button_press_event(event);
 	    // user's post button_press_event operations here...
 		return ret;
 	});
 	da.motion_notify_event.connect((event) => {
 	    // user's pre motion_notify_event operations here...
-		var ret = chart.motion_notify_event(event);
+		var ret = true;//chart.motion_notify_event(event);
 	    // user's post motion_notify_event operations here...
 		return ret;
 	});
@@ -358,7 +358,7 @@ int main (string[] args) {
 	    // user's pre scroll_notify_event operations here...
 	    stdout.puts("pre_scroll\n");
 
-		var ret = chart.scroll_notify_event(event);
+		var ret = true;//chart.scroll_notify_event(event);
 
 	    // user's post scroll_notify_event operations here...
 	    stdout.puts("post_scroll\n");
