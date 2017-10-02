@@ -5,14 +5,14 @@ void plot_chart1 (Chart chart) {
 	var s2 = new Series ();
 	var s3 = new Series ();
 
-	s1.title = new Text("Series 1"); s1.color = new Color (1, 0, 0);
-	s1.points = {new Point(0, 0), new Point(2, 1), new Point(1, 3)};
+	s1.title = new Text("Series 1"); s1.color = Color (1, 0, 0);
+	s1.points = {Point(0, 0), Point(2, 1), Point(1, 3)};
 	s1.axis_x.position = Axis.Position.HIGH;
 	s1.axis_x.format = "%.3Lf";
-	s2.title = new Text("Series 2"); s2.color = new Color (0, 1, 0);
-	s2.points = {new Point(5, -3), new Point(25, -18), new Point(-11, 173)};
-	s3.title = new Text("Series 3"); s3.color = new Color (0, 0, 1);
-	s3.points = {new Point(9, 17), new Point(2, 10), new Point(122, 31)};
+	s2.title = new Text("Series 2"); s2.color = Color (0, 1, 0);
+	s2.points = {Point(5, -3), Point(25, -18), Point(-11, 173)};
+	s3.title = new Text("Series 3"); s3.color = Color (0, 0, 1);
+	s3.points = {Point(9, 17), Point(2, 10), Point(122, 31)};
 	s3.axis_y.position = Axis.Position.HIGH;
 
 	s1.axis_x.min = 0; s1.axis_x.max = 2;
@@ -48,14 +48,14 @@ void plot_chart2 (Chart chart) {
 	var s2 = new Series ();
 	var s3 = new Series ();
 
-	s1.title = new Text("Series 1"); s1.color = new Color (1, 0, 0);
-	s1.points = {new Point(-12, 0), new Point(2, 1), new Point(20, 3)};
+	s1.title = new Text("Series 1"); s1.color = Color (1, 0, 0);
+	s1.points = {Point(-12, 0), Point(2, 1), Point(20, 3)};
 	s2.axis_y.position = Axis.Position.HIGH;
 	s1.axis_x.format = "%.3Lf";
-	s2.title = new Text("Series 2"); s2.color = new Color (0, 1, 0);
-	s2.points = {new Point(5, -3), new Point(25, -18), new Point(-11, 173)};
-	s3.title = new Text("Series 3"); s3.color = new Color (0, 0, 1);
-	s3.points = {new Point(9, 17), new Point(2, 10), new Point(-15, 31)};
+	s2.title = new Text("Series 2"); s2.color = Color (0, 1, 0);
+	s2.points = {Point(5, -3), Point(25, -18), Point(-11, 173)};
+	s3.title = new Text("Series 3"); s3.color = Color (0, 0, 1);
+	s3.points = {Point(9, 17), Point(2, 10), Point(-15, 31)};
 	s3.axis_y.position = Axis.Position.HIGH;
 
 	s1.axis_x.min = -15; s1.axis_x.max = 30;
@@ -91,16 +91,16 @@ void plot_chart3 (Chart chart) {
 	var s2 = new Series ();
 	var s3 = new Series ();
 
-	s1.title = new Text("Series 1"); s1.color = new Color (1, 0, 0);
-	s1.points = {new Point(0, 70), new Point(2, 155), new Point(1, -3)};
+	s1.title = new Text("Series 1"); s1.color = Color (1, 0, 0);
+	s1.points = {Point(0, 70), Point(2, 155), Point(1, -3)};
 	s1.axis_x.position = Axis.Position.HIGH;
 	s1.axis_y.position = Axis.Position.HIGH;
 	s1.axis_x.format = "%.3Lf";
-	s2.title = new Text("Series 2"); s2.color = new Color (0, 1, 0);
-	s2.points = {new Point(5, -3), new Point(25, -18), new Point(-11, 173)};
+	s2.title = new Text("Series 2"); s2.color = Color (0, 1, 0);
+	s2.points = {Point(5, -3), Point(25, -18), Point(-11, 173)};
 	s2.axis_y.position = Axis.Position.HIGH;
-	s3.title = new Text("Series 3"); s3.color = new Color (0, 0, 1);
-	s3.points = {new Point(9, -17), new Point(2, 10), new Point(122, 31)};
+	s3.title = new Text("Series 3"); s3.color = Color (0, 0, 1);
+	s3.points = {Point(9, -17), Point(2, 10), Point(122, 31)};
 	s3.axis_y.position = Axis.Position.HIGH;
 
 	s1.axis_x.min = 0; s1.axis_x.max = 2;
@@ -145,18 +145,18 @@ void plot_chart4 (Chart chart) {
 	var now = new DateTime.now_local().to_unix();
 	var high = (uint64) (253000000000L);
 
-	s1.title = new Text("Series 1"); s1.color = new Color (1, 0, 0);
-	s1.points = {new Point(now, 70), new Point(now - 100000, 155), new Point(now + 100000, 30)};
+	s1.title = new Text("Series 1"); s1.color = Color (1, 0, 0);
+	s1.points = {Point(now, 70), Point(now - 100000, 155), Point(now + 100000, 30)};
 	s1.axis_x.position = Axis.Position.HIGH;
 	s1.axis_y.position = Axis.Position.HIGH;
-	s2.title = new Text("Series 2"); s2.color = new Color (0, 1, 0);
-	s2.points = {new Point(5, -3), new Point(25, -18), new Point(-11, 173)};
+	s2.title = new Text("Series 2"); s2.color = Color (0, 1, 0);
+	s2.points = {Point(5, -3), Point(25, -18), Point(-11, 173)};
 	s2.axis_y.position = Axis.Position.HIGH;
-	s3.title = new Text("Series 3"); s3.color = new Color (0, 0, 1);
-	s3.points = {new Point(high - 2 + 0.73, -17), new Point(high - 1 + 0.234, 10), new Point(high + 1 + 0.411, 31)};
+	s3.title = new Text("Series 3"); s3.color = Color (0, 0, 1);
+	s3.points = {Point(high - 2 + 0.73, -17), Point(high - 1 + 0.234, 10), Point(high + 1 + 0.411, 31)};
 	s3.axis_y.position = Axis.Position.HIGH;
-	s4.title = new Text("Series 4"); s4.color = new Color (0.5, 0.3, 0.9);
-	s4.points = {new Point(high + 0.005, -19.05), new Point(high + 0.0051, 28), new Point(high + 0.0052, 55), new Point(high + 0.0053, 44)};
+	s4.title = new Text("Series 4"); s4.color = Color (0.5, 0.3, 0.9);
+	s4.points = {Point(high + 0.005, -19.05), Point(high + 0.0051, 28), Point(high + 0.0052, 55), Point(high + 0.0053, 44)};
 	s4.axis_y.position = Axis.Position.HIGH;
 
 	s1.axis_x.min = now - 100000; s1.axis_x.max = now + 100000;
@@ -193,6 +193,14 @@ void plot_chart4 (Chart chart) {
 	s4.axis_y.title = new Text("Series 4: Axis Y.");
 
 	chart.series = { s1, s2, s3, s4 };
+}
+
+bool point_in_chart (Chart chart, double x, double y) {
+	if (x < chart.plot_area_x_min) return false;
+	if (x > chart.plot_area_x_max) return false;
+	if (y < chart.plot_area_y_min) return false;
+	if (y > chart.plot_area_y_max) return false;
+	return true;
 }
 
 int main (string[] args) {
@@ -326,44 +334,95 @@ int main (string[] args) {
 		}
 	});
 
+	bool draw_selection = false;
+	double sel_x0 = 0, sel_x1 = 0, sel_y0 = 0, sel_y1 = 0;
+
 	da.draw.connect((context) => {
 	    // user's pre draw operations here...
+
 		chart.context = context;
-		var ret = chart.draw();
+		/*var ret = */chart.draw();
+
 	    // user's post draw operations here...
-		return ret;
+	    if (draw_selection) {
+			context.set_source_rgba (0.5, 0.5, 0.5, 0.7);
+			context.set_line_join(Cairo.LineJoin.MITER);
+			context.set_line_cap(Cairo.LineCap.ROUND);
+			context.set_line_width(1);
+			//context.set_dash(null, 0);
+			context.rectangle (sel_x0, sel_y0, sel_x1 - sel_x0, sel_y1 - sel_y0);
+			//context.fill();
+			context.stroke();
+		}
+
+		return true;//ret;
 	});
 	da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 
-	da.button_release_event.connect((event) => {
-	    // user's pre button_release_event operations here...
-		var ret = true;//chart.button_release_event(event);
-	    // user's post button_release_event operations here...
-		return ret;
-	});
 	da.button_press_event.connect((event) => {
 	    // user's pre button_press_event operations here...
-		var ret = true;//chart.button_press_event(event);
+	    //stdout.puts("pre_press\n");
+
+		if (event.button == 2 && point_in_chart(chart, event.x, event.y)) {
+			draw_selection = true;
+			sel_x0 = sel_x1 = event.x;
+			sel_y0 = sel_y1 = event.y;
+			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
+		}
+
 	    // user's post button_press_event operations here...
-		return ret;
+	    //stdout.puts("post_press\n");
+
+		return true; // return ret;
+	});
+	da.button_release_event.connect((event) => {
+	    // user's pre button_release_event operations here...
+	    //stdout.puts("pre_release\n");
+
+		//var ret = chart.button_release_event(event);
+		if (event.button == 2) {
+			draw_selection = false;
+			sel_x1 = event.x;
+			sel_y1 = event.y;
+			if (sel_x1 > sel_x0 && sel_y1 > sel_y0)
+				chart.zoom_in (sel_x0, sel_y0, sel_x1, sel_y1);
+			else
+				chart.zoom_out ();
+			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
+		}
+
+	    // user's post button_release_event operations here...
+	    //stdout.puts("post_release\n");
+
+		return true; // return ret;
 	});
 	da.motion_notify_event.connect((event) => {
 	    // user's pre motion_notify_event operations here...
-		var ret = true;//chart.motion_notify_event(event);
+	    //stdout.puts("pre_motion\n");
+
+		//var ret = chart.motion_notify_event(event);
+
 	    // user's post motion_notify_event operations here...
-		return ret;
+	    //stdout.puts("post_motion\n");
+		if (draw_selection && point_in_chart(chart, event.x, event.y)) {
+			sel_x1 = event.x;
+			sel_y1 = event.y;
+			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
+		}
+
+		return true; // return ret;
 	});
 	da.add_events(Gdk.EventMask.SCROLL_MASK);
 	da.scroll_event.connect((event) => {
 	    // user's pre scroll_notify_event operations here...
-	    stdout.puts("pre_scroll\n");
+	    //stdout.puts("pre_scroll\n");
 
-		var ret = true;//chart.scroll_notify_event(event);
+		//var ret = chart.scroll_notify_event(event);
 
 	    // user's post scroll_notify_event operations here...
-	    stdout.puts("post_scroll\n");
+	    //stdout.puts("post_scroll\n");
 
-		return ret;
+		return true; // return ret;
 	});
 
 	var vbox2 = new Box(Orientation.VERTICAL, 0);

@@ -3,8 +3,20 @@ namespace Gtk.CairoChart {
 	// then draw separate axis for each/all series
 	// or specify series name near the axis
 	public class Axis {
-		public Float128 min = 0;
-		public Float128 max = 1;
+		Float128 _min = 0;
+		Float128 _max = 0;
+		public Float128 min {
+			get { return _min; }
+			set { _min = zoom_min = value; }
+			default = 0;
+		}
+		public Float128 max {
+			get { return _max; }
+			set { _max = zoom_max = value; }
+			default = 1;
+		}
+		public Float128 zoom_min = 0;
+		public Float128 zoom_max = 1;
 		public Text title = new Text ("");
 		public enum Type {
 			NUMBERS = 0,
