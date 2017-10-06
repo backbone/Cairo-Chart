@@ -341,6 +341,8 @@ int main (string[] args) {
 	    // user's pre draw operations here...
 
 		chart.context = context;
+		chart.width = da.get_allocated_width();
+		chart.height = da.get_allocated_height();
 		/*var ret = */chart.draw();
 
 	    // user's post draw operations here...

@@ -1,8 +1,8 @@
 namespace Gtk.CairoChart {
 	public class Chart {
 
-		protected double width = 0;
-		protected double height = 0;
+		public double width = 0;
+		public double height = 0;
 
 		public Cairo.Context context = null;
 
@@ -35,9 +35,9 @@ namespace Gtk.CairoChart {
 		}
 
 		protected double cur_x_min = 0.0;
-		protected double cur_x_max = 0.0;
+		protected double cur_x_max = 1.0;
 		protected double cur_y_min = 0.0;
-		protected double cur_y_max = 0.0;
+		protected double cur_y_max = 1.0;
 
 		public virtual void check_cur_values () {
 			if (cur_x_min > cur_x_max)
@@ -47,8 +47,6 @@ namespace Gtk.CairoChart {
 		}
 
 		public virtual bool draw () {
-
-			update_size ();
 
 			draw_background ();
 
@@ -82,13 +80,6 @@ namespace Gtk.CairoChart {
 			check_cur_values ();
 
 			return true;
-		}
-
-		protected virtual void update_size () {
-			if (context != null) {
-				width = context.copy_clip_rectangle_list().rectangles[0].width;
-				height = context.copy_clip_rectangle_list().rectangles[0].height;
-			}
 		}
 
 		protected virtual void set_source_rgba (Color color) {
