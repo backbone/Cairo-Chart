@@ -336,6 +336,8 @@ int main (string[] args) {
 
 	bool draw_selection = false;
 	double sel_x0 = 0, sel_x1 = 0, sel_y0 = 0, sel_y1 = 0;
+	bool moving_chart = false;
+	double mov_x0 = 0, mov_y0 = 0;
 
 	da.draw.connect((context) => {
 	    // user's pre draw operations here...
@@ -362,8 +364,6 @@ int main (string[] args) {
 	da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 
 	da.button_press_event.connect((event) => {
-	    // user's pre button_press_event operations here...
-	    //stdout.puts("pre_press\n");
 
 		if (event.button == 2 && point_in_chart(chart, event.x, event.y)) {
 			draw_selection = true;
@@ -372,14 +372,16 @@ int main (string[] args) {
 			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 		}
 
-	    // user's post button_press_event operations here...
-	    //stdout.puts("post_press\n");
+		if (event.button == 3 && point_in_chart(chart, event.x, event.y)) {
+			moving_chart = true;
+			mov_x0 = event.x;
+			mov_y0 = event.y;
+			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
+		}
 
 		return true; // return ret;
 	});
 	da.button_release_event.connect((event) => {
-	    // user's pre button_release_event operations here...
-	    //stdout.puts("pre_release\n");
 
 		//var ret = chart.button_release_event(event);
 		if (event.button == 2) {
@@ -393,22 +395,28 @@ int main (string[] args) {
 			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 		}
 
-	    // user's post button_release_event operations here...
-	    //stdout.puts("post_release\n");
+		if (event.button == 3 && point_in_chart(chart, event.x, event.y)) {
+			moving_chart = false;
+			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
+		}
 
 		return true; // return ret;
 	});
 	da.motion_notify_event.connect((event) => {
-	    // user's pre motion_notify_event operations here...
-	    //stdout.puts("pre_motion\n");
 
 		//var ret = chart.motion_notify_event(event);
 
-	    // user's post motion_notify_event operations here...
-	    //stdout.puts("post_motion\n");
 		if (draw_selection && point_in_chart(chart, event.x, event.y)) {
 			sel_x1 = event.x;
 			sel_y1 = event.y;
+			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
+		}
+
+		if (moving_chart && point_in_chart(chart, event.x, event.y)) {
+			var delta_x = event.x - mov_x0, delta_y = event.y - mov_y0;
+			chart.move (delta_x, delta_y);
+			mov_x0 = event.x;
+			mov_y0 = event.y;
 			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 		}
 
@@ -416,13 +424,8 @@ int main (string[] args) {
 	});
 	da.add_events(Gdk.EventMask.SCROLL_MASK);
 	da.scroll_event.connect((event) => {
-	    // user's pre scroll_notify_event operations here...
-	    //stdout.puts("pre_scroll\n");
 
 		//var ret = chart.scroll_notify_event(event);
-
-	    // user's post scroll_notify_event operations here...
-	    //stdout.puts("post_scroll\n");
 
 		return true; // return ret;
 	});

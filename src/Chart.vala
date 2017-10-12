@@ -102,6 +102,11 @@ namespace Gtk.CairoChart {
 			return new_series;
 		}
 
+		double rel_zoom_x_min = 0.0;
+		double rel_zoom_x_max = 1.0;
+		double rel_zoom_y_min = 0.0;
+		double rel_zoom_y_max = 1.0;
+
 		public virtual void zoom_in (double x0, double y0, double x1, double y1) {
 			for (var i = 0, max_i = zoom_series.length; i < max_i; ++i) {
 				var s = zoom_series[i];
@@ -142,6 +147,15 @@ namespace Gtk.CairoChart {
 					s.place.zoom_y_high = (s.axis_y.zoom_max - real_y1) / (real_y0 - real_y1);
 				}
 			}
+
+			var new_rel_zoom_x_min = rel_zoom_x_min + (x0 - plot_area_x_min) / (plot_area_x_max - plot_area_x_min) * (rel_zoom_x_max - rel_zoom_x_min);
+			var new_rel_zoom_x_max = rel_zoom_x_min + (x1 - plot_area_x_min) / (plot_area_x_max - plot_area_x_min) * (rel_zoom_x_max - rel_zoom_x_min);
+			var new_rel_zoom_y_min = rel_zoom_y_min + (y0 - plot_area_y_min) / (plot_area_y_max - plot_area_y_min) * (rel_zoom_y_max - rel_zoom_y_min);
+			var new_rel_zoom_y_max = rel_zoom_y_min + (y1 - plot_area_y_min) / (plot_area_y_max - plot_area_y_min) * (rel_zoom_y_max - rel_zoom_y_min);
+			rel_zoom_x_min = new_rel_zoom_x_min;
+			rel_zoom_x_max = new_rel_zoom_x_max;
+			rel_zoom_y_min = new_rel_zoom_y_min;
+			rel_zoom_y_max = new_rel_zoom_y_max;
 		}
 
 		public virtual void zoom_out () {
@@ -160,6 +174,34 @@ namespace Gtk.CairoChart {
 				s.place.zoom_y_low = s.place.y_low;
 				s.place.zoom_y_high = s.place.y_high;
 			}
+			rel_zoom_x_min = 0;
+			rel_zoom_x_max = 1;
+			rel_zoom_y_min = 0;
+			rel_zoom_y_max = 1;
+		}
+
+		public virtual void move (double delta_x, double delta_y) {
+			delta_x /= plot_area_x_max - plot_area_x_min; delta_x *= - 1.0;
+			delta_y /= plot_area_y_max - plot_area_y_min; delta_y *= - 1.0;
+			var rzxmin = rel_zoom_x_min, rzxmax = rel_zoom_x_max, rzymin = rel_zoom_y_min, rzymax = rel_zoom_y_max;
+			zoom_out();
+			draw(); // TODO: optimize here
+			delta_x *= plot_area_x_max - plot_area_x_min;
+			delta_y *= plot_area_y_max - plot_area_y_min;
+			var xmin = plot_area_x_min + (plot_area_x_max - plot_area_x_min) * rzxmin;
+			var xmax = plot_area_x_min + (plot_area_x_max - plot_area_x_min) * rzxmax;
+			var ymin = plot_area_y_min + (plot_area_y_max - plot_area_y_min) * rzymin;
+			var ymax = plot_area_y_min + (plot_area_y_max - plot_area_y_min) * rzymax;
+
+			delta_x *= rzxmax - rzxmin; delta_y *= rzymax - rzymin;
+
+			if (xmin + delta_x < plot_area_x_min) delta_x = plot_area_x_min - xmin;
+			if (xmax + delta_x > plot_area_x_max) delta_x = plot_area_x_max - xmax;
+			if (ymin + delta_y < plot_area_y_min) delta_y = plot_area_y_min - ymin;
+			if (ymax + delta_y > plot_area_y_max) delta_y = plot_area_y_max - ymax;
+
+			zoom_in (xmin + delta_x, ymin + delta_y, xmax + delta_x, ymax + delta_y);
+			draw(); // TODO: optimize here
 		}
 
 		protected double title_width = 0.0;
@@ -1142,6 +1184,10 @@ namespace Gtk.CairoChart {
 			chart.plot_area_x_min = this.plot_area_x_min;
 			chart.plot_area_y_max = this.plot_area_y_max;
 			chart.plot_area_y_min = this.plot_area_y_min;
+			chart.rel_zoom_x_min = this.rel_zoom_x_min;
+			chart.rel_zoom_x_max = this.rel_zoom_x_max;
+			chart.rel_zoom_y_min = this.rel_zoom_y_min;
+			chart.rel_zoom_y_max = this.rel_zoom_y_max;
 			chart.selection_style = this.selection_style;
 			chart.zoom_series = this.zoom_series.copy();
 			chart.show_legend = this.show_legend;
