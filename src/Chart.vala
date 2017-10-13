@@ -46,9 +46,11 @@ namespace Gtk.CairoChart {
 				cur_y_max = cur_y_min;
 		}
 
-		public virtual bool draw () {
-
+		public virtual void clear () {
 			draw_background ();
+		}
+
+		public virtual bool draw () {
 
 			cur_x_min = cur_y_min = 0.0;
 			cur_x_max = width;
