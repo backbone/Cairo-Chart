@@ -367,15 +367,16 @@ int main (string[] args) {
 	da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 
 	da.button_press_event.connect((event) => {
+		if (!point_in_chart(chart, event.x, event.y)) return true;
 
-		if (event.button == 2 && point_in_chart(chart, event.x, event.y)) {
+		if (event.button == 2) {
 			draw_selection = true;
 			sel_x0 = sel_x1 = event.x;
 			sel_y0 = sel_y1 = event.y;
 			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 		}
 
-		if (event.button == 3 && point_in_chart(chart, event.x, event.y)) {
+		if (event.button == 3) {
 			moving_chart = true;
 			mov_x0 = event.x;
 			mov_y0 = event.y;
@@ -385,6 +386,8 @@ int main (string[] args) {
 		return true; // return ret;
 	});
 	da.button_release_event.connect((event) => {
+
+		if (!point_in_chart(chart, event.x, event.y)) return true;
 
 		//var ret = chart.button_release_event(event);
 		if (event.button == 2) {
@@ -398,7 +401,7 @@ int main (string[] args) {
 			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 		}
 
-		if (event.button == 3 && point_in_chart(chart, event.x, event.y)) {
+		if (event.button == 3) {
 			moving_chart = false;
 			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 		}
@@ -406,16 +409,17 @@ int main (string[] args) {
 		return true; // return ret;
 	});
 	da.motion_notify_event.connect((event) => {
+		if (!point_in_chart(chart, event.x, event.y)) return true;
 
 		//var ret = chart.motion_notify_event(event);
 
-		if (draw_selection && point_in_chart(chart, event.x, event.y)) {
+		if (draw_selection) {
 			sel_x1 = event.x;
 			sel_y1 = event.y;
 			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 		}
 
-		if (moving_chart && point_in_chart(chart, event.x, event.y)) {
+		if (moving_chart) {
 			var delta_x = event.x - mov_x0, delta_y = event.y - mov_y0;
 			chart.move (delta_x, delta_y);
 			mov_x0 = event.x;
