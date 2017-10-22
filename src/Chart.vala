@@ -1,8 +1,10 @@
 namespace Gtk.CairoChart {
 	public class Chart {
 
-		public double width = 0;
-		public double height = 0;
+		public double x_min = 0.0;
+		public double y_min = 0.0;
+		public double width = 0.0;
+		public double height = 0.0;
 
 		public Cairo.Context context = null;
 
@@ -52,9 +54,10 @@ namespace Gtk.CairoChart {
 
 		public virtual bool draw () {
 
-			cur_x_min = cur_y_min = 0.0;
-			cur_x_max = width;
-			cur_y_max = height;
+			cur_x_min = x_min;
+			cur_y_min = y_min;
+			cur_x_max = x_min + width;
+			cur_y_max = y_min + height;
 
 			draw_chart_title ();
 			check_cur_values ();
