@@ -223,8 +223,8 @@ int main (string[] args) {
 	var button3 = new Button.with_label("Common Y axes");
 	var button4 = new Button.with_label("Dates/Times");
 	var button5 = new Button.with_label("rm Axis Titles");
-	var button6 = new Button.with_label("rm Dates");
-	var button7 = new Button.with_label("rm Times");
+	var button6 = new Button.with_label("Dates only");
+	var button7 = new Button.with_label("Times only");
 
 	plot_chart1 (chart1);
 	plot_chart2 (chart2);
@@ -295,7 +295,8 @@ int main (string[] args) {
 	button6.clicked.connect (() => {
 			for (var i = 0; i < chart.series.length; ++i) {
 				var s = chart.series[i];
-				s.axis_x.date_format = "";
+				s.axis_x.date_format = "%Y.%m.%d";
+				s.axis_x.time_format = "";
 			}
 			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 	});
@@ -304,6 +305,7 @@ int main (string[] args) {
 			for (var i = 0; i < chart.series.length; ++i) {
 				var s = chart.series[i];
 				s.axis_x.time_format = "";
+				s.axis_x.date_format = "%H:%M:%S";
 			}
 			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 	});
