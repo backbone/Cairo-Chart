@@ -225,6 +225,7 @@ int main (string[] args) {
 	var button5 = new Button.with_label("rm Axis Titles");
 	var button6 = new Button.with_label("Dates only");
 	var button7 = new Button.with_label("Times only");
+	var button8 = new Button.with_label("Date+Time");
 
 	plot_chart1 (chart1);
 	plot_chart2 (chart2);
@@ -304,8 +305,17 @@ int main (string[] args) {
 	button7.clicked.connect (() => {
 			for (var i = 0; i < chart.series.length; ++i) {
 				var s = chart.series[i];
-				s.axis_x.time_format = "";
-				s.axis_x.date_format = "%H:%M:%S";
+				s.axis_x.date_format = "";
+				s.axis_x.time_format = "%H:%M:%S";
+			}
+			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
+	});
+
+	button8.clicked.connect (() => {
+			for (var i = 0; i < chart.series.length; ++i) {
+				var s = chart.series[i];
+				s.axis_x.date_format = "%Y.%m.%d";
+				s.axis_x.time_format = "%H:%M:%S";
 			}
 			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 	});
@@ -447,6 +457,7 @@ int main (string[] args) {
 	vbox2.pack_start(button5, false, false, 0);
 	vbox2.pack_start(button6, false, false, 0);
 	vbox2.pack_start(button7, false, false, 0);
+	vbox2.pack_start(button8, false, false, 0);
 	vbox2.pack_start(radio_button1, false, false, 0);
 	vbox2.pack_start(radio_button2, false, false, 0);
 	vbox2.pack_start(radio_button3, false, false, 0);
