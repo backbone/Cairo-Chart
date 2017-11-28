@@ -203,6 +203,13 @@ bool point_in_chart (Chart chart, double x, double y) {
 	return true;
 }
 
+enum MouseState {
+	FREE = 0,  // default
+	DRAW_SELECTION,
+	MOVING_CHART,
+	CURSOR_SELECTION
+}
+
 int main (string[] args) {
 	init (ref args);
 
@@ -346,9 +353,40 @@ int main (string[] args) {
 		}
 	});
 
-	bool draw_selection = false;
+
+/*	var radio_button5 = new RadioButton.with_label (null, "Labels");
+	var radio_button6 = new RadioButton.with_label_from_widget (radio_button5, "Cursors");
+	radio_button5.toggled.connect ((button) => {
+		// TODO: set labels
+		if (button.get_active()) {
+			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
+		}
+	});
+	radio_button6.toggled.connect ((button) => {
+		// TODO: set cursors
+		if (button.get_active()) {
+			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
+		}
+	});*/
+
+	var radio_button7 = new RadioButton.with_label (null, "Vertical Cursors");
+	var radio_button8 = new RadioButton.with_label_from_widget (radio_button7, "Horizontal Cursors");
+	radio_button7.toggled.connect ((button) => {
+		if (button.get_active()) {
+			chart.cursors_orientation = Chart.CursorOrientation.VERTICAL;
+			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
+		}
+	});
+	radio_button8.toggled.connect ((button) => {
+		if (button.get_active()) {
+			chart.cursors_orientation = Chart.CursorOrientation.HORIZONTAL;
+			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
+		}
+	});
+
+	MouseState mouse_state = MouseState.FREE;
+
 	double sel_x0 = 0, sel_x1 = 0, sel_y0 = 0, sel_y1 = 0;
-	bool moving_chart = false;
 	double mov_x0 = 0, mov_y0 = 0;
 
 	da.draw.connect((context) => {
@@ -363,7 +401,7 @@ int main (string[] args) {
 		/*var ret = */chart.draw();
 
 	    // user's post draw operations here...
-	    if (draw_selection) {
+	    if (mouse_state == MouseState.DRAW_SELECTION) {
 			context.set_source_rgba (0.5, 0.5, 0.5, 0.7);
 			context.set_line_join(Cairo.LineJoin.MITER);
 			context.set_line_cap(Cairo.LineCap.ROUND);
@@ -381,18 +419,30 @@ int main (string[] args) {
 	da.button_press_event.connect((event) => {
 		if (!point_in_chart(chart, event.x, event.y)) return true;
 
-		if (event.button == 2) {
-			draw_selection = true;
+		switch (event.button) {
+		case 1:  // start cursor position selection
+			if ((event.state & Gdk.ModifierType.SHIFT_MASK) != 0) { // remove cursor
+				chart.set_active_cursor (event.x, event.y, true);
+			} else { // add cursor
+				chart.set_active_cursor (event.x, event.y);
+			}
+			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
+			mouse_state = MouseState.CURSOR_SELECTION;
+			break;
+
+		case 2:  // start zoom area selection
 			sel_x0 = sel_x1 = event.x;
 			sel_y0 = sel_y1 = event.y;
 			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
-		}
+			mouse_state = MouseState.DRAW_SELECTION;
+			break;
 
-		if (event.button == 3) {
-			moving_chart = true;
+		case 3:  // start moving
 			mov_x0 = event.x;
 			mov_y0 = event.y;
 			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
+			mouse_state = MouseState.MOVING_CHART;
+			break;
 		}
 
 		return true; // return ret;
@@ -401,9 +451,20 @@ int main (string[] args) {
 
 		if (!point_in_chart(chart, event.x, event.y)) return true;
 
-		//var ret = chart.button_release_event(event);
-		if (event.button == 2) {
-			draw_selection = false;
+		switch (event.button) {
+		case 1:  // start cursor position selection
+			if ((event.state & Gdk.ModifierType.SHIFT_MASK) != 0) { // remove cursor
+				chart.remove_active_cursor ();
+				da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
+				mouse_state = MouseState.FREE;
+			} else { // add cursor
+				chart.add_active_cursor ();
+				da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
+				mouse_state = MouseState.FREE;
+			}
+			break;
+
+		case 2:
 			sel_x1 = event.x;
 			sel_y1 = event.y;
 			if (sel_x1 > sel_x0 && sel_y1 > sel_y0)
@@ -411,11 +472,13 @@ int main (string[] args) {
 			else
 				chart.zoom_out ();
 			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
-		}
+			mouse_state = MouseState.FREE;
+			break;
 
-		if (event.button == 3) {
-			moving_chart = false;
+		case 3:
 			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
+			mouse_state = MouseState.FREE;
+			break;
 		}
 
 		return true; // return ret;
@@ -423,20 +486,25 @@ int main (string[] args) {
 	da.motion_notify_event.connect((event) => {
 		if (!point_in_chart(chart, event.x, event.y)) return true;
 
-		//var ret = chart.motion_notify_event(event);
-
-		if (draw_selection) {
+		switch (mouse_state) {
+		case MouseState.DRAW_SELECTION:
 			sel_x1 = event.x;
 			sel_y1 = event.y;
 			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
-		}
+			break;
 
-		if (moving_chart) {
+		case MouseState.MOVING_CHART:
 			var delta_x = event.x - mov_x0, delta_y = event.y - mov_y0;
 			chart.move (delta_x, delta_y);
 			mov_x0 = event.x;
 			mov_y0 = event.y;
 			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
+			break;
+
+		case MouseState.CURSOR_SELECTION:
+			chart.set_active_cursor (event.x, event.y, true);
+			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
+			break;
 		}
 
 		return true; // return ret;
@@ -462,6 +530,10 @@ int main (string[] args) {
 	vbox2.pack_start(radio_button2, false, false, 0);
 	vbox2.pack_start(radio_button3, false, false, 0);
 	vbox2.pack_start(radio_button4, false, false, 0);
+	//vbox2.pack_start(radio_button5, false, false, 0);
+	//vbox2.pack_start(radio_button6, false, false, 0);
+	vbox2.pack_start(radio_button7, false, false, 0);
+	vbox2.pack_start(radio_button8, false, false, 0);
 
 	var hbox = new Box(Orientation.HORIZONTAL, 0);
 	hbox.pack_start(da, true, true, 0);

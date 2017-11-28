@@ -87,17 +87,21 @@ namespace Gtk.CairoChart {
 			}
 		}
 
-		double rel_zoom_x_min = 0.0;
-		double rel_zoom_x_max = 1.0;
-		double rel_zoom_y_min = 0.0;
-		double rel_zoom_y_max = 1.0;
+		double _rel_zoom_x_min = 0.0;
+		double _rel_zoom_x_max = 1.0;
+		double _rel_zoom_y_min = 0.0;
+		double _rel_zoom_y_max = 1.0;
+		public double rel_zoom_x_min { get { return _rel_zoom_x_min; } default = 0.0; }
+		public double rel_zoom_x_max { get { return _rel_zoom_x_max; } default = 1.0; }
+		public double rel_zoom_y_min { get { return _rel_zoom_y_min; } default = 0.0; }
+		public double rel_zoom_y_max { get { return _rel_zoom_y_max; } default = 1.0; }
 
 		int zoom_first_show = 0;
 
 		public virtual void zoom_in (double x0, double y0, double x1, double y1) {
 			for (var si = 0, max_i = series.length; si < max_i; ++si) {
 				var s = series[si];
-				if (!s.zoom_show) continue;
+				if (!s.show) continue;
 				var real_x0 = get_real_x (s, x0);
 				var real_x1 = get_real_x (s, x1);
 				var real_y0 = get_real_y (s, y0);
@@ -105,7 +109,7 @@ namespace Gtk.CairoChart {
 				// if selected square does not intersect with the series's square
 				if (   real_x1 <= s.axis_x.zoom_min || real_x0 >= s.axis_x.zoom_max
 					|| real_y0 <= s.axis_y.zoom_min || real_y1 >= s.axis_y.zoom_max) {
-					s.zoom_show = false;
+					s.show = false;
 					continue;
 				}
 				if (real_x0 >= s.axis_x.zoom_min) {
@@ -136,24 +140,24 @@ namespace Gtk.CairoChart {
 
 			zoom_first_show = 0;
 			for (var si = 0, max_i = series.length; si < max_i; ++si)
-				if (series[si].zoom_show) {
+				if (series[si].show) {
 					zoom_first_show = si;
 					break;
 				}
 
-			var new_rel_zoom_x_min = rel_zoom_x_min + (x0 - plot_area_x_min) / (plot_area_x_max - plot_area_x_min) * (rel_zoom_x_max - rel_zoom_x_min);
-			var new_rel_zoom_x_max = rel_zoom_x_min + (x1 - plot_area_x_min) / (plot_area_x_max - plot_area_x_min) * (rel_zoom_x_max - rel_zoom_x_min);
-			var new_rel_zoom_y_min = rel_zoom_y_min + (y0 - plot_area_y_min) / (plot_area_y_max - plot_area_y_min) * (rel_zoom_y_max - rel_zoom_y_min);
-			var new_rel_zoom_y_max = rel_zoom_y_min + (y1 - plot_area_y_min) / (plot_area_y_max - plot_area_y_min) * (rel_zoom_y_max - rel_zoom_y_min);
-			rel_zoom_x_min = new_rel_zoom_x_min;
-			rel_zoom_x_max = new_rel_zoom_x_max;
-			rel_zoom_y_min = new_rel_zoom_y_min;
-			rel_zoom_y_max = new_rel_zoom_y_max;
+			var new_rel_zoom_x_min = _rel_zoom_x_min + (x0 - plot_area_x_min) / (plot_area_x_max - plot_area_x_min) * (_rel_zoom_x_max - _rel_zoom_x_min);
+			var new_rel_zoom_x_max = _rel_zoom_x_min + (x1 - plot_area_x_min) / (plot_area_x_max - plot_area_x_min) * (_rel_zoom_x_max - _rel_zoom_x_min);
+			var new_rel_zoom_y_min = _rel_zoom_y_min + (y0 - plot_area_y_min) / (plot_area_y_max - plot_area_y_min) * (_rel_zoom_y_max - _rel_zoom_y_min);
+			var new_rel_zoom_y_max = _rel_zoom_y_min + (y1 - plot_area_y_min) / (plot_area_y_max - plot_area_y_min) * (_rel_zoom_y_max - _rel_zoom_y_min);
+			_rel_zoom_x_min = new_rel_zoom_x_min;
+			_rel_zoom_x_max = new_rel_zoom_x_max;
+			_rel_zoom_y_min = new_rel_zoom_y_min;
+			_rel_zoom_y_max = new_rel_zoom_y_max;
 		}
 
 		public virtual void zoom_out () {
 			foreach (var s in series) {
-				s.zoom_show = true;
+				s.show = true;
 				s.axis_x.zoom_min = s.axis_x.min;
 				s.axis_x.zoom_max = s.axis_x.max;
 				s.axis_y.zoom_min = s.axis_y.min;
@@ -163,10 +167,10 @@ namespace Gtk.CairoChart {
 				s.place.zoom_y_low = s.place.y_low;
 				s.place.zoom_y_high = s.place.y_high;
 			}
-			rel_zoom_x_min = 0;
-			rel_zoom_x_max = 1;
-			rel_zoom_y_min = 0;
-			rel_zoom_y_max = 1;
+			_rel_zoom_x_min = 0;
+			_rel_zoom_x_max = 1;
+			_rel_zoom_y_min = 0;
+			_rel_zoom_y_max = 1;
 
 			zoom_first_show = 0;
 		}
@@ -174,7 +178,7 @@ namespace Gtk.CairoChart {
 		public virtual void move (double delta_x, double delta_y) {
 			delta_x /= plot_area_x_max - plot_area_x_min; delta_x *= - 1.0;
 			delta_y /= plot_area_y_max - plot_area_y_min; delta_y *= - 1.0;
-			var rzxmin = rel_zoom_x_min, rzxmax = rel_zoom_x_max, rzymin = rel_zoom_y_min, rzymax = rel_zoom_y_max;
+			var rzxmin = _rel_zoom_x_min, rzxmax = _rel_zoom_x_max, rzymin = _rel_zoom_y_min, rzymax = _rel_zoom_y_max;
 			zoom_out();
 			//draw(); // TODO: optimize here
 			delta_x *= plot_area_x_max - plot_area_x_min;
@@ -355,7 +359,7 @@ namespace Gtk.CairoChart {
 
 			foreach (var s in series) {
 
-				if (!s.zoom_show) continue;
+				if (!s.show) continue;
 
 				// carry
 				switch (legend.position) {
@@ -554,7 +558,7 @@ namespace Gtk.CairoChart {
 		    int nzoom_series_show = 0;
 			for (var si = series.length - 1; si >=0; --si) {
 				var s = series[si];
-				if (!s.zoom_show) continue;
+				if (!s.show) continue;
 				++nzoom_series_show;
 				if (   s.axis_x.position != series[0].axis_x.position
 				    || s.axis_x.zoom_min != series[0].axis_x.zoom_min
@@ -575,7 +579,7 @@ namespace Gtk.CairoChart {
 			// Join and calc X-axes
 			for (var si = series.length - 1, nskip = 0; si >=0; --si) {
 				var s = series[si];
-				if (!s.zoom_show) continue;
+				if (!s.show) continue;
 				if (nskip != 0) {--nskip; continue;}
 				double max_rec_width = 0; double max_rec_height = 0;
 				calc_axis_rec_sizes (s.axis_x, out max_rec_width, out max_rec_height, true);
@@ -585,11 +589,11 @@ namespace Gtk.CairoChart {
 				// join relative x-axes with non-intersect places
 				for (int sj = si - 1; sj >= 0; --sj) {
 					var s2 = series[sj];
-					if (!s2.zoom_show) continue;
+					if (!s2.show) continue;
 					bool has_intersection = false;
 					for (int sk = si; sk > sj; --sk) {
 						var s3 = series[sk];
-						if (!s3.zoom_show) continue;
+						if (!s3.show) continue;
 						if (are_intersect(s2.place.zoom_x_low, s2.place.zoom_x_high, s3.place.zoom_x_low, s3.place.zoom_x_high)
 						    || s2.axis_x.position != s3.axis_x.position
 						    || s2.axis_x.type != s3.axis_x.type) {
@@ -623,7 +627,7 @@ namespace Gtk.CairoChart {
 			// Join and calc Y-axes
 			for (var si = series.length - 1, nskip = 0; si >=0; --si) {
 				var s = series[si];
-				if (!s.zoom_show) continue;
+				if (!s.show) continue;
 				if (nskip != 0) {--nskip; continue;}
 				double max_rec_width = 0; double max_rec_height = 0;
 				calc_axis_rec_sizes (s.axis_y, out max_rec_width, out max_rec_height, false);
@@ -633,11 +637,11 @@ namespace Gtk.CairoChart {
 				// join relative x-axes with non-intersect places
 				for (int sj = si - 1; sj >= 0; --sj) {
 					var s2 = series[sj];
-					if (!s2.zoom_show) continue;
+					if (!s2.show) continue;
 					bool has_intersection = false;
 					for (int sk = si; sk > sj; --sk) {
 						var s3 = series[sk];
-						if (!s3.zoom_show) continue;
+						if (!s3.show) continue;
 						if (are_intersect(s2.place.zoom_y_low, s2.place.zoom_y_high, s3.place.zoom_y_low, s3.place.zoom_y_high)
 						    || s2.axis_y.position != s3.axis_y.position
 						    || s2.axis_x.type != s3.axis_x.type) {
@@ -678,7 +682,7 @@ namespace Gtk.CairoChart {
 		protected virtual void draw_horizontal_axis () {
 			for (var si = series.length - 1, nskip = 0; si >=0; --si) {
 				var s = series[si];
-				if (!s.zoom_show) continue;
+				if (!s.show) continue;
 				if (common_x_axes && si != zoom_first_show) continue;
 				// 1. Detect max record width/height by axis_rec_npoints equally selected points using format.
 				double max_rec_width, max_rec_height;
@@ -829,11 +833,11 @@ namespace Gtk.CairoChart {
 				// join relative x-axes with non-intersect places
 				for (int sj = si - 1; sj >= 0; --sj) {
 					var s2 = series[sj];
-					if (!s2.zoom_show) continue;
+					if (!s2.show) continue;
 					bool has_intersection = false;
 					for (int sk = si; sk > sj; --sk) {
 						var s3 = series[sk];
-						if (!s3.zoom_show) continue;
+						if (!s3.show) continue;
 						if (are_intersect(s2.place.zoom_x_low, s2.place.zoom_x_high, s3.place.zoom_x_low, s3.place.zoom_x_high)
 						    || s2.axis_x.position != s3.axis_x.position
 						    || s2.axis_x.type != s3.axis_x.type) {
@@ -869,7 +873,7 @@ namespace Gtk.CairoChart {
 		protected virtual void draw_vertical_axis () {
 			for (var si = series.length - 1, nskip = 0; si >=0; --si) {
 				var s = series[si];
-				if (!s.zoom_show) continue;
+				if (!s.show) continue;
 				if (common_y_axes && si != zoom_first_show) continue;
 				// 1. Detect max record width/height by axis_rec_npoints equally selected points using format.
 				double max_rec_width, max_rec_height;
@@ -972,11 +976,11 @@ namespace Gtk.CairoChart {
 				// join relative x-axes with non-intersect places
 				for (int sj = si - 1; sj >= 0; --sj) {
 					var s2 = series[sj];
-					if (!s2.zoom_show) continue;
+					if (!s2.show) continue;
 					bool has_intersection = false;
 					for (int sk = si; sk > sj; --sk) {
 						var s3 = series[sk];
-						if (!s3.zoom_show) continue;
+						if (!s3.show) continue;
 						if (are_intersect(s2.place.zoom_y_low, s2.place.zoom_y_high, s3.place.zoom_y_low, s3.place.zoom_y_high)
 						    || s2.axis_y.position != s3.axis_y.position) {
 							has_intersection = true;
@@ -1027,15 +1031,20 @@ namespace Gtk.CairoChart {
 			return plot_area_y_max - (plot_area_y_max - plot_area_y_min) * (s.place.zoom_y_low + (y - s.axis_y.zoom_min)
 			                         / (s.axis_y.zoom_max - s.axis_y.zoom_min) * (s.place.zoom_y_high - s.place.zoom_y_low));
 		}
+		protected virtual Point get_scr_point (Series s, Point p) {
+			return Point (get_scr_x(s, p.x), get_scr_y(s, p.y));
+		}
 
 		protected virtual Float128 get_real_x (Series s, double scr_x) {
 			return s.axis_x.zoom_min + ((scr_x - plot_area_x_min) / (plot_area_x_max - plot_area_x_min) - s.place.zoom_x_low)
 			       * (s.axis_x.zoom_max - s.axis_x.zoom_min) / (s.place.zoom_x_high - s.place.zoom_x_low);
 		}
-
 		protected virtual Float128 get_real_y (Series s, double scr_y) {
 			return s.axis_y.zoom_min + ((plot_area_y_max - scr_y) / (plot_area_y_max - plot_area_y_min) - s.place.zoom_y_low)
 			       * (s.axis_y.zoom_max - s.axis_y.zoom_min) / (s.place.zoom_y_high - s.place.zoom_y_low);
+		}
+		protected virtual Point get_real_point (Series s, Point p) {
+			return Point (get_real_x(s, p.x), get_real_y(s, p.y));
 		}
 
 		protected virtual bool point_in_rect (Point p, double x0, double x1, double y0, double y1) {
@@ -1072,7 +1081,7 @@ namespace Gtk.CairoChart {
 		}
 
 		delegate int PointComparator(Point a, Point b);
-		void sort_points(Point[] points, PointComparator compare) {
+		void sort_points_delegate(Point[] points, PointComparator compare) {
 			for(var i = 0; i < points.length; ++i) {
 				for(var j = i + 1; j < points.length; ++j) {
 					if(compare(points[i], points[j]) > 0) {
@@ -1121,28 +1130,33 @@ namespace Gtk.CairoChart {
 			return false;
 		}
 
+		protected virtual Point[] sort_points (Series s) {
+			var points = s.points.copy();
+			switch(s.sort) {
+			case Series.Sort.BY_X:
+				sort_points_delegate(points, (a, b) => {
+				    if (a.x < b.x) return -1;
+				    if (a.x > b.x) return 1;
+				    return 0;
+				});
+				break;
+			case Series.Sort.BY_Y:
+				sort_points_delegate(points, (a, b) => {
+				    if (a.y < b.y) return -1;
+				    if (a.y > b.y) return 1;
+				    return 0;
+				});
+				break;
+			}
+			return points;
+		}
+
 		protected virtual void draw_series () {
 			for (var si = 0; si < series.length; ++si) {
 				var s = series[si];
-				if (!s.zoom_show) continue;
+				if (!s.show) continue;
 				if (s.points.length == 0) continue;
-				var points = s.points.copy();
-				switch(s.sort) {
-				case Series.Sort.BY_X:
-					sort_points(points, (a, b) => {
-					    if (a.x < b.x) return -1;
-					    if (a.x > b.x) return 1;
-					    return 0;
-					});
-					break;
-				case Series.Sort.BY_Y:
-					sort_points(points, (a, b) => {
-					    if (a.y < b.y) return -1;
-					    if (a.y > b.y) return 1;
-					    return 0;
-					});
-					break;
-				}
+				var points = sort_points(s);
 				set_line_style(s.line_style);
 				// draw series line
 				for (int i = 1; i < points.length; ++i) {
@@ -1164,8 +1178,193 @@ namespace Gtk.CairoChart {
 			}
 		}
 
+		protected List<Point?> cursors = new List<Point?> ();
+		protected Point active_cursor = Point ();
+		protected bool is_cursor_active = false;
+
+		public virtual void set_active_cursor (double x, double y, bool remove = false) {
+			active_cursor = Point (scr2rel_x(x), scr2rel_y(y));
+			is_cursor_active = true;
+		}
+
+		public virtual void add_active_cursor () {
+			cursors.append (active_cursor);
+			is_cursor_active = false;
+		}
+
+		public enum CursorOrientation {
+			VERTICAL = 0,  // default
+			HORIZONTAL
+		}
+
+		public CursorOrientation cursors_orientation = CursorOrientation.VERTICAL;
+
+		public double cursor_max_distance = 32;
+
+		public virtual void remove_active_cursor () {
+			if (cursors.length() == 0) return;
+			var distance = width * width;
+			uint rm_indx = 0;
+			uint i = 0;
+			foreach (var c in cursors) {
+				double d = distance;
+				switch (cursors_orientation) {
+				case CursorOrientation.VERTICAL:
+					d = (c.x - active_cursor.x).abs();
+					break;
+				case CursorOrientation.HORIZONTAL:
+					d = (c.y - active_cursor.y).abs();
+					break;
+				default:
+					break;
+				}
+				if (distance > d) {
+					distance = d;
+					rm_indx = i;
+				}
+				++i;
+			}
+			if (distance < cursor_max_distance)
+				cursors.delete_link(cursors.nth(rm_indx));
+		}
+
+		// TODO:
+		protected virtual bool get_cursor_limits (Series s, Point cursor, out Point low, out Point high) {
+			var points = sort_points (s);
+			bool ret = false;
+			low.x = plot_area_x_min;
+			low.y = plot_area_y_min;
+			high.x = plot_area_x_max;
+			high.y = plot_area_y_max;
+			for (var i = 0; i + 1 < points.length; ++i) {
+				switch (cursors_orientation) {
+					case CursorOrientation.VERTICAL:
+						Float128 y = 0.0;
+						if (vcross(get_scr_point(s, s.points[i]), get_scr_point(s, s.points[i+1]), cursor.x, plot_area_y_min, plot_area_y_max, out y)) {
+							if (y < low.y) low.y = y;
+							if (y > high.y) high.y = y;
+							ret = true;
+						}
+						break;
+					case CursorOrientation.HORIZONTAL:
+						Float128 x = 0.0;
+						if (hcross(get_scr_point(s, s.points[i]), get_scr_point(s, s.points[i+1]), cursor.y, plot_area_x_min, plot_area_x_max, out x)) {
+							if (x < low.x) low.x = x;
+							if (x > high.x) high.x = x;
+							ret = true;
+						}
+						break;
+				}
+			}
+
+			if (common_x_axes) {
+				switch (s.axis_x.position) {
+					case Axis.Position.LOW: low.y = plot_area_y_max + s.axis_x.font_indent; break;
+					case Axis.Position.HIGH: high.y = plot_area_y_min - s.axis_x.font_indent; break;
+					case Axis.Position.BOTH:
+						low.y = plot_area_y_max + s.axis_x.font_indent;
+						high.y = plot_area_y_min - s.axis_x.font_indent;
+						break;
+				}
+			}
+			if (common_y_axes) {
+				switch (s.axis_y.position) {
+					case Axis.Position.LOW: low.x = plot_area_x_min - s.axis_y.font_indent; break;
+					case Axis.Position.HIGH: high.x = plot_area_x_max + s.axis_y.font_indent; break;
+					case Axis.Position.BOTH:
+						low.x = plot_area_x_min - s.axis_y.font_indent;
+						high.x = plot_area_x_max + s.axis_y.font_indent;
+						break;
+				}
+			}
+
+			return false;
+		}
+
+		protected virtual Float128 scr2rel_x (Float128 x) {
+			return (x - plot_area_x_min) / (plot_area_x_max - plot_area_x_min);
+		}
+		protected virtual Float128 scr2rel_y (Float128 y) {
+			return (y - plot_area_y_min) / (plot_area_y_max - plot_area_y_min);
+		}
+		protected virtual Point scr2rel_point (Point p) {
+			return Point (scr2rel_x(p.x), scr2rel_y(p.y));
+		}
+
+		protected virtual Float128 rel2scr_x(Float128 x) {
+			return plot_area_x_min + (plot_area_x_max - plot_area_x_min) * x;
+		}
+
+		protected virtual Float128 rel2scr_y(Float128 y) {
+			return plot_area_y_max - (plot_area_y_max - plot_area_y_min) * y;
+		}
+
+		protected virtual Point rel2scr_point (Point p) {
+			return Point (rel2scr_x(p.x), rel2scr_y(p.y));
+		}
+
+		public LineStyle cursor_line_style = LineStyle();
+
 		// TODO:
 		protected virtual void draw_cursors () {
+			if (series.length == 0) return;
+
+			var all_cursors = cursors.copy();
+			all_cursors.append(active_cursor);
+
+			foreach (var c in all_cursors) {
+				switch (cursors_orientation) {
+					case CursorOrientation.VERTICAL:
+						if (c.x <= rel_zoom_x_min || c.x >= rel_zoom_x_max) continue; break;
+					case CursorOrientation.HORIZONTAL:
+						if (c.y <= rel_zoom_y_min || c.y >= rel_zoom_y_max) continue; break;
+				}
+
+				var low = Point(plot_area_x_max, plot_area_y_min);  // low and high
+				var high = Point(plot_area_x_min, plot_area_y_max); //              points of the cursor
+				foreach (var s in series) {
+					var l = Point(), h = Point();
+					if (get_cursor_limits (s, c, out l, out h)) {
+						if (l.x < low.x) low.x = l.x;
+						if (l.y < low.y) low.y = l.y;
+						if (h.x > high.x) high.x = h.x;
+						if (h.y > high.y) high.y = h.y;
+					}
+				}
+
+				switch (cursors_orientation) {
+					case CursorOrientation.VERTICAL:
+						// TODO: draw cursor line
+						set_line_style(cursor_line_style);
+						context.move_to (rel2scr_x(c.x), low.y);
+						context.line_to (rel2scr_x(c.x), high.y);
+						context.stroke();
+
+						// TODO: show values
+						if (common_x_axes)
+							// TODO: show only Y value
+							;
+						else
+							// TODO: show [X;Y]
+							;
+						break;
+					case CursorOrientation.HORIZONTAL:
+						// TODO: draw cursor line
+						set_line_style(cursor_line_style);
+						context.move_to (low.x, rel2scr_y(c.y));
+						context.line_to (high.x, rel2scr_y(c.y));
+						context.stroke();
+
+						// TODO: show values
+						if (common_y_axes)
+							// TODO: show only X value
+							;
+						else
+							// TODO: show [X;Y]
+							;
+						break;
+				}
+			}
 		}
 
 		public Chart copy () {
@@ -1193,10 +1392,10 @@ namespace Gtk.CairoChart {
 			chart.plot_area_x_min = this.plot_area_x_min;
 			chart.plot_area_y_max = this.plot_area_y_max;
 			chart.plot_area_y_min = this.plot_area_y_min;
-			chart.rel_zoom_x_min = this.rel_zoom_x_min;
-			chart.rel_zoom_x_max = this.rel_zoom_x_max;
-			chart.rel_zoom_y_min = this.rel_zoom_y_min;
-			chart.rel_zoom_y_max = this.rel_zoom_y_max;
+			chart._rel_zoom_x_min = this._rel_zoom_x_min;
+			chart._rel_zoom_x_max = this._rel_zoom_x_max;
+			chart._rel_zoom_y_min = this._rel_zoom_y_min;
+			chart._rel_zoom_y_max = this._rel_zoom_y_max;
 			chart.selection_style = this.selection_style;
 			chart.show_legend = this.show_legend;
 			chart.title = this.title.copy().copy();
