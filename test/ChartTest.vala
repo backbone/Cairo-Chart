@@ -251,6 +251,8 @@ int main (string[] args) {
 	var radio_button2 = new RadioButton.with_label (radio_button1.get_group(), "Right Legend");
 	var radio_button3 = new RadioButton.with_label_from_widget (radio_button1, "Left Legend");
 	var radio_button4 = new RadioButton.with_label_from_widget (radio_button1, "Bottom Legend");
+	var radio_button7 = new RadioButton.with_label (null, "Vertical Cursors");
+	var radio_button8 = new RadioButton.with_label_from_widget (radio_button7, "Horizontal Cursors");
 
 	button1.clicked.connect (() => {
 			chart = chart1; da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
@@ -260,6 +262,10 @@ int main (string[] args) {
 			case Legend.Position.LEFT: radio_button3.set_active(true); break;
 			case Legend.Position.BOTTOM: radio_button4.set_active(true); break;
 			default: break;
+			}
+			switch (chart.cursors_orientation) {
+			case Chart.CursorOrientation.VERTICAL: radio_button7.set_active(true); break;
+			case Chart.CursorOrientation.HORIZONTAL: radio_button8.set_active(true); break;
 			}
 	});
 	button2.clicked.connect (() => {
@@ -271,6 +277,10 @@ int main (string[] args) {
 			case Legend.Position.BOTTOM: radio_button4.set_active(true); break;
 			default: break;
 			}
+			switch (chart.cursors_orientation) {
+			case Chart.CursorOrientation.VERTICAL: radio_button7.set_active(true); break;
+			case Chart.CursorOrientation.HORIZONTAL: radio_button8.set_active(true); break;
+			}
 	});
 	button3.clicked.connect (() => {
 			chart = chart3; da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
@@ -281,6 +291,10 @@ int main (string[] args) {
 			case Legend.Position.BOTTOM: radio_button4.set_active(true); break;
 			default: break;
 			}
+			switch (chart.cursors_orientation) {
+			case Chart.CursorOrientation.VERTICAL: radio_button7.set_active(true); break;
+			case Chart.CursorOrientation.HORIZONTAL: radio_button8.set_active(true); break;
+			}
 	});
 	button4.clicked.connect (() => {
 			chart = chart4; da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
@@ -290,6 +304,10 @@ int main (string[] args) {
 			case Legend.Position.LEFT: radio_button4.set_active(true); break;
 			case Legend.Position.BOTTOM: radio_button4.set_active(true); break;
 			default: break;
+			}
+			switch (chart.cursors_orientation) {
+			case Chart.CursorOrientation.VERTICAL: radio_button7.set_active(true); break;
+			case Chart.CursorOrientation.HORIZONTAL: radio_button8.set_active(true); break;
 			}
 	});
 	button5.clicked.connect (() => {
@@ -369,8 +387,6 @@ int main (string[] args) {
 		}
 	});*/
 
-	var radio_button7 = new RadioButton.with_label (null, "Vertical Cursors");
-	var radio_button8 = new RadioButton.with_label_from_widget (radio_button7, "Horizontal Cursors");
 	radio_button7.toggled.connect ((button) => {
 		if (button.get_active()) {
 			chart.cursors_orientation = Chart.CursorOrientation.VERTICAL;
@@ -423,11 +439,13 @@ int main (string[] args) {
 		case 1:  // start cursor position selection
 			if ((event.state & Gdk.ModifierType.SHIFT_MASK) != 0) { // remove cursor
 				chart.set_active_cursor (event.x, event.y, true);
+				chart.remove_active_cursor();
+				mouse_state = MouseState.FREE;
 			} else { // add cursor
 				chart.set_active_cursor (event.x, event.y);
+				mouse_state = MouseState.CURSOR_SELECTION;
 			}
 			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
-			mouse_state = MouseState.CURSOR_SELECTION;
 			break;
 
 		case 2:  // start zoom area selection
@@ -454,9 +472,9 @@ int main (string[] args) {
 		switch (event.button) {
 		case 1:  // start cursor position selection
 			if ((event.state & Gdk.ModifierType.SHIFT_MASK) != 0) { // remove cursor
-				chart.remove_active_cursor ();
-				da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
-				mouse_state = MouseState.FREE;
+				//chart.remove_active_cursor ();
+				//da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
+				//mouse_state = MouseState.FREE;
 			} else { // add cursor
 				chart.add_active_cursor ();
 				da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
@@ -502,7 +520,7 @@ int main (string[] args) {
 			break;
 
 		case MouseState.CURSOR_SELECTION:
-			chart.set_active_cursor (event.x, event.y, true);
+			chart.set_active_cursor (event.x, event.y);
 			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 			break;
 		}

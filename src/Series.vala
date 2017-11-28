@@ -49,7 +49,7 @@ namespace Gtk.CairoChart {
 			default = Color (0.0, 0.0, 0.0, 1.0);
 		}
 
-		public bool show = true;
+		public bool zoom_show = true;
 
 		public Series copy () {
 			var series = new Series ();
@@ -63,7 +63,7 @@ namespace Gtk.CairoChart {
 			series.points = this.points.copy();
 			series.sort = this.sort;
 			series.title = this.title.copy();
-			series.show = this.show;
+			series.zoom_show = this.zoom_show;
 			return series;
 		}
 
