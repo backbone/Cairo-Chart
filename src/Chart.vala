@@ -55,6 +55,8 @@ namespace Gtk.CairoChart {
 
 			set_vertical_axes_titles ();
 
+			get_cursors_crossings();
+
 			calc_plot_area (); // Calculate plot area
 
 			draw_horizontal_axis ();
@@ -1276,78 +1278,31 @@ namespace Gtk.CairoChart {
 
 		public LineStyle cursor_line_style = LineStyle(Color(0.2, 0.2, 0.2, 0.8));
 
-		protected virtual bool get_cursor_limits (Series s, Point cursor, out Point low, out Point high) {
-			bool ret = false;
-			low.x = plot_area_x_max;
-			low.y = plot_area_y_max;
-			high.x = plot_area_x_min;
-			high.y = plot_area_y_min;
-			Point[] points = {};
-			switch (cursors_orientation) {
-				case CursorOrientation.VERTICAL:
-					points = sort_points (s, s.sort);
-					break;
-				case CursorOrientation.HORIZONTAL:
-					points = sort_points (s, s.sort);
-					break;
-			}
-			for (var i = 0; i + 1 < points.length; ++i) {
-				switch (cursors_orientation) {
-					case CursorOrientation.VERTICAL:
-						Float128 y = 0.0;
-						if (vcross(get_scr_point(s, points[i]), get_scr_point(s, points[i+1]), rel2scr_x(cursor.x),
-						           plot_area_y_min, plot_area_y_max, out y)) {
-							if (y < low.y /*&& y_in_plot_area(y)*/) low.y = y;
-							if (y > high.y /*&& y_in_plot_area(y)*/) high.y = y;
-							ret = true;
-						}
-						break;
-					case CursorOrientation.HORIZONTAL:
-						Float128 x = 0.0;
-						if (hcross(get_scr_point(s, points[i]), get_scr_point(s, points[i+1]),
-						           plot_area_x_min, plot_area_x_max, rel2scr_y(cursor.y), out x)) {
-							if (x < low.x /*&& x_in_plot_area(x)*/) low.x = x;
-							if (x > high.x /*&& x_in_plot_area(x)*/) high.x = x;
-							ret = true;
-						}
-						break;
-				}
-			}
-
-			if (common_x_axes) {
-				switch (s.axis_x.position) {
-					case Axis.Position.LOW: high.y = plot_area_y_max + s.axis_x.font_indent; break;
-					case Axis.Position.HIGH: low.y = plot_area_y_min - s.axis_x.font_indent; break;
-					case Axis.Position.BOTH:
-						high.y = plot_area_y_max + s.axis_x.font_indent;
-						low.y = plot_area_y_min - s.axis_x.font_indent;
-						break;
-				}
-				ret = true;
-			}
-			if (common_y_axes) {
-				switch (s.axis_y.position) {
-					case Axis.Position.LOW: low.x = plot_area_x_min - s.axis_y.font_indent; break;
-					case Axis.Position.HIGH: high.x = plot_area_x_max + s.axis_y.font_indent; break;
-					case Axis.Position.BOTH:
-						low.x = plot_area_x_min - s.axis_y.font_indent;
-						high.x = plot_area_x_max + s.axis_y.font_indent;
-						break;
-				}
-				ret = true;
-			}
-
-			return ret;
+		protected struct CursorCross {
+			uint series_index;
+			Point point;
+		}
+		protected struct CursorCrossings {
+			uint cursor_index;
+			CursorCross[] crossings;
 		}
 
-		protected virtual void draw_cursors () {
-			if (series.length == 0) return;
+		protected CursorCrossings[] cursors_crossings = {};
 
+		protected List<Point?> get_all_cursors () {
 			var all_cursors = cursors.copy_deep ((src) => { return src; });
 			if (is_cursor_active)
 				all_cursors.append(active_cursor);
+			return all_cursors;
+		}
 
-			foreach (var c in all_cursors) {
+		protected void get_cursors_crossings () {
+			var all_cursors = get_all_cursors();
+
+			CursorCrossings[] local_cursor_crossings = {};
+
+			for (var ci = 0, max_ci = all_cursors.length(); ci < max_ci; ++ci) {
+				var c = all_cursors.nth_data(ci);
 				switch (cursors_orientation) {
 					case CursorOrientation.VERTICAL:
 						if (c.x <= _rel_zoom_x_min || c.x >= _rel_zoom_x_max) continue; break;
@@ -1355,23 +1310,103 @@ namespace Gtk.CairoChart {
 						if (c.y <= _rel_zoom_y_min || c.y >= _rel_zoom_y_max) continue; break;
 				}
 
-				var low = Point(plot_area_x_max, plot_area_y_max);  // low and high
-				var high = Point(plot_area_x_min, plot_area_y_min); //              points of the cursor
-				foreach (var s in series) {
+				CursorCross[] crossings = {};
+				for (var si = 0, max_si = series.length; si < max_si; ++si) {
+					var s = series[si];
 					if (!s.zoom_show) continue;
-					var l = Point(), h = Point();
-					if (get_cursor_limits (s, c, out l, out h)) {
-						if (l.x < low.x) low.x = l.x;
-						if (l.y < low.y) low.y = l.y;
-						if (h.x > high.x) high.x = h.x;
-						if (h.y > high.y) high.y = h.y;
+
+					Point[] points = {};
+					switch (cursors_orientation) {
+						case CursorOrientation.VERTICAL:
+							points = sort_points (s, s.sort);
+							break;
+						case CursorOrientation.HORIZONTAL:
+							points = sort_points (s, s.sort);
+							break;
+					}
+
+					for (var i = 0; i + 1 < points.length; ++i) {
+						switch (cursors_orientation) {
+							case CursorOrientation.VERTICAL:
+								Float128 y = 0.0;
+								if (vcross(get_scr_point(s, points[i]), get_scr_point(s, points[i+1]), rel2scr_x(c.x),
+								           plot_area_y_min, plot_area_y_max, out y)) {
+								    CursorCross cc = {si, Point(get_real_x(s, rel2scr_x(c.x)), get_real_y(s, y))};
+								    crossings += cc;
+//stdout.printf("si = %d, rel2scr_x(c.x) = %f, y = %f\n", si, rel2scr_x(c.x), y);
+								}
+								break;
+							case CursorOrientation.HORIZONTAL:
+								Float128 x = 0.0;
+								if (hcross(get_scr_point(s, points[i]), get_scr_point(s, points[i+1]),
+								           plot_area_x_min, plot_area_x_max, rel2scr_y(c.y), out x)) {
+								    CursorCross cc = {si, Point(get_real_x(s, x), get_real_y(s, rel2scr_y(c.y)))};
+								    crossings += cc;
+								}
+								break;
+						}
 					}
 				}
+				if (crossings.length != 0) {
+					CursorCrossings ccs = {ci, crossings};
+					local_cursor_crossings += ccs;
+				}
+			}
+			cursors_crossings = local_cursor_crossings;
+//if (cursors_crossings.length != 0)
+//stdout.printf("cursors_crossings[0].crossings.length = %d\n", cursors_crossings[0].crossings.length);
+		}
+
+		protected virtual void draw_cursors () {
+			if (series.length == 0) return;
+
+			var all_cursors = get_all_cursors();
+
+			for (var cci = 0, max_cci = cursors_crossings.length; cci < max_cci; ++cci) {
+				var low = Point(plot_area_x_max, plot_area_y_max);  // low and high
+				var high = Point(plot_area_x_min, plot_area_y_min); //              points of the cursor
+				var ccs = cursors_crossings[cci].crossings;
+				for (var ci = 0, max_ci = ccs.length; ci < max_ci; ++ci) {
+					var si = ccs[ci].series_index;
+					var s = series[si];
+					var p = ccs[ci].point;
+					var scrx = get_scr_x(s, p.x);
+					var scry = get_scr_y(s, p.y);
+					if (scrx < low.x) low.x = scrx;
+//stdout.printf("low.y = %f, high.y = %f\n", low.y, high.y);
+					if (scry < low.y) low.y = scry;
+					if (scrx > high.x) high.x = scrx;
+					if (scry > high.y) high.y = scry;
+
+					if (common_x_axes) {
+						switch (s.axis_x.position) {
+							case Axis.Position.LOW: high.y = plot_area_y_max + s.axis_x.font_indent; break;
+							case Axis.Position.HIGH: low.y = plot_area_y_min - s.axis_x.font_indent; break;
+							case Axis.Position.BOTH:
+								high.y = plot_area_y_max + s.axis_x.font_indent;
+								low.y = plot_area_y_min - s.axis_x.font_indent;
+								break;
+						}
+					}
+					if (common_y_axes) {
+						switch (s.axis_y.position) {
+							case Axis.Position.LOW: low.x = plot_area_x_min - s.axis_y.font_indent; break;
+							case Axis.Position.HIGH: high.x = plot_area_x_max + s.axis_y.font_indent; break;
+							case Axis.Position.BOTH:
+								low.x = plot_area_x_min - s.axis_y.font_indent;
+								high.x = plot_area_x_max + s.axis_y.font_indent;
+								break;
+						}
+					}
+				}
+
+				var c = all_cursors.nth_data(cursors_crossings[cci].cursor_index);
 
 				switch (cursors_orientation) {
 					case CursorOrientation.VERTICAL:
 						if (low.y > high.y) continue;
 						set_line_style(cursor_line_style);
+//stdout.printf("rel2scr_x(c.x) = %f, low.y = %f\n", rel2scr_x(c.x), low.y);
 						context.move_to (rel2scr_x(c.x), low.y);
 						context.line_to (rel2scr_x(c.x), high.y);
 						context.stroke();
@@ -1419,6 +1454,7 @@ namespace Gtk.CairoChart {
 			chart.cursor_line_style = this.cursor_line_style;
 			chart.cursor_max_rm_distance = this.cursor_max_rm_distance;
 			chart.cursors = this.cursors.copy();
+			chart.cursors_crossings = this.cursors_crossings.copy(); // no deep copying for .crossings
 			chart.cursors_orientation = this.cursors_orientation;
 			chart.height = this.height;
 			chart.is_cursor_active = this.is_cursor_active;
