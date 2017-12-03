@@ -665,12 +665,30 @@ namespace Gtk.CairoChart {
 					}
 				}
 
+				// 4.2. Cursor values for common X axis
+				if (common_x_axes && si == zoom_first_show && cursors_orientation == CursorOrientation.VERTICAL && cursors_crossings.length != 0) {
+					switch (s.axis_x.position) {
+						case Axis.Position.LOW: plot_area_y_max -= max_rec_height + s.axis_x.font_indent; break;
+						case Axis.Position.HIGH: plot_area_y_min += max_rec_height + s.axis_x.font_indent; break;
+						case Axis.Position.BOTH: break;
+					}
+				}
+
+				// 4.2. Cursor values for common Y axis
+				if (common_y_axes && si == zoom_first_show && cursors_orientation == CursorOrientation.HORIZONTAL && cursors_crossings.length != 0) {
+					switch (s.axis_y.position) {
+						case Axis.Position.LOW: plot_area_x_min += max_rec_width + s.axis_y.font_indent; break;
+						case Axis.Position.HIGH: plot_area_x_max -= max_rec_width + s.axis_y.font_indent; break;
+						case Axis.Position.BOTH: break;
+					}
+				}
+
 				if (!common_y_axes || si == zoom_first_show)
 					switch (s.axis_y.position) {
-					case Axis.Position.LOW: plot_area_x_min += max_rec_width + max_font_indent + max_axis_font_width; break;
-					case Axis.Position.HIGH: plot_area_x_max -= max_rec_width + max_font_indent + max_axis_font_width; break;
-					case Axis.Position.BOTH: break;
-					default: break;
+						case Axis.Position.LOW: plot_area_x_min += max_rec_width + max_font_indent + max_axis_font_width; break;
+						case Axis.Position.HIGH: plot_area_x_max -= max_rec_width + max_font_indent + max_axis_font_width; break;
+						case Axis.Position.BOTH: break;
+						default: break;
 					}
 			}
 		}
@@ -709,6 +727,15 @@ namespace Gtk.CairoChart {
 					x_min = round_axis_x_min + x_min_nsteps * step;
 				}
 				if (x_min < s.axis_x.zoom_min) x_min += step;
+
+				// 4.2. Cursor values for common X axis
+				if (common_x_axes && cursors_orientation == CursorOrientation.VERTICAL && cursors_crossings.length != 0) {
+					switch (s.axis_x.position) {
+						case Axis.Position.LOW: cur_y_max -= max_rec_height + s.axis_x.font_indent; break;
+						case Axis.Position.HIGH: cur_y_min += max_rec_height + s.axis_x.font_indent; break;
+						case Axis.Position.BOTH: break;
+					}
+				}
 
 				// 4.5. Draw Axis title
 				if (s.axis_x.title.text != "")
@@ -900,6 +927,15 @@ namespace Gtk.CairoChart {
 					y_min = round_axis_y_min + y_min_nsteps * step;
 				}
 				if (y_min < s.axis_y.zoom_min) y_min += step;
+
+				// 4.2. Cursor values for common Y axis
+				if (common_y_axes && cursors_orientation == CursorOrientation.HORIZONTAL && cursors_crossings.length != 0) {
+					switch (s.axis_y.position) {
+						case Axis.Position.LOW: cur_x_min += max_rec_width + s.axis_y.font_indent; break;
+						case Axis.Position.HIGH: cur_x_max -= max_rec_width + s.axis_y.font_indent; break;
+						case Axis.Position.BOTH: break;
+					}
+				}
 
 				// 4.5. Draw Axis title
 				if (s.axis_y.title.text != "")
