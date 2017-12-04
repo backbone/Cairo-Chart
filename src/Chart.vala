@@ -268,9 +268,6 @@ namespace Gtk.CairoChart {
 					x0 = width - legend_width;
 					y0 = (height - legend_height) / 2;
 				break;
-
-				default:
-				break;
 				}
 				set_source_rgba(legend.bg_color);
 				context.rectangle (x0, y0, legend_width, legend_height);
@@ -294,47 +291,43 @@ namespace Gtk.CairoChart {
 		                                           double x, double y) {
 			context.move_to (x, y);
 			switch (marker_type) {
-				case Series.MarkerType.SQUARE:
-					context.rectangle (x - marker_size / 2, y - marker_size / 2,
-					                   marker_size, marker_size);
-					context.fill();
-					break;
+			case Series.MarkerType.SQUARE:
+				context.rectangle (x - marker_size / 2, y - marker_size / 2,
+				                   marker_size, marker_size);
+				context.fill();
+				break;
 
-				case Series.MarkerType.CIRCLE:
-					context.arc (x, y, marker_size / 2, 0, 2*Math.PI);
-					context.fill();
-					break;
+			case Series.MarkerType.CIRCLE:
+				context.arc (x, y, marker_size / 2, 0, 2*Math.PI);
+				context.fill();
+				break;
 
-				case Series.MarkerType.TRIANGLE:
-					context.move_to (x - marker_size / 2, y - marker_size / 2);
-					context.line_to (x + marker_size / 2, y - marker_size / 2);
-					context.line_to (x, y + marker_size / 2);
-					context.line_to (x - marker_size / 2, y - marker_size / 2);
-					context.fill();
-					break;
+			case Series.MarkerType.TRIANGLE:
+				context.move_to (x - marker_size / 2, y - marker_size / 2);
+				context.line_to (x + marker_size / 2, y - marker_size / 2);
+				context.line_to (x, y + marker_size / 2);
+				context.line_to (x - marker_size / 2, y - marker_size / 2);
+				context.fill();
+				break;
 
-				case Series.MarkerType.PRICLE_SQUARE:
-					context.rectangle (x - marker_size / 2, y - marker_size / 2,
-					                   marker_size, marker_size);
-					context.stroke();
-					break;
+			case Series.MarkerType.PRICLE_SQUARE:
+				context.rectangle (x - marker_size / 2, y - marker_size / 2,
+				                   marker_size, marker_size);
+				context.stroke();
+				break;
 
-				case Series.MarkerType.PRICLE_CIRCLE:
-					context.arc (x, y, marker_size / 2, 0, 2*Math.PI);
-					context.stroke();
-					break;
+			case Series.MarkerType.PRICLE_CIRCLE:
+				context.arc (x, y, marker_size / 2, 0, 2*Math.PI);
+				context.stroke();
+				break;
 
-				case Series.MarkerType.PRICLE_TRIANGLE:
-					context.move_to (x - marker_size / 2, y - marker_size / 2);
-					context.line_to (x + marker_size / 2, y - marker_size / 2);
-					context.line_to (x, y + marker_size / 2);
-					context.line_to (x - marker_size / 2, y - marker_size / 2);
-					context.stroke();
-					break;
-
-				case Series.MarkerType.NONE:
-				default:
-					break;
+			case Series.MarkerType.PRICLE_TRIANGLE:
+				context.move_to (x - marker_size / 2, y - marker_size / 2);
+				context.line_to (x + marker_size / 2, y - marker_size / 2);
+				context.line_to (x, y + marker_size / 2);
+				context.line_to (x - marker_size / 2, y - marker_size / 2);
+				context.stroke();
+				break;
 			}
 		}
 
@@ -348,15 +341,15 @@ namespace Gtk.CairoChart {
 
 			// prepare
 			switch (process_type) {
-				case LegendProcessType.CALC:
-					legend_width = 0.0;
-					legend_height = 0.0;
-					max_font_heights = {};
-					heights_idx = 0;
-					break;
-				case LegendProcessType.DRAW:
-					draw_legend_rect(out legend_x0, out legend_y0);
-					break;
+			case LegendProcessType.CALC:
+				legend_width = 0.0;
+				legend_height = 0.0;
+				max_font_heights = {};
+				heights_idx = 0;
+				break;
+			case LegendProcessType.DRAW:
+				draw_legend_rect(out legend_x0, out legend_y0);
+				break;
 			}
 
 			foreach (var s in series) {
@@ -365,43 +358,43 @@ namespace Gtk.CairoChart {
 
 				// carry
 				switch (legend.position) {
-					case Legend.Position.TOP:
-					case Legend.Position.BOTTOM:
-						var ser_title_width = s.title.get_width(context) + legend_line_length;
-						if (leg_width_sum + (leg_width_sum == 0 ? 0 : legend_text_hspace) + ser_title_width > width) { // carry
-							leg_height_sum += max_font_h;
-							switch (process_type) {
-								case LegendProcessType.CALC:
-									max_font_heights += max_font_h;
-									legend_width = double.max(legend_width, leg_width_sum);
-									break;
-								case LegendProcessType.DRAW:
-									heights_idx++;
-									break;
-							}
-							leg_width_sum = 0.0;
-							max_font_h = 0;
+				case Legend.Position.TOP:
+				case Legend.Position.BOTTOM:
+					var ser_title_width = s.title.get_width(context) + legend_line_length;
+					if (leg_width_sum + (leg_width_sum == 0 ? 0 : legend_text_hspace) + ser_title_width > width) { // carry
+						leg_height_sum += max_font_h;
+						switch (process_type) {
+						case LegendProcessType.CALC:
+							max_font_heights += max_font_h;
+							legend_width = double.max(legend_width, leg_width_sum);
+							break;
+						case LegendProcessType.DRAW:
+							heights_idx++;
+							break;
 						}
-						break;
+						leg_width_sum = 0.0;
+						max_font_h = 0;
+					}
+					break;
 				}
 
 				switch (process_type) {
-					case LegendProcessType.DRAW:
-						var x = legend_x0 + leg_width_sum + (leg_width_sum == 0.0 ? 0.0 : legend_text_hspace);
-						var y = legend_y0 + leg_height_sum + max_font_heights[heights_idx];
+				case LegendProcessType.DRAW:
+					var x = legend_x0 + leg_width_sum + (leg_width_sum == 0.0 ? 0.0 : legend_text_hspace);
+					var y = legend_y0 + leg_height_sum + max_font_heights[heights_idx];
 
-						// series title
-						context.move_to (x + legend_line_length - s.title.get_x_bearing(context), y);
-						set_source_rgba (s.title.color);
-						show_text(s.title);
+					// series title
+					context.move_to (x + legend_line_length - s.title.get_x_bearing(context), y);
+					set_source_rgba (s.title.color);
+					show_text(s.title);
 
-						// series line style
-						context.move_to (x, y - s.title.get_height(context) / 2);
-						set_line_style(s.line_style);
-						context.rel_line_to (legend_line_length, 0);
-						context.stroke();
-						draw_marker_at_pos (s.marker_type, x + legend_line_length / 2, y - s.title.get_height(context) / 2);
-						break;
+					// series line style
+					context.move_to (x, y - s.title.get_height(context) / 2);
+					set_line_style(s.line_style);
+					context.rel_line_to (legend_line_length, 0);
+					context.stroke();
+					draw_marker_at_pos (s.marker_type, x + legend_line_length / 2, y - s.title.get_height(context) / 2);
+					break;
 				}
 
 				switch (legend.position) {
@@ -415,13 +408,13 @@ namespace Gtk.CairoChart {
 				case Legend.Position.LEFT:
 				case Legend.Position.RIGHT:
 					switch (process_type) {
-						case LegendProcessType.CALC:
-							max_font_heights += s.title.get_height(context) + (leg_height_sum != 0 ? legend_text_vspace : 0);
-							legend_width = double.max (legend_width, s.title.get_width(context) + legend_line_length);
-							break;
-						case LegendProcessType.DRAW:
-							heights_idx++;
-							break;
+					case LegendProcessType.CALC:
+						max_font_heights += s.title.get_height(context) + (leg_height_sum != 0 ? legend_text_vspace : 0);
+						legend_width = double.max (legend_width, s.title.get_width(context) + legend_line_length);
+						break;
+					case LegendProcessType.DRAW:
+						heights_idx++;
+						break;
 					}
 					leg_height_sum += s.title.get_height(context) + (leg_height_sum != 0 ? legend_text_vspace : 0);
 				break;
@@ -430,38 +423,38 @@ namespace Gtk.CairoChart {
 
 			// TOP, BOTTOM
 			switch (legend.position) {
-				case Legend.Position.TOP:
-				case Legend.Position.BOTTOM:
-					if (leg_width_sum != 0) {
-						leg_height_sum += max_font_h;
-						switch (process_type) {
-							case LegendProcessType.CALC:
-								max_font_heights += max_font_h;
-								legend_width = double.max(legend_width, leg_width_sum);
-								break;
-						}
+			case Legend.Position.TOP:
+			case Legend.Position.BOTTOM:
+				if (leg_width_sum != 0) {
+					leg_height_sum += max_font_h;
+					switch (process_type) {
+						case LegendProcessType.CALC:
+							max_font_heights += max_font_h;
+							legend_width = double.max(legend_width, leg_width_sum);
+							break;
 					}
-					break;
+				}
+				break;
 			}
 
 			switch (process_type) {
-				case LegendProcessType.CALC:
-					legend_height = leg_height_sum;
-					switch (legend.position) {
-						case Legend.Position.TOP:
-							cur_y_min += legend_height;
-							break;
-						case Legend.Position.BOTTOM:
-							cur_y_max -= legend_height;
-							break;
-						case Legend.Position.LEFT:
-							cur_x_min += legend_width;
-							break;
-						case Legend.Position.RIGHT:
-							cur_x_max -= legend_width;
-							break;
-					}
-					break;
+			case LegendProcessType.CALC:
+				legend_height = leg_height_sum;
+				switch (legend.position) {
+					case Legend.Position.TOP:
+						cur_y_min += legend_height;
+						break;
+					case Legend.Position.BOTTOM:
+						cur_y_max -= legend_height;
+						break;
+					case Legend.Position.LEFT:
+						cur_x_min += legend_width;
+						break;
+					case Legend.Position.RIGHT:
+						cur_x_max -= legend_width;
+						break;
+				}
+				break;
 			}
 		}
 
@@ -501,8 +494,6 @@ namespace Gtk.CairoChart {
 						h += text.get_height(context);
 					}
 					max_rec_height = double.max (max_rec_height, h);
-					break;
-				default:
 					break;
 				}
 			}
@@ -617,12 +608,18 @@ namespace Gtk.CairoChart {
 					}
 				}
 
+				// for 4.2. Cursor values for common X axis
+				if (common_x_axes && si == zoom_first_show && cursors_orientation == CursorOrientation.VERTICAL && cursors_crossings.length != 0) {
+					switch (s.axis_x.position) {
+					case Axis.Position.LOW: plot_area_y_max -= max_rec_height + s.axis_x.font_indent; break;
+					case Axis.Position.HIGH: plot_area_y_min += max_rec_height + s.axis_x.font_indent; break;
+					}
+				}
+
 				if (!common_x_axes || si == zoom_first_show)
 					switch (s.axis_x.position) {
 					case Axis.Position.LOW: plot_area_y_max -= max_rec_height + max_font_indent + max_axis_font_height; break;
 					case Axis.Position.HIGH: plot_area_y_min += max_rec_height + max_font_indent + max_axis_font_height; break;
-					case Axis.Position.BOTH: break;
-					default: break;
 					}
 			}
 
@@ -665,30 +662,18 @@ namespace Gtk.CairoChart {
 					}
 				}
 
-				// 4.2. Cursor values for common X axis
-				if (common_x_axes && si == zoom_first_show && cursors_orientation == CursorOrientation.VERTICAL && cursors_crossings.length != 0) {
-					switch (s.axis_x.position) {
-						case Axis.Position.LOW: plot_area_y_max -= max_rec_height + s.axis_x.font_indent; break;
-						case Axis.Position.HIGH: plot_area_y_min += max_rec_height + s.axis_x.font_indent; break;
-						case Axis.Position.BOTH: break;
-					}
-				}
-
-				// 4.2. Cursor values for common Y axis
+				// for 4.2. Cursor values for common Y axis
 				if (common_y_axes && si == zoom_first_show && cursors_orientation == CursorOrientation.HORIZONTAL && cursors_crossings.length != 0) {
 					switch (s.axis_y.position) {
-						case Axis.Position.LOW: plot_area_x_min += max_rec_width + s.axis_y.font_indent; break;
-						case Axis.Position.HIGH: plot_area_x_max -= max_rec_width + s.axis_y.font_indent; break;
-						case Axis.Position.BOTH: break;
+					case Axis.Position.LOW: plot_area_x_min += max_rec_width + s.axis_y.font_indent; break;
+					case Axis.Position.HIGH: plot_area_x_max -= max_rec_width + s.axis_y.font_indent; break;
 					}
 				}
 
 				if (!common_y_axes || si == zoom_first_show)
 					switch (s.axis_y.position) {
-						case Axis.Position.LOW: plot_area_x_min += max_rec_width + max_font_indent + max_axis_font_width; break;
-						case Axis.Position.HIGH: plot_area_x_max -= max_rec_width + max_font_indent + max_axis_font_width; break;
-						case Axis.Position.BOTH: break;
-						default: break;
+					case Axis.Position.LOW: plot_area_x_min += max_rec_width + max_font_indent + max_axis_font_width; break;
+					case Axis.Position.HIGH: plot_area_x_max -= max_rec_width + max_font_indent + max_axis_font_width; break;
 					}
 			}
 		}
@@ -699,11 +684,22 @@ namespace Gtk.CairoChart {
 			return false;
 		}
 
+		protected virtual double compact_rec_x_pos (Series s, Float128 x, Text text) {
+			return get_scr_x(s, x) - text.get_width(context) / 2.0 - text.get_x_bearing(context)
+			       - text.get_width(context) * (x - (s.axis_x.zoom_min + s.axis_x.zoom_max) / 2.0) / (s.axis_x.zoom_max - s.axis_x.zoom_min);
+		}
+
+		protected virtual double compact_rec_y_pos (Series s, Float128 y, Text text) {
+			return get_scr_y(s, y) + text.get_height(context) / 2.0
+			       + text.get_height(context) * (y - (s.axis_y.zoom_min + s.axis_y.zoom_max) / 2.0) / (s.axis_y.zoom_max - s.axis_y.zoom_min);
+		}
+
 		protected virtual void draw_horizontal_axis () {
 			for (var si = series.length - 1, nskip = 0; si >=0; --si) {
 				var s = series[si];
 				if (!s.zoom_show) continue;
 				if (common_x_axes && si != zoom_first_show) continue;
+
 				// 1. Detect max record width/height by axis_rec_npoints equally selected points using format.
 				double max_rec_width, max_rec_height;
 				calc_axis_rec_sizes (s.axis_x, out max_rec_width, out max_rec_height, true);
@@ -731,34 +727,24 @@ namespace Gtk.CairoChart {
 				// 4.2. Cursor values for common X axis
 				if (common_x_axes && cursors_orientation == CursorOrientation.VERTICAL && cursors_crossings.length != 0) {
 					switch (s.axis_x.position) {
-						case Axis.Position.LOW: cur_y_max -= max_rec_height + s.axis_x.font_indent; break;
-						case Axis.Position.HIGH: cur_y_min += max_rec_height + s.axis_x.font_indent; break;
-						case Axis.Position.BOTH: break;
+					case Axis.Position.LOW: cur_y_max -= max_rec_height + s.axis_x.font_indent; break;
+					case Axis.Position.HIGH: cur_y_min += max_rec_height + s.axis_x.font_indent; break;
 					}
 				}
 
 				// 4.5. Draw Axis title
-				if (s.axis_x.title.text != "")
+				if (s.axis_x.title.text != "") {
+					var scr_x = plot_area_x_min + (plot_area_x_max - plot_area_x_min) * (s.place.zoom_x_low + s.place.zoom_x_high) / 2.0;
+					double scr_y = 0.0;
 					switch (s.axis_x.position) {
-					case Axis.Position.LOW:
-						var scr_x = plot_area_x_min + (plot_area_x_max - plot_area_x_min) * (s.place.zoom_x_low + s.place.zoom_x_high) / 2.0;
-						var scr_y = cur_y_max - s.axis_x.font_indent;
-						context.move_to(scr_x - s.axis_x.title.get_width(context) / 2.0, scr_y);
-						set_source_rgba(s.axis_x.color);
-						if (common_x_axes) set_source_rgba(Color(0,0,0,1));
-						show_text(s.axis_x.title);
-						break;
-					case Axis.Position.HIGH:
-						var scr_x = plot_area_x_min + (plot_area_x_max - plot_area_x_min) * (s.place.zoom_x_low + s.place.zoom_x_high) / 2.0;
-						var scr_y = cur_y_min + s.axis_x.font_indent + s.axis_x.title.get_height(context);
-						context.move_to(scr_x - s.axis_x.title.get_width(context) / 2.0, scr_y);
-						set_source_rgba(s.axis_x.color);
-						if (common_x_axes) set_source_rgba(Color(0,0,0,1));
-						show_text(s.axis_x.title);
-						break;
-					case Axis.Position.BOTH:
-						break;
+					case Axis.Position.LOW: scr_y = cur_y_max - s.axis_x.font_indent; break;
+					case Axis.Position.HIGH: scr_y = cur_y_min + s.axis_x.font_indent + s.axis_x.title.get_height(context); break;
 					}
+					context.move_to(scr_x - s.axis_x.title.get_width(context) / 2.0, scr_y);
+					set_source_rgba(s.axis_x.color);
+					if (common_x_axes) set_source_rgba(Color(0,0,0,1));
+					show_text(s.axis_x.title);
+				}
 
 				// 5. Draw records, update cur_{x,y}_{min,max}.
 				for (Float128 x = x_min, x_max = s.axis_x.zoom_max; point_belong (x, x_min, x_max); x += step) {
@@ -776,37 +762,27 @@ namespace Gtk.CairoChart {
 							("%."+(s.axis_x.dsec_signs.to_string())+"Lf").printf((LongDouble)(x - (int64)x)).offset(1);
 						time_text = dt.format(s.axis_x.time_format) + dsec_str;
 						break;
-					default:
-						break;
 					}
-					var scr_x = plot_area_x_min + (plot_area_x_max - plot_area_x_min)
-					            * (s.place.zoom_x_low + (s.place.zoom_x_high - s.place.zoom_x_low) / (s.axis_x.zoom_max - s.axis_x.zoom_min) * (x - s.axis_x.zoom_min));
+					var scr_x = get_scr_x (s, x);
 					var text_t = new Text(text, s.axis_x.font_style, s.axis_x.color);
 					switch (s.axis_x.position) {
 					case Axis.Position.LOW:
 						var print_y = cur_y_max - s.axis_x.font_indent - (s.axis_x.title.text == "" ? 0 : s.axis_x.title.get_height(context) + s.axis_x.font_indent);
+						var print_x = compact_rec_x_pos (s, x, text_t);
+						context.move_to (print_x, print_y);
 						switch (s.axis_x.type) {
 						case Axis.Type.NUMBERS:
-							var print_x = scr_x - text_t.get_width(context) / 2.0 - text_t.get_x_bearing(context)
-							              - text_t.get_width(context) * (x - (s.axis_x.zoom_min + s.axis_x.zoom_max) / 2.0) / (s.axis_x.zoom_max - s.axis_x.zoom_min);
-							context.move_to (print_x, print_y);
 							show_text(text_t);
 							break;
 						case Axis.Type.DATE_TIME:
-							var print_x = scr_x - text_t.get_width(context) / 2.0 - text_t.get_x_bearing(context)
-							              - text_t.get_width(context) * (x - (s.axis_x.zoom_min + s.axis_x.zoom_max) / 2.0) / (s.axis_x.zoom_max - s.axis_x.zoom_min);
-							context.move_to (print_x, print_y);
 							if (s.axis_x.date_format != "") show_text(text_t);
 							var time_text_t = new Text(time_text, s.axis_x.font_style, s.axis_x.color);
-							print_x = scr_x - time_text_t.get_width(context) / 2.0 - time_text_t.get_x_bearing(context)
-							          - time_text_t.get_width(context) * (x - (s.axis_x.zoom_min + s.axis_x.zoom_max) / 2.0) / (s.axis_x.zoom_max - s.axis_x.zoom_min);
+							print_x = compact_rec_x_pos (s, x, time_text_t);
 							context.move_to (print_x, print_y - (s.axis_x.date_format == "" ? 0 : text_t.get_height(context) + s.axis_x.font_indent));
 							if (s.axis_x.time_format != "") show_text(time_text_t);
 							break;
-						default:
-							break;
 						}
-						// 6. Draw grid lines to the s.place.zoom_y_high.
+						// 6. Draw grid lines to the s.place.zoom_y_low.
 						var line_style = s.grid.line_style;
 						if (common_x_axes) line_style.color = Color(0, 0, 0, 0.5);
 						set_line_style(line_style);
@@ -819,25 +795,19 @@ namespace Gtk.CairoChart {
 						break;
 					case Axis.Position.HIGH:
 						var print_y = cur_y_min + max_rec_height + s.axis_x.font_indent + (s.axis_x.title.text == "" ? 0 : s.axis_x.title.get_height(context) + s.axis_x.font_indent);
+						var print_x = compact_rec_x_pos (s, x, text_t);
+						context.move_to (print_x, print_y);
+
 						switch (s.axis_x.type) {
 						case Axis.Type.NUMBERS:
-							var print_x = scr_x - text_t.get_width(context) / 2.0 - text_t.get_x_bearing(context)
-							              - text_t.get_width(context) * (x - (s.axis_x.zoom_min + s.axis_x.zoom_max) / 2.0) / (s.axis_x.zoom_max - s.axis_x.zoom_min);
-							context.move_to (print_x, print_y);
 							show_text(text_t);
 							break;
 						case Axis.Type.DATE_TIME:
-							var print_x = scr_x - text_t.get_width(context) / 2.0 - text_t.get_x_bearing(context)
-							              - text_t.get_width(context) * (x - (s.axis_x.zoom_min + s.axis_x.zoom_max) / 2.0) / (s.axis_x.zoom_max - s.axis_x.zoom_min);
-							context.move_to (print_x, print_y);
 							if (s.axis_x.date_format != "") show_text(text_t);
 							var time_text_t = new Text(time_text, s.axis_x.font_style, s.axis_x.color);
-							print_x = scr_x - time_text_t.get_width(context) / 2.0 - time_text_t.get_x_bearing(context)
-							          - time_text_t.get_width(context) * (x - (s.axis_x.zoom_min + s.axis_x.zoom_max) / 2.0) / (s.axis_x.zoom_max - s.axis_x.zoom_min);
+							print_x = compact_rec_x_pos (s, x, time_text_t);
 							context.move_to (print_x, print_y - (s.axis_x.date_format == "" ? 0 : text_t.get_height(context) + s.axis_x.font_indent));
 							if (s.axis_x.time_format != "") show_text(time_text_t);
-							break;
-						default:
 							break;
 						}
 						// 6. Draw grid lines to the s.place.zoom_y_high.
@@ -850,10 +820,6 @@ namespace Gtk.CairoChart {
 							context.line_to (scr_x, plot_area_y_max);
 						else
 							context.line_to (scr_x, double.max (y, plot_area_y_max - (plot_area_y_max - plot_area_y_min) * s.place.zoom_y_low));
-						break;
-					case Axis.Position.BOTH:
-						break;
-					default:
 						break;
 					}
 					context.stroke ();
@@ -892,9 +858,6 @@ namespace Gtk.CairoChart {
 					cur_y_min += max_rec_height +  s.axis_x.font_indent
 					             + (s.axis_x.title.text == "" ? 0 : s.axis_x.title.get_height(context) + s.axis_x.font_indent);
 					break;
-				case Axis.Position.BOTH:
-					break;
-				default: break;
 				}
 			}
 		}
@@ -931,51 +894,43 @@ namespace Gtk.CairoChart {
 				// 4.2. Cursor values for common Y axis
 				if (common_y_axes && cursors_orientation == CursorOrientation.HORIZONTAL && cursors_crossings.length != 0) {
 					switch (s.axis_y.position) {
-						case Axis.Position.LOW: cur_x_min += max_rec_width + s.axis_y.font_indent; break;
-						case Axis.Position.HIGH: cur_x_max -= max_rec_width + s.axis_y.font_indent; break;
-						case Axis.Position.BOTH: break;
+					case Axis.Position.LOW: cur_x_min += max_rec_width + s.axis_y.font_indent; break;
+					case Axis.Position.HIGH: cur_x_max -= max_rec_width + s.axis_y.font_indent; break;
 					}
 				}
 
 				// 4.5. Draw Axis title
-				if (s.axis_y.title.text != "")
+				if (s.axis_y.title.text != "") {
+					var scr_y = plot_area_y_max - (plot_area_y_max - plot_area_y_min) * (s.place.zoom_y_low + s.place.zoom_y_high) / 2.0;
 					switch (s.axis_y.position) {
 					case Axis.Position.LOW:
-						var scr_y = plot_area_y_max - (plot_area_y_max - plot_area_y_min) * (s.place.zoom_y_low + s.place.zoom_y_high) / 2.0;
 						var scr_x = cur_x_min + s.axis_y.font_indent + s.axis_y.title.get_width(context);
 						context.move_to(scr_x, scr_y + s.axis_y.title.get_height(context) / 2.0);
-						set_source_rgba(s.axis_y.color);
-						if (common_y_axes) set_source_rgba(Color(0,0,0,1));
-						show_text(s.axis_y.title);
 						break;
 					case Axis.Position.HIGH:
-						var scr_y = plot_area_y_max - (plot_area_y_max - plot_area_y_min) * (s.place.zoom_y_low + s.place.zoom_y_high) / 2.0;
 						var scr_x = cur_x_max - s.axis_y.font_indent;
 						context.move_to(scr_x, scr_y + s.axis_y.title.get_height(context) / 2.0);
-						set_source_rgba(s.axis_y.color);
-						if (common_y_axes) set_source_rgba(Color(0,0,0,1));
-						show_text(s.axis_y.title);
-						break;
-					case Axis.Position.BOTH:
 						break;
 					}
+					set_source_rgba(s.axis_y.color);
+					if (common_y_axes) set_source_rgba(Color(0,0,0,1));
+					show_text(s.axis_y.title);
+				}
 
 				// 5. Draw records, update cur_{x,y}_{min,max}.
 				for (Float128 y = y_min, y_max = s.axis_y.zoom_max; point_belong (y, y_min, y_max); y += step) {
 					if (common_y_axes) set_source_rgba(Color(0,0,0,1));
 					else set_source_rgba(s.axis_y.color);
 					var text = s.axis_y.format.printf((LongDouble)y);
-					var scr_y = plot_area_y_max - (plot_area_y_max - plot_area_y_min)
-					            * (s.place.zoom_y_low + (s.place.zoom_y_high - s.place.zoom_y_low) / (s.axis_y.zoom_max - s.axis_y.zoom_min) * (y - s.axis_y.zoom_min));
+					var scr_y = get_scr_y (s, y);
 					var text_t = new Text(text, s.axis_y.font_style, s.axis_y.color);
 					switch (s.axis_y.position) {
 					case Axis.Position.LOW:
 						context.move_to (cur_x_min + max_rec_width - (new Text(text)).get_width(context) + s.axis_y.font_indent - text_t.get_x_bearing(context)
 						                 + (s.axis_y.title.text == "" ? 0 : s.axis_y.title.get_width(context) + s.axis_y.font_indent),
-						                 scr_y + (new Text(text)).get_height(context) / 2.0
-						                 + text_t.get_height(context) * (y - (s.axis_y.zoom_min + s.axis_y.zoom_max) / 2.0) / (s.axis_y.zoom_max - s.axis_y.zoom_min));
+						                 compact_rec_y_pos (s, y, new Text(text)));
 						show_text(text_t);
-						// 6. Draw grid lines to the s.place.zoom_y_high.
+						// 6. Draw grid lines to the s.place.zoom_x_low.
 						var line_style = s.grid.line_style;
 						if (common_y_axes) line_style.color = Color(0, 0, 0, 0.5);
 						set_line_style(line_style);
@@ -989,10 +944,9 @@ namespace Gtk.CairoChart {
 					case Axis.Position.HIGH:
 						context.move_to (cur_x_max - (new Text(text)).get_width(context) - s.axis_y.font_indent - text_t.get_x_bearing(context)
 						                 - (s.axis_y.title.text == "" ? 0 : s.axis_y.title.get_width(context) + s.axis_y.font_indent),
-						                 scr_y + (new Text(text)).get_height(context) / 2.0
-						                 + text_t.get_height(context) * (y - (s.axis_y.zoom_min + s.axis_y.zoom_max) / 2.0) / (s.axis_y.zoom_max - s.axis_y.zoom_min));
+						                 compact_rec_y_pos (s, y, new Text(text)));
 						show_text(text_t);
-						// 6. Draw grid lines to the s.place.zoom_y_high.
+						// 6. Draw grid lines to the s.place.zoom_x_high.
 						var line_style = s.grid.line_style;
 						if (common_y_axes) line_style.color = Color(0, 0, 0, 0.5);
 						set_line_style(line_style);
@@ -1002,10 +956,6 @@ namespace Gtk.CairoChart {
 							context.line_to (plot_area_x_min, scr_y);
 						else
 							context.line_to (double.min (x, plot_area_x_min + (plot_area_x_max - plot_area_x_min) * s.place.zoom_x_low), scr_y);
-						break;
-					case Axis.Position.BOTH:
-						break;
-					default:
 						break;
 					}
 					context.stroke ();
@@ -1034,7 +984,6 @@ namespace Gtk.CairoChart {
 
 				if (nskip != 0) {--nskip; continue;}
 
-
 				switch (s.axis_y.position) {
 				case Axis.Position.LOW:
 					cur_x_min += max_rec_width + s.axis_y.font_indent
@@ -1042,9 +991,6 @@ namespace Gtk.CairoChart {
 				case Axis.Position.HIGH:
 					cur_x_max -= max_rec_width + s.axis_y.font_indent
 					             + (s.axis_y.title.text == "" ? 0 : s.axis_y.title.get_width(context) + s.axis_y.font_indent); break;
-				case Axis.Position.BOTH:
-					break;
-				default: break;
 				}
 			}
 		}
@@ -1276,8 +1222,6 @@ namespace Gtk.CairoChart {
 				case CursorOrientation.HORIZONTAL:
 					d = (rel2scr_y(c.y) - rel2scr_y(active_cursor.y)).abs();
 					break;
-				default:
-					break;
 				}
 				if (d < distance) {
 					distance = d;
@@ -1340,10 +1284,10 @@ namespace Gtk.CairoChart {
 			for (var ci = 0, max_ci = all_cursors.length(); ci < max_ci; ++ci) {
 				var c = all_cursors.nth_data(ci);
 				switch (cursors_orientation) {
-					case CursorOrientation.VERTICAL:
-						if (c.x <= _rel_zoom_x_min || c.x >= _rel_zoom_x_max) continue; break;
-					case CursorOrientation.HORIZONTAL:
-						if (c.y <= _rel_zoom_y_min || c.y >= _rel_zoom_y_max) continue; break;
+				case CursorOrientation.VERTICAL:
+					if (c.x <= _rel_zoom_x_min || c.x >= _rel_zoom_x_max) continue; break;
+				case CursorOrientation.HORIZONTAL:
+					if (c.y <= _rel_zoom_y_min || c.y >= _rel_zoom_y_max) continue; break;
 				}
 
 				CursorCross[] crossings = {};
@@ -1353,33 +1297,32 @@ namespace Gtk.CairoChart {
 
 					Point[] points = {};
 					switch (cursors_orientation) {
-						case CursorOrientation.VERTICAL:
-							points = sort_points (s, s.sort);
-							break;
-						case CursorOrientation.HORIZONTAL:
-							points = sort_points (s, s.sort);
-							break;
+					case CursorOrientation.VERTICAL:
+						points = sort_points (s, s.sort);
+						break;
+					case CursorOrientation.HORIZONTAL:
+						points = sort_points (s, s.sort);
+						break;
 					}
 
 					for (var i = 0; i + 1 < points.length; ++i) {
 						switch (cursors_orientation) {
-							case CursorOrientation.VERTICAL:
-								Float128 y = 0.0;
-								if (vcross(get_scr_point(s, points[i]), get_scr_point(s, points[i+1]), rel2scr_x(c.x),
-								           plot_area_y_min, plot_area_y_max, out y)) {
-								    CursorCross cc = {si, Point(get_real_x(s, rel2scr_x(c.x)), get_real_y(s, y))};
-								    crossings += cc;
-//stdout.printf("si = %d, rel2scr_x(c.x) = %f, y = %f\n", si, rel2scr_x(c.x), y);
-								}
-								break;
-							case CursorOrientation.HORIZONTAL:
-								Float128 x = 0.0;
-								if (hcross(get_scr_point(s, points[i]), get_scr_point(s, points[i+1]),
-								           plot_area_x_min, plot_area_x_max, rel2scr_y(c.y), out x)) {
-								    CursorCross cc = {si, Point(get_real_x(s, x), get_real_y(s, rel2scr_y(c.y)))};
-								    crossings += cc;
-								}
-								break;
+						case CursorOrientation.VERTICAL:
+							Float128 y = 0.0;
+							if (vcross(get_scr_point(s, points[i]), get_scr_point(s, points[i+1]), rel2scr_x(c.x),
+							           plot_area_y_min, plot_area_y_max, out y)) {
+							    CursorCross cc = {si, Point(get_real_x(s, rel2scr_x(c.x)), get_real_y(s, y))};
+							    crossings += cc;
+							}
+							break;
+						case CursorOrientation.HORIZONTAL:
+							Float128 x = 0.0;
+							if (hcross(get_scr_point(s, points[i]), get_scr_point(s, points[i+1]),
+							           plot_area_x_min, plot_area_x_max, rel2scr_y(c.y), out x)) {
+							    CursorCross cc = {si, Point(get_real_x(s, x), get_real_y(s, rel2scr_y(c.y)))};
+							    crossings += cc;
+							}
+							break;
 						}
 					}
 				}
@@ -1389,8 +1332,6 @@ namespace Gtk.CairoChart {
 				}
 			}
 			cursors_crossings = local_cursor_crossings;
-//if (cursors_crossings.length != 0)
-//stdout.printf("cursors_crossings[0].crossings.length = %d\n", cursors_crossings[0].crossings.length);
 		}
 
 		protected virtual void draw_cursors () {
@@ -1409,67 +1350,116 @@ namespace Gtk.CairoChart {
 					var scrx = get_scr_x(s, p.x);
 					var scry = get_scr_y(s, p.y);
 					if (scrx < low.x) low.x = scrx;
-//stdout.printf("low.y = %f, high.y = %f\n", low.y, high.y);
 					if (scry < low.y) low.y = scry;
 					if (scrx > high.x) high.x = scrx;
 					if (scry > high.y) high.y = scry;
 
 					if (common_x_axes) {
 						switch (s.axis_x.position) {
-							case Axis.Position.LOW: high.y = plot_area_y_max + s.axis_x.font_indent; break;
-							case Axis.Position.HIGH: low.y = plot_area_y_min - s.axis_x.font_indent; break;
-							case Axis.Position.BOTH:
-								high.y = plot_area_y_max + s.axis_x.font_indent;
-								low.y = plot_area_y_min - s.axis_x.font_indent;
-								break;
+						case Axis.Position.LOW: high.y = plot_area_y_max + s.axis_x.font_indent; break;
+						case Axis.Position.HIGH: low.y = plot_area_y_min - s.axis_x.font_indent; break;
+						case Axis.Position.BOTH:
+							high.y = plot_area_y_max + s.axis_x.font_indent;
+							low.y = plot_area_y_min - s.axis_x.font_indent;
+							break;
 						}
 					}
 					if (common_y_axes) {
 						switch (s.axis_y.position) {
-							case Axis.Position.LOW: low.x = plot_area_x_min - s.axis_y.font_indent; break;
-							case Axis.Position.HIGH: high.x = plot_area_x_max + s.axis_y.font_indent; break;
-							case Axis.Position.BOTH:
-								low.x = plot_area_x_min - s.axis_y.font_indent;
-								high.x = plot_area_x_max + s.axis_y.font_indent;
-								break;
+						case Axis.Position.LOW: low.x = plot_area_x_min - s.axis_y.font_indent; break;
+						case Axis.Position.HIGH: high.x = plot_area_x_max + s.axis_y.font_indent; break;
+						case Axis.Position.BOTH:
+							low.x = plot_area_x_min - s.axis_y.font_indent;
+							high.x = plot_area_x_max + s.axis_y.font_indent;
+							break;
 						}
 					}
 				}
 
 				var c = all_cursors.nth_data(cursors_crossings[cci].cursor_index);
+				var s = series[zoom_first_show];
 
 				switch (cursors_orientation) {
-					case CursorOrientation.VERTICAL:
-						if (low.y > high.y) continue;
-						set_line_style(cursor_line_style);
-//stdout.printf("rel2scr_x(c.x) = %f, low.y = %f\n", rel2scr_x(c.x), low.y);
-						context.move_to (rel2scr_x(c.x), low.y);
-						context.line_to (rel2scr_x(c.x), high.y);
-						context.stroke();
+				case CursorOrientation.VERTICAL:
+					if (low.y > high.y) continue;
+					set_line_style(cursor_line_style);
+					context.move_to (rel2scr_x(c.x), low.y);
+					context.line_to (rel2scr_x(c.x), high.y);
+					context.stroke();
 
-						// TODO: show values
-						if (common_x_axes)
-							// show only Y value
-							;
-						else
-							// show [X;Y]
-							;
-						break;
-					case CursorOrientation.HORIZONTAL:
-						if (low.x > high.x) continue;
-						set_line_style(cursor_line_style);
-						context.move_to (low.x, rel2scr_y(c.y));
-						context.line_to (high.x, rel2scr_y(c.y));
-						context.stroke();
+					// TODO: show values
+					if (common_x_axes) {
+						// show common X value
+						var x = get_real_x(s, rel2scr_x(c.x));
+						string text = "", time_text = "";
+						switch (s.axis_x.type) {
+						case Axis.Type.NUMBERS:
+							text = s.axis_x.format.printf((LongDouble)x);
+							break;
+						case Axis.Type.DATE_TIME:
+							var dt = new DateTime.from_unix_utc((int64)x);
+							text = dt.format(s.axis_x.date_format);
+							var dsec_str =
+								("%."+(s.axis_x.dsec_signs.to_string())+"Lf").printf((LongDouble)(x - (int64)x)).offset(1);
+							time_text = dt.format(s.axis_x.time_format) + dsec_str;
+							break;
+						default:
+							break;
+						}
+						var text_t = new Text(text, s.axis_x.font_style, s.axis_x.color);
+						var time_text_t = new Text(time_text, s.axis_x.font_style, s.axis_x.color);
+						var print_y = 0.0;
+						switch (s.axis_x.position) {
+							case Axis.Position.LOW: print_y = y_min + height - s.axis_x.font_indent
+							                        - (legend.position == Legend.Position.BOTTOM ? legend_height : 0);
+								break;
+							case Axis.Position.HIGH: print_y = y_min + title_height + s.axis_x.font_indent
+							                         + (legend.position == Legend.Position.TOP ? legend_height : 0)
+							                         + (s.axis_x.date_format == "" ? 0 : text_t.get_height(context))
+							                         + (s.axis_x.time_format == "" ? 0 : time_text_t.get_height(context))
+							                         + (s.axis_x.date_format == "" || s.axis_x.time_format == "" ? 0 : s.axis_x.font_indent);
+								break;
+						}
+						var print_x = compact_rec_x_pos (s, x, text_t);
+						context.move_to (print_x, print_y);
 
-						// TODO: show values
-						if (common_y_axes)
-							// show only X value
-							;
-						else
-							// show [X;Y]
-							;
-						break;
+						switch (s.axis_x.type) {
+						case Axis.Type.NUMBERS:
+							show_text(text_t);
+							break;
+						case Axis.Type.DATE_TIME:
+							if (s.axis_x.date_format != "") show_text(text_t);
+							print_x = compact_rec_x_pos (s, x, time_text_t);
+							context.move_to (print_x, print_y - (s.axis_x.date_format == "" ? 0 : text_t.get_height(context) + s.axis_x.font_indent));
+							if (s.axis_x.time_format != "") show_text(time_text_t);
+							break;
+						}
+
+						context.stroke ();
+
+						// show only Y value
+						;
+					} else {
+						// show [X;Y]
+					}
+					break;
+				case CursorOrientation.HORIZONTAL:
+					if (low.x > high.x) continue;
+					set_line_style(cursor_line_style);
+					context.move_to (low.x, rel2scr_y(c.y));
+					context.line_to (high.x, rel2scr_y(c.y));
+					context.stroke();
+
+					// TODO: show values
+					if (common_y_axes) {
+						// show common Y value
+
+						// show only X value
+						;
+					} else
+						// show [X;Y]
+						;
+					break;
 				}
 			}
 		}

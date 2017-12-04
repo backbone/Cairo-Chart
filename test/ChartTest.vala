@@ -83,6 +83,9 @@ void plot_chart2 (Chart chart) {
 	s3.axis_x.title = new Text("All Series: Axis X.");
 	s3.axis_y.title = new Text("Series 3: Axis Y.");
 
+	//s1.axis_x.position = s2.axis_x.position = s3.axis_x.position = Axis.Position.HIGH;
+	//s1.axis_x.type = s2.axis_x.type = s3.axis_x.type = Axis.Type.DATE_TIME;
+
 	chart.series = { s1, s2, s3 };
 }
 
@@ -261,7 +264,6 @@ int main (string[] args) {
 			case Legend.Position.RIGHT: radio_button2.set_active(true); break;
 			case Legend.Position.LEFT: radio_button3.set_active(true); break;
 			case Legend.Position.BOTTOM: radio_button4.set_active(true); break;
-			default: break;
 			}
 			switch (chart.cursors_orientation) {
 			case Chart.CursorOrientation.VERTICAL: radio_button7.set_active(true); break;
@@ -275,7 +277,6 @@ int main (string[] args) {
 			case Legend.Position.RIGHT: radio_button2.set_active(true); break;
 			case Legend.Position.LEFT: radio_button3.set_active(true); break;
 			case Legend.Position.BOTTOM: radio_button4.set_active(true); break;
-			default: break;
 			}
 			switch (chart.cursors_orientation) {
 			case Chart.CursorOrientation.VERTICAL: radio_button7.set_active(true); break;
@@ -289,7 +290,6 @@ int main (string[] args) {
 			case Legend.Position.RIGHT: radio_button2.set_active(true); break;
 			case Legend.Position.LEFT: radio_button3.set_active(true); break;
 			case Legend.Position.BOTTOM: radio_button4.set_active(true); break;
-			default: break;
 			}
 			switch (chart.cursors_orientation) {
 			case Chart.CursorOrientation.VERTICAL: radio_button7.set_active(true); break;
@@ -303,7 +303,6 @@ int main (string[] args) {
 			case Legend.Position.RIGHT: radio_button2.set_active(true); break;
 			case Legend.Position.LEFT: radio_button4.set_active(true); break;
 			case Legend.Position.BOTTOM: radio_button4.set_active(true); break;
-			default: break;
 			}
 			switch (chart.cursors_orientation) {
 			case Chart.CursorOrientation.VERTICAL: radio_button7.set_active(true); break;
