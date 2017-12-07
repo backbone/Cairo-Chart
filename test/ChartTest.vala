@@ -131,6 +131,8 @@ void plot_chart3 (Chart chart) {
 	s3.axis_x.title = new Text("Series 3: Axis X.");
 	s3.axis_y.title = new Text("Series 3: Axis Y.");
 
+	//s1.axis_y.position = s2.axis_y.position = s3.axis_y.position = Axis.Position.LOW;
+
 	chart.series = { s1, s2, s3 };
 }
 

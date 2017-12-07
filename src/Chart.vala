@@ -1414,10 +1414,17 @@ namespace Gtk.CairoChart {
 							                        - (legend.position == Legend.Position.BOTTOM ? legend_height : 0);
 								break;
 							case Axis.Position.HIGH: print_y = y_min + title_height + s.axis_x.font_indent
-							                         + (legend.position == Legend.Position.TOP ? legend_height : 0)
-							                         + (s.axis_x.date_format == "" ? 0 : text_t.get_height(context))
-							                         + (s.axis_x.time_format == "" ? 0 : time_text_t.get_height(context))
-							                         + (s.axis_x.date_format == "" || s.axis_x.time_format == "" ? 0 : s.axis_x.font_indent);
+							                         + (legend.position == Legend.Position.TOP ? legend_height : 0);
+								switch (s.axis_x.type) {
+								case Axis.Type.NUMBERS:
+									print_y += text_t.get_height(context);
+									break;
+								case Axis.Type.DATE_TIME:
+									print_y += (s.axis_x.date_format == "" ? 0 : text_t.get_height(context))
+							                   + (s.axis_x.time_format == "" ? 0 : time_text_t.get_height(context))
+							                   + (s.axis_x.date_format == "" || s.axis_x.time_format == "" ? 0 : s.axis_x.font_indent);
+							        break;
+								}
 								break;
 						}
 						var print_x = compact_rec_x_pos (s, x, text_t);
@@ -1453,6 +1460,24 @@ namespace Gtk.CairoChart {
 					// TODO: show values
 					if (common_y_axes) {
 						// show common Y value
+						var y = get_real_y(s, rel2scr_y(c.y));
+						var text_t = new Text(s.axis_y.format.printf((LongDouble)y));
+						var print_y = compact_rec_y_pos (s, y, text_t);
+						var print_x = 0.0;
+						switch (s.axis_y.position) {
+						case Axis.Position.LOW:
+							print_x = x_min + s.axis_y.font_indent
+							          + (legend.position == Legend.Position.LEFT ? legend_width : 0);
+							break;
+						case Axis.Position.HIGH:
+							print_x = x_min + width - text_t.get_width(context) - s.axis_y.font_indent
+							          - (legend.position == Legend.Position.RIGHT ? legend_width : 0);
+							break;
+						}
+						context.move_to (print_x, print_y);
+						show_text(text_t);
+
+						context.stroke ();
 
 						// show only X value
 						;
