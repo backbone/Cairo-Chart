@@ -176,7 +176,7 @@ namespace Gtk.CairoChart {
 			delta_y /= plot_area_y_max - plot_area_y_min; delta_y *= - 1.0;
 			var rzxmin = rel_zoom_x_min, rzxmax = rel_zoom_x_max, rzymin = rel_zoom_y_min, rzymax = rel_zoom_y_max;
 			zoom_out();
-			draw(); // TODO: optimize here
+			//draw(); // TODO: optimize here
 			delta_x *= plot_area_x_max - plot_area_x_min;
 			delta_y *= plot_area_y_max - plot_area_y_min;
 			var xmin = plot_area_x_min + (plot_area_x_max - plot_area_x_min) * rzxmin;
@@ -192,7 +192,7 @@ namespace Gtk.CairoChart {
 			if (ymax + delta_y > plot_area_y_max) delta_y = plot_area_y_max - ymax;
 
 			zoom_in (xmin + delta_x, ymin + delta_y, xmax + delta_x, ymax + delta_y);
-			draw(); // TODO: optimize here
+			//draw(); // TODO: optimize here
 		}
 
 		protected double title_width = 0.0;
