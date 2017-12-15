@@ -60,7 +60,7 @@ namespace Gtk.CairoChart {
 			series.line_style = this.line_style;
 			series.marker_type = this.marker_type;
 			series.place = this.place.copy();
-			series.points = this.points.copy();
+			series.points = this.points;
 			series.sort = this.sort;
 			series.title = this.title.copy();
 			series.zoom_show = this.zoom_show;

@@ -1634,7 +1634,7 @@ namespace Gtk.CairoChart {
 			chart.cursor_line_style = this.cursor_line_style;
 			chart.cursor_max_rm_distance = this.cursor_max_rm_distance;
 			chart.cursors = this.cursors.copy();
-			chart.cursors_crossings = this.cursors_crossings.copy(); // no deep copying for .crossings
+			chart.cursors_crossings = this.cursors_crossings;
 			chart.cursors_orientation = this.cursors_orientation;
 			chart.height = this.height;
 			chart.is_cursor_active = this.is_cursor_active;
@@ -1645,7 +1645,7 @@ namespace Gtk.CairoChart {
 			chart.legend_text_vspace = this.legend_text_vspace;
 			chart.legend_width = this.legend_width;
 			chart.marker_size = this.marker_size;
-			chart.max_font_heights = this.max_font_heights.copy();
+			chart.max_font_heights = this.max_font_heights;
 			chart.plot_area_x_max = this.plot_area_x_max;
 			chart.plot_area_x_min = this.plot_area_x_min;
 			chart.plot_area_y_max = this.plot_area_y_max;
@@ -1655,7 +1655,7 @@ namespace Gtk.CairoChart {
 			chart._rel_zoom_y_min = this._rel_zoom_y_min;
 			chart._rel_zoom_y_max = this._rel_zoom_y_max;
 			chart.selection_style = this.selection_style;
-			chart.series = this.series.copy();
+			chart.series = this.series;
 			chart.show_legend = this.show_legend;
 			chart.title = this.title.copy();
 			chart.title_height = this.title_height;
