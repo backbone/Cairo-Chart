@@ -471,8 +471,7 @@ namespace Gtk.CairoChart {
 				Float128 x = (int64)(axis.zoom_min + (axis.zoom_max - axis.zoom_min) / axis_rec_npoints * i) + 1.0/3.0;
 				switch (axis.type) {
 				case Axis.Type.NUMBERS:
-					var text = new Text (axis.format.printf((LongDouble)x) + (is_horizontal ? "_" : ""));
-					text.style = axis.font_style;
+					var text = new Text (axis.format.printf((LongDouble)x) + (is_horizontal ? "_" : ""), axis.font_style);
 					max_rec_width = double.max (max_rec_width, text.get_width(context));
 					max_rec_height = double.max (max_rec_height, text.get_height(context));
 					break;
@@ -480,17 +479,14 @@ namespace Gtk.CairoChart {
 					string date, time;
 					format_date_time(axis, x, out date, out time);
 
-					var text = new Text("");
 					var h = 0.0;
 					if (axis.date_format != "") {
-						text = new Text (date + (is_horizontal ? "_" : ""));
-						text.style = axis.font_style;
+						var text = new Text (date + (is_horizontal ? "_" : ""), axis.font_style);
 						max_rec_width = double.max (max_rec_width, text.get_width(context));
 						h = text.get_height(context);
 					}
 					if (axis.time_format != "") {
-						text = new Text (time + (is_horizontal ? "_" : ""));
-						text.style = axis.font_style;
+						var text = new Text (time + (is_horizontal ? "_" : ""), axis.font_style);
 						max_rec_width = double.max (max_rec_width, text.get_width(context));
 						h += text.get_height(context);
 					}
@@ -932,9 +928,9 @@ namespace Gtk.CairoChart {
 					var text_t = new Text(text, s.axis_y.font_style, s.axis_y.color);
 					switch (s.axis_y.position) {
 					case Axis.Position.LOW:
-						context.move_to (cur_x_min + max_rec_width - (new Text(text)).get_width(context) + s.axis_y.font_indent - text_t.get_x_bearing(context)
+						context.move_to (cur_x_min + max_rec_width - text_t.get_width(context) + s.axis_y.font_indent - text_t.get_x_bearing(context)
 						                 + (s.axis_y.title.text == "" ? 0 : s.axis_y.title.get_width(context) + s.axis_y.font_indent),
-						                 compact_rec_y_pos (s, y, new Text(text)));
+						                 compact_rec_y_pos (s, y, text_t));
 						show_text(text_t);
 						// 6. Draw grid lines to the s.place.zoom_x_low.
 						var line_style = s.grid.line_style;
@@ -948,9 +944,9 @@ namespace Gtk.CairoChart {
 							context.line_to (double.max (x, plot_area_x_min + (plot_area_x_max - plot_area_x_min) * s.place.zoom_x_high), scr_y);
 						break;
 					case Axis.Position.HIGH:
-						context.move_to (cur_x_max - (new Text(text)).get_width(context) - s.axis_y.font_indent - text_t.get_x_bearing(context)
+						context.move_to (cur_x_max - text_t.get_width(context) - s.axis_y.font_indent - text_t.get_x_bearing(context)
 						                 - (s.axis_y.title.text == "" ? 0 : s.axis_y.title.get_width(context) + s.axis_y.font_indent),
-						                 compact_rec_y_pos (s, y, new Text(text)));
+						                 compact_rec_y_pos (s, y, text_t));
 						show_text(text_t);
 						// 6. Draw grid lines to the s.place.zoom_x_high.
 						var line_style = s.grid.line_style;
@@ -1541,7 +1537,7 @@ namespace Gtk.CairoChart {
 					if (common_y_axes) {
 						var s = series[zoom_first_show];
 						var y = get_real_y(s, rel2scr_y(c.y));
-						var text_t = new Text(s.axis_y.format.printf((LongDouble)y));
+						var text_t = new Text(s.axis_y.format.printf((LongDouble)y, s.axis_y.font_style));
 						var print_y = compact_rec_y_pos (s, y, text_t);
 						var print_x = 0.0;
 						switch (s.axis_y.position) {
@@ -1581,7 +1577,7 @@ namespace Gtk.CairoChart {
 
 					if (show_x) {
 						set_source_rgba(s.axis_x.color);
-						var text_t = new Text(s.axis_x.format.printf((LongDouble)point.x));
+						var text_t = new Text(s.axis_x.format.printf((LongDouble)point.x), s.axis_x.font_style);
 						context.move_to (svp.x - size.x / 2, svp.y + text_t.get_height(context) / 2);
 						show_text(text_t);
 						context.stroke();
@@ -1591,7 +1587,7 @@ namespace Gtk.CairoChart {
 						set_source_rgba(s.axis_x.color);
 						string date = "", time = "";
 						format_date_time(s.axis_x, point.x, out date, out time);
-						var text_t = new Text(time);
+						var text_t = new Text(time, s.axis_x.font_style);
 						var y = svp.y + text_t.get_height(context) / 2;
 						if (show_date) y -= text_t.get_height(context) / 2 + s.axis_x.font_indent / 2;
 						context.move_to (svp.x - size.x / 2, y);
@@ -1603,7 +1599,7 @@ namespace Gtk.CairoChart {
 						set_source_rgba(s.axis_x.color);
 						string date = "", time = "";
 						format_date_time(s.axis_x, point.x, out date, out time);
-						var text_t = new Text(date);
+						var text_t = new Text(date, s.axis_x.font_style);
 						var y = svp.y + text_t.get_height(context) / 2;
 						if (show_time) y += text_t.get_height(context) / 2 + s.axis_x.font_indent / 2;
 						context.move_to (svp.x - size.x / 2, y);
@@ -1613,7 +1609,7 @@ namespace Gtk.CairoChart {
 
 					if (show_y) {
 						set_source_rgba(s.axis_y.color);
-						var text_t = new Text(s.axis_y.format.printf((LongDouble)point.y));
+						var text_t = new Text(s.axis_y.format.printf((LongDouble)point.y), s.axis_y.font_style);
 						context.move_to (svp.x + size.x / 2 - text_t.get_width(context), svp.y + text_t.get_height(context) / 2);
 						show_text(text_t);
 						context.stroke();
