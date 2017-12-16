@@ -244,6 +244,8 @@ int main (string[] args) {
 	plot_chart3 (chart3);
 	plot_chart4 (chart4);
 
+	chart1.selection_style = LineStyle(Color(0.3, 0.3, 0.3, 0.7), 1);
+
 	var da = new DrawingArea();
 	da.set_events ( Gdk.EventMask.BUTTON_PRESS_MASK
 	               |Gdk.EventMask.BUTTON_RELEASE_MASK
@@ -418,16 +420,8 @@ int main (string[] args) {
 		/*var ret = */chart.draw();
 
 	    // user's post draw operations here...
-	    if (mouse_state == MouseState.DRAW_SELECTION) {
-			context.set_source_rgba (0.5, 0.5, 0.5, 0.7);
-			context.set_line_join(Cairo.LineJoin.MITER);
-			context.set_line_cap(Cairo.LineCap.ROUND);
-			context.set_line_width(1);
-			//context.set_dash(null, 0);
-			context.rectangle (sel_x0, sel_y0, sel_x1 - sel_x0, sel_y1 - sel_y0);
-			//context.fill();
-			context.stroke();
-		}
+		if (mouse_state == MouseState.DRAW_SELECTION)
+			chart.draw_selection (sel_x0, sel_y0, sel_x1, sel_y1);
 
 		return true;//ret;
 	});
