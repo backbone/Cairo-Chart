@@ -18,8 +18,6 @@ namespace Gtk.CairoChart {
 
 		public Series[] series = {};
 
-		protected LineStyle selection_style = LineStyle ();
-
 		public Chart () {
 			bg_color = Color (1, 1, 1);
 		}
@@ -461,6 +459,14 @@ namespace Gtk.CairoChart {
 		protected virtual void draw_legend () {
 			process_legend (LegendProcessType.CALC);
 			process_legend (LegendProcessType.DRAW);
+		}
+
+		public LineStyle selection_style = LineStyle ();
+
+		public virtual void draw_selection (double x0, double y0, double x1, double y1) {
+			set_line_style (selection_style);
+			context.rectangle (x0, y0, x1 - x0, y1 - y0);
+			context.stroke();
 		}
 
 		protected int axis_rec_npoints = 128;
