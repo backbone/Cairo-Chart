@@ -425,7 +425,6 @@ int main (string[] args) {
 
 		return true;//ret;
 	});
-	da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 
 	da.button_press_event.connect((event) => {
 		if (!point_in_chart(chart, event.x, event.y)) return true;
@@ -446,14 +445,12 @@ int main (string[] args) {
 		case 2:  // start zoom area selection
 			sel_x0 = sel_x1 = event.x;
 			sel_y0 = sel_y1 = event.y;
-			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 			mouse_state = MouseState.DRAW_SELECTION;
 			break;
 
 		case 3:  // start moving
 			mov_x0 = event.x;
 			mov_y0 = event.y;
-			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 			mouse_state = MouseState.MOVING_CHART;
 			break;
 		}
@@ -472,7 +469,6 @@ int main (string[] args) {
 				//mouse_state = MouseState.FREE;
 			} else { // add cursor
 				chart.add_active_cursor ();
-				da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 				mouse_state = MouseState.FREE;
 			}
 			break;
@@ -489,7 +485,6 @@ int main (string[] args) {
 			break;
 
 		case 3:
-			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 			mouse_state = MouseState.FREE;
 			break;
 		}
