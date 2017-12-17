@@ -528,6 +528,7 @@ namespace Gtk.CairoChart {
 
 		bool common_x_axes = false;
 		bool common_y_axes = false;
+		public Color common_axis_color = Color (0, 0, 0, 1);
 
 		bool are_intersect (double a_min, double a_max, double b_min, double b_max) {
 			if (   a_min < a_max <= b_min < b_max
@@ -754,13 +755,13 @@ namespace Gtk.CairoChart {
 					}
 					context.move_to(scr_x - s.axis_x.title.get_width(context) / 2.0, scr_y);
 					set_source_rgba(s.axis_x.color);
-					if (common_x_axes) set_source_rgba(Color(0,0,0,1));
+					if (common_x_axes) set_source_rgba(common_axis_color);
 					show_text(s.axis_x.title);
 				}
 
 				// 5. Draw records, update cur_{x,y}_{min,max}.
 				for (Float128 x = x_min, x_max = s.axis_x.zoom_max; point_belong (x, x_min, x_max); x += step) {
-					if (common_x_axes) set_source_rgba(Color(0,0,0,1));
+					if (common_x_axes) set_source_rgba(common_axis_color);
 					else set_source_rgba(s.axis_x.color);
 					string text = "", time_text = "";
 					switch (s.axis_x.type) {
@@ -921,13 +922,13 @@ namespace Gtk.CairoChart {
 						break;
 					}
 					set_source_rgba(s.axis_y.color);
-					if (common_y_axes) set_source_rgba(Color(0,0,0,1));
+					if (common_y_axes) set_source_rgba(common_axis_color);
 					show_text(s.axis_y.title);
 				}
 
 				// 5. Draw records, update cur_{x,y}_{min,max}.
 				for (Float128 y = y_min, y_max = s.axis_y.zoom_max; point_belong (y, y_min, y_max); y += step) {
-					if (common_y_axes) set_source_rgba(Color(0,0,0,1));
+					if (common_y_axes) set_source_rgba(common_axis_color);
 					else set_source_rgba(s.axis_y.color);
 					var text = s.axis_y.format.printf((LongDouble)y);
 					var scr_y = get_scr_y (s, y);
@@ -1585,6 +1586,7 @@ namespace Gtk.CairoChart {
 						set_source_rgba(s.axis_x.color);
 						var text_t = new Text(s.axis_x.format.printf((LongDouble)point.x), s.axis_x.font_style);
 						context.move_to (svp.x - size.x / 2, svp.y + text_t.get_height(context) / 2);
+						if (common_x_axes) set_source_rgba (common_axis_color);
 						show_text(text_t);
 						context.stroke();
 					}
@@ -1597,6 +1599,7 @@ namespace Gtk.CairoChart {
 						var y = svp.y + text_t.get_height(context) / 2;
 						if (show_date) y -= text_t.get_height(context) / 2 + s.axis_x.font_indent / 2;
 						context.move_to (svp.x - size.x / 2, y);
+						if (common_x_axes) set_source_rgba (common_axis_color);
 						show_text(text_t);
 						context.stroke();
 					}
@@ -1609,6 +1612,7 @@ namespace Gtk.CairoChart {
 						var y = svp.y + text_t.get_height(context) / 2;
 						if (show_time) y += text_t.get_height(context) / 2 + s.axis_x.font_indent / 2;
 						context.move_to (svp.x - size.x / 2, y);
+						if (common_x_axes) set_source_rgba (common_axis_color);
 						show_text(text_t);
 						context.stroke();
 					}
@@ -1617,6 +1621,7 @@ namespace Gtk.CairoChart {
 						set_source_rgba(s.axis_y.color);
 						var text_t = new Text(s.axis_y.format.printf((LongDouble)point.y), s.axis_y.font_style);
 						context.move_to (svp.x + size.x / 2 - text_t.get_width(context), svp.y + text_t.get_height(context) / 2);
+						if (common_y_axes) set_source_rgba (common_axis_color);
 						show_text(text_t);
 						context.stroke();
 					}
