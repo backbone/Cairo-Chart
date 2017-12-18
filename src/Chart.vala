@@ -1400,7 +1400,6 @@ namespace Gtk.CairoChart {
 			if (show_x == show_time == show_date == show_y == false)
 				cross_what_to_show(s, out show_x, out show_time, out show_date, out show_y);
 			size = Point ();
-			double x_w = 0.0, x_h = 0.0, y_w = 0.0, y_h = 0.0;
 			string date, time;
 			format_date_time(s.axis_x, p.x, out date, out time);
 			var date_t = new Text (date, s.axis_x.font_style, s.axis_x.color);
@@ -1568,7 +1567,6 @@ namespace Gtk.CairoChart {
 					var point = ccs[ci].point;
 					var size = ccs[ci].size;
 					var svp = ccs[ci].scr_value_point;
-					var rp = get_real_point(s, rel2scr_point(point));
 					var show_x = ccs[ci].show_x;
 					var show_date = ccs[ci].show_date;
 					var show_time = ccs[ci].show_time;
