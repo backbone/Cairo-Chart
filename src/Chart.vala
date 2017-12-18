@@ -75,7 +75,7 @@ namespace Gtk.CairoChart {
 			return true;
 		}
 
-		protected virtual void set_source_rgba (Color color) {
+		public virtual void set_source_rgba (Color color) {
 				context.set_source_rgba (color.red, color.green, color.blue, color.alpha);
 		}
 
@@ -522,8 +522,8 @@ namespace Gtk.CairoChart {
 		public double plot_area_y_min = 0;
 		public double plot_area_y_max = 0;
 
-		bool common_x_axes = false;
-		bool common_y_axes = false;
+		public bool common_x_axes { get; protected set; default = false; }
+		public bool common_y_axes { get; protected set; default = false; }
 		public Color common_axis_color = Color (0, 0, 0, 1);
 
 		bool are_intersect (double a_min, double a_max, double b_min, double b_max) {
@@ -1623,6 +1623,62 @@ namespace Gtk.CairoChart {
 					}
 				}
 			}
+		}
+
+		public bool get_cursors_delta (out Float128 delta) {
+			delta = 0.0;
+			if (series.length == 0) return false;
+			if (cursors.length() + (is_cursor_active ? 1 : 0) != 2) return false;
+			if (common_x_axes && cursors_orientation == CursorOrientation.VERTICAL) {
+				Float128 val1 = get_real_x (series[zoom_first_show], rel2scr_x(cursors.nth_data(0).x));
+				Float128 val2 = 0;
+				if (is_cursor_active)
+					val2 = get_real_x (series[zoom_first_show], rel2scr_x(active_cursor.x));
+				else
+					val2 = get_real_x (series[zoom_first_show], rel2scr_x(cursors.nth_data(1).x));
+				if (val2 > val1)
+					delta = val2 - val1;
+				else
+					delta = val1 - val2;
+				return true;
+			}
+			if (common_y_axes && cursors_orientation == CursorOrientation.HORIZONTAL) {
+				Float128 val1 = get_real_y (series[zoom_first_show], rel2scr_y(cursors.nth_data(0).y));
+				Float128 val2 = 0;
+				if (is_cursor_active)
+					val2 = get_real_y (series[zoom_first_show], rel2scr_y(active_cursor.y));
+				else
+					val2 = get_real_y (series[zoom_first_show], rel2scr_y(cursors.nth_data(1).y));
+				if (val2 > val1)
+					delta = val2 - val1;
+				else
+					delta = val1 - val2;
+				return true;
+			}
+			return false;
+		}
+
+		public string get_cursors_delta_str () {
+			Float128 delta = 0.0;
+			if (!get_cursors_delta(out delta)) return "";
+			var str = "";
+			var s = series[zoom_first_show];
+			if (common_x_axes)
+				switch (s.axis_x.type) {
+				case Axis.Type.NUMBERS:
+					str = s.axis_x.format.printf((LongDouble)delta);
+					break;
+				case Axis.Type.DATE_TIME:
+					var date = "", time = "";
+					int64 days = (int64)(delta / 24 / 3600);
+					format_date_time(s.axis_x, delta, out date, out time);
+					str = days.to_string() + " + " + time;
+					break;
+				}
+			if (common_y_axes) {
+				str = s.axis_y.format.printf((LongDouble)delta);
+			}
+			return str;
 		}
 
 		public Chart copy () {

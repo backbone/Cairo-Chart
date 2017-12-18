@@ -85,6 +85,7 @@ void plot_chart2 (Chart chart) {
 
 	//s1.axis_x.position = s2.axis_x.position = s3.axis_x.position = Axis.Position.HIGH;
 	//s1.axis_x.type = s2.axis_x.type = s3.axis_x.type = Axis.Type.DATE_TIME;
+	//s1.axis_x.max = s2.axis_x.max = s3.axis_x.max = 5*24*3600;
 
 	chart.series = { s1, s2, s3 };
 }
@@ -422,6 +423,23 @@ int main (string[] args) {
 	    // user's post draw operations here...
 		if (mouse_state == MouseState.DRAW_SELECTION)
 			chart.draw_selection (sel_x0, sel_y0, sel_x1, sel_y1);
+
+		// show delta
+		var str = chart.get_cursors_delta_str();
+		if (str != "") {
+			var text = "Δ = " + str;
+			var text_t = new Text(text);
+			var w = text_t.get_width(context);
+			var h = text_t.get_height(context);
+			var x0 = chart.plot_area_x_max - w - 5;
+			var y0 = chart.plot_area_y_min + h + 5;
+			chart.set_source_rgba(chart.legend.bg_color);
+			context.rectangle (x0, y0 - h, w, h);
+			context.fill();
+			context.move_to (x0, y0);
+			chart.set_source_rgba(chart.common_axis_color);
+			context.show_text(text);
+		}
 
 		return true;//ret;
 	});
