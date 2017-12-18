@@ -87,14 +87,10 @@ namespace Gtk.CairoChart {
 			}
 		}
 
-		double _rel_zoom_x_min = 0.0;
-		double _rel_zoom_x_max = 1.0;
-		double _rel_zoom_y_min = 0.0;
-		double _rel_zoom_y_max = 1.0;
-		public double rel_zoom_x_min { get { return _rel_zoom_x_min; } default = 0.0; }
-		public double rel_zoom_x_max { get { return _rel_zoom_x_max; } default = 1.0; }
-		public double rel_zoom_y_min { get { return _rel_zoom_y_min; } default = 0.0; }
-		public double rel_zoom_y_max { get { return _rel_zoom_y_max; } default = 1.0; }
+		protected double rel_zoom_x_min = 0.0;
+		protected double rel_zoom_x_max = 1.0;
+		protected double rel_zoom_y_min = 0.0;
+		protected double rel_zoom_y_max = 1.0;
 
 		int zoom_first_show = 0;
 
@@ -145,14 +141,14 @@ namespace Gtk.CairoChart {
 					break;
 				}
 
-			var new_rel_zoom_x_min = _rel_zoom_x_min + (x0 - plot_area_x_min) / (plot_area_x_max - plot_area_x_min) * (_rel_zoom_x_max - _rel_zoom_x_min);
-			var new_rel_zoom_x_max = _rel_zoom_x_min + (x1 - plot_area_x_min) / (plot_area_x_max - plot_area_x_min) * (_rel_zoom_x_max - _rel_zoom_x_min);
-			var new_rel_zoom_y_min = _rel_zoom_y_min + (y0 - plot_area_y_min) / (plot_area_y_max - plot_area_y_min) * (_rel_zoom_y_max - _rel_zoom_y_min);
-			var new_rel_zoom_y_max = _rel_zoom_y_min + (y1 - plot_area_y_min) / (plot_area_y_max - plot_area_y_min) * (_rel_zoom_y_max - _rel_zoom_y_min);
-			_rel_zoom_x_min = new_rel_zoom_x_min;
-			_rel_zoom_x_max = new_rel_zoom_x_max;
-			_rel_zoom_y_min = new_rel_zoom_y_min;
-			_rel_zoom_y_max = new_rel_zoom_y_max;
+			var new_rel_zoom_x_min = rel_zoom_x_min + (x0 - plot_area_x_min) / (plot_area_x_max - plot_area_x_min) * (rel_zoom_x_max - rel_zoom_x_min);
+			var new_rel_zoom_x_max = rel_zoom_x_min + (x1 - plot_area_x_min) / (plot_area_x_max - plot_area_x_min) * (rel_zoom_x_max - rel_zoom_x_min);
+			var new_rel_zoom_y_min = rel_zoom_y_min + (y0 - plot_area_y_min) / (plot_area_y_max - plot_area_y_min) * (rel_zoom_y_max - rel_zoom_y_min);
+			var new_rel_zoom_y_max = rel_zoom_y_min + (y1 - plot_area_y_min) / (plot_area_y_max - plot_area_y_min) * (rel_zoom_y_max - rel_zoom_y_min);
+			rel_zoom_x_min = new_rel_zoom_x_min;
+			rel_zoom_x_max = new_rel_zoom_x_max;
+			rel_zoom_y_min = new_rel_zoom_y_min;
+			rel_zoom_y_max = new_rel_zoom_y_max;
 		}
 
 		public virtual void zoom_out () {
@@ -167,10 +163,10 @@ namespace Gtk.CairoChart {
 				s.place.zoom_y_low = s.place.y_low;
 				s.place.zoom_y_high = s.place.y_high;
 			}
-			_rel_zoom_x_min = 0;
-			_rel_zoom_x_max = 1;
-			_rel_zoom_y_min = 0;
-			_rel_zoom_y_max = 1;
+			rel_zoom_x_min = 0;
+			rel_zoom_x_max = 1;
+			rel_zoom_y_min = 0;
+			rel_zoom_y_max = 1;
 
 			zoom_first_show = 0;
 		}
@@ -178,7 +174,7 @@ namespace Gtk.CairoChart {
 		public virtual void move (double delta_x, double delta_y) {
 			delta_x /= plot_area_x_max - plot_area_x_min; delta_x *= - 1.0;
 			delta_y /= plot_area_y_max - plot_area_y_min; delta_y *= - 1.0;
-			var rzxmin = _rel_zoom_x_min, rzxmax = _rel_zoom_x_max, rzymin = _rel_zoom_y_min, rzymax = _rel_zoom_y_max;
+			var rzxmin = rel_zoom_x_min, rzxmax = rel_zoom_x_max, rzymin = rel_zoom_y_min, rzymax = rel_zoom_y_max;
 			zoom_out();
 			//draw(); // TODO: optimize here
 			delta_x *= plot_area_x_max - plot_area_x_min;
@@ -1244,21 +1240,21 @@ namespace Gtk.CairoChart {
 		}
 
 		protected virtual Float128 scr2rel_x (Float128 x) {
-			return _rel_zoom_x_min + (x - plot_area_x_min) / (plot_area_x_max - plot_area_x_min) * (_rel_zoom_x_max - _rel_zoom_x_min);
+			return rel_zoom_x_min + (x - plot_area_x_min) / (plot_area_x_max - plot_area_x_min) * (rel_zoom_x_max - rel_zoom_x_min);
 		}
 		protected virtual Float128 scr2rel_y (Float128 y) {
-			return _rel_zoom_y_max - (plot_area_y_max - y) / (plot_area_y_max - plot_area_y_min) * (_rel_zoom_y_max - _rel_zoom_y_min);
+			return rel_zoom_y_max - (plot_area_y_max - y) / (plot_area_y_max - plot_area_y_min) * (rel_zoom_y_max - rel_zoom_y_min);
 		}
 		protected virtual Point scr2rel_point (Point p) {
 			return Point (scr2rel_x(p.x), scr2rel_y(p.y));
 		}
 
 		protected virtual Float128 rel2scr_x(Float128 x) {
-			return plot_area_x_min + (plot_area_x_max - plot_area_x_min) * (x - _rel_zoom_x_min) / (_rel_zoom_x_max - _rel_zoom_x_min);
+			return plot_area_x_min + (plot_area_x_max - plot_area_x_min) * (x - rel_zoom_x_min) / (rel_zoom_x_max - rel_zoom_x_min);
 		}
 
 		protected virtual Float128 rel2scr_y(Float128 y) {
-			return plot_area_y_min + (plot_area_y_max - plot_area_y_min) * (y - _rel_zoom_y_min) / (_rel_zoom_y_max - _rel_zoom_y_min);
+			return plot_area_y_min + (plot_area_y_max - plot_area_y_min) * (y - rel_zoom_y_min) / (rel_zoom_y_max - rel_zoom_y_min);
 		}
 
 		protected virtual Point rel2scr_point (Point p) {
@@ -1301,9 +1297,9 @@ namespace Gtk.CairoChart {
 				var c = all_cursors.nth_data(ci);
 				switch (cursors_orientation) {
 				case CursorOrientation.VERTICAL:
-					if (c.x <= _rel_zoom_x_min || c.x >= _rel_zoom_x_max) continue; break;
+					if (c.x <= rel_zoom_x_min || c.x >= rel_zoom_x_max) continue; break;
 				case CursorOrientation.HORIZONTAL:
-					if (c.y <= _rel_zoom_y_min || c.y >= _rel_zoom_y_max) continue; break;
+					if (c.y <= rel_zoom_y_min || c.y >= rel_zoom_y_max) continue; break;
 				}
 
 				CursorCross[] crossings = {};
@@ -1661,10 +1657,10 @@ namespace Gtk.CairoChart {
 			chart.plot_area_x_min = this.plot_area_x_min;
 			chart.plot_area_y_max = this.plot_area_y_max;
 			chart.plot_area_y_min = this.plot_area_y_min;
-			chart._rel_zoom_x_min = this._rel_zoom_x_min;
-			chart._rel_zoom_x_max = this._rel_zoom_x_max;
-			chart._rel_zoom_y_min = this._rel_zoom_y_min;
-			chart._rel_zoom_y_max = this._rel_zoom_y_max;
+			chart.rel_zoom_x_min = this.rel_zoom_x_min;
+			chart.rel_zoom_x_max = this.rel_zoom_x_max;
+			chart.rel_zoom_y_min = this.rel_zoom_y_min;
+			chart.rel_zoom_y_max = this.rel_zoom_y_max;
 			chart.selection_style = this.selection_style;
 			chart.series = this.series;
 			chart.show_legend = this.show_legend;
