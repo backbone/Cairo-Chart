@@ -1,0 +1,8 @@
+SET (BinName chart_test)
+FILE (GLOB_RECURSE BinSources RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ChartTest.vala)
+SET (BinPackages gtk+-3.0)
+SET (BinPkgModules gtk+-3.0)
+SET (BinCustomVapis ${CMAKE_BINARY_DIR}/src/${PROJECT_LOWERCASE_NAME}-${MAJOR}.vapi ${CMAKE_SOURCE_DIR}/src/cairo-chart-float128type.vapi)
+SET (BinLinkLibs ${PROJECT_LOWERCASE_NAME})
+INCLUDE_DIRECTORIES ("${CMAKE_BINARY_DIR}/src;${CMAKE_SOURCE_DIR}/src")
+INCLUDE (ValaBinCommonRules)
