@@ -5,7 +5,7 @@ namespace Gtk.CairoChart {
 		public FontStyle style = FontStyle ();
 		public Color color = Color();
 
-		Cairo.TextExtents get_extents (Cairo.Context context) {
+		public Cairo.TextExtents get_extents (Cairo.Context context) {
 			context.select_font_face (style.family,
 			                          style.slant,
 			                          style.weight);
@@ -17,26 +17,53 @@ namespace Gtk.CairoChart {
 
 		public double get_width (Cairo.Context context) {
 			var extents = get_extents (context);
-			if (style.orientation == FontOrient.HORIZONTAL)
-				return extents.width;
-			else
-				return extents.height;
+			switch (style.orientation) {
+			case FontOrient.HORIZONTAL: return extents.width;
+			case FontOrient.VERTICAL: return extents.height;
+			default: return 0.0;
+			}
 		}
 
 		public double get_height (Cairo.Context context) {
 			var extents = get_extents (context);
-			if (style.orientation == FontOrient.HORIZONTAL)
-				return extents.height;
-			else
-				return extents.width;
+			switch (style.orientation) {
+			case FontOrient.HORIZONTAL: return extents.height;
+			case FontOrient.VERTICAL: return extents.width;
+			default: return 0.0;
+			}
 		}
 
 		public double get_x_bearing (Cairo.Context context) {
 			var extents = get_extents (context);
-			if (style.orientation == FontOrient.HORIZONTAL)
-				return extents.x_bearing;
-			else
-				return extents.y_bearing;
+			switch (style.orientation) {
+			case FontOrient.HORIZONTAL: return extents.x_bearing;
+			case FontOrient.VERTICAL: return extents.y_bearing;
+			default: return 0.0;
+			}
+		}
+
+		public struct Size {
+			double width;
+			double height;
+			double x_bearing;
+		}
+
+		public Size size (Cairo.Context context) {
+			var sz = Size();
+			var extents = get_extents (context);
+			switch (style.orientation) {
+			case FontOrient.HORIZONTAL:
+				sz.width = extents.width;
+				sz.height = extents.height;
+				sz.x_bearing = extents.x_bearing;
+				break;
+			case FontOrient.VERTICAL:
+				sz.width = extents.height;
+				sz.height = extents.width;
+				sz.x_bearing = extents.y_bearing;
+				break;
+			}
+			return sz;
 		}
 
 		public Text (string text = "",
