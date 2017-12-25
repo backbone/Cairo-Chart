@@ -827,8 +827,8 @@ namespace Gtk.CairoChart {
 							context.line_to (scr_x, double.max (y, plot_area_y_max - (plot_area_y_max - plot_area_y_min) * s.place.zoom_y_low));
 						break;
 					}
-					context.stroke ();
 				}
+				context.stroke ();
 
 				// join relative x-axes with non-intersect places
 				for (int sj = si - 1; sj >= 0; --sj) {
@@ -963,8 +963,8 @@ namespace Gtk.CairoChart {
 							context.line_to (double.min (x, plot_area_x_min + (plot_area_x_max - plot_area_x_min) * s.place.zoom_x_low), scr_y);
 						break;
 					}
-					context.stroke ();
 				}
+				context.stroke ();
 
 				// join relative x-axes with non-intersect places
 				for (int sj = si - 1; sj >= 0; --sj) {
@@ -1426,6 +1426,7 @@ namespace Gtk.CairoChart {
 				var low = Point(plot_area_x_max, plot_area_y_max);  // low and high
 				var high = Point(plot_area_x_min, plot_area_y_min); //              points of the cursor
 				unowned CursorCross[] ccs = cursors_crossings[cci].crossings;
+				set_line_style(cursor_line_style);
 				for (var ci = 0, max_ci = ccs.length; ci < max_ci; ++ci) {
 					var si = ccs[ci].series_index;
 					var s = series[si];
@@ -1458,10 +1459,8 @@ namespace Gtk.CairoChart {
 						}
 					}
 
-					set_line_style(cursor_line_style);
 					context.move_to (ccs[ci].scr_point.x, ccs[ci].scr_point.y);
 					context.line_to (ccs[ci].scr_value_point.x, ccs[ci].scr_value_point.y);
-					context.stroke ();
 				}
 
 				var c = all_cursors.nth_data(cursors_crossings[cci].cursor_index);
@@ -1469,10 +1468,8 @@ namespace Gtk.CairoChart {
 				switch (cursors_orientation) {
 				case CursorOrientation.VERTICAL:
 					if (low.y > high.y) continue;
-					set_line_style(cursor_line_style);
 					context.move_to (rel2scr_x(c.x), low.y);
 					context.line_to (rel2scr_x(c.x), high.y);
-					context.stroke();
 
 					// show common X value
 					if (common_x_axes) {
@@ -1524,16 +1521,12 @@ namespace Gtk.CairoChart {
 							if (s.axis_x.time_format != "") show_text(time_text_t);
 							break;
 						}
-
-						context.stroke ();
 					}
 					break;
 				case CursorOrientation.HORIZONTAL:
 					if (low.x > high.x) continue;
-					set_line_style(cursor_line_style);
 					context.move_to (low.x, rel2scr_y(c.y));
 					context.line_to (high.x, rel2scr_y(c.y));
-					context.stroke();
 
 					// show common Y value
 					if (common_y_axes) {
@@ -1554,11 +1547,10 @@ namespace Gtk.CairoChart {
 						}
 						context.move_to (print_x, print_y);
 						show_text(text_t);
-
-						context.stroke ();
 					}
 					break;
 				}
+				context.stroke ();
 
 				// show value (X, Y or [X;Y])
 				for (var ci = 0, max_ci = ccs.length; ci < max_ci; ++ci) {
@@ -1582,7 +1574,6 @@ namespace Gtk.CairoChart {
 						context.move_to (svp.x - size.x / 2, svp.y + text_t.get_height(context) / 2);
 						if (common_x_axes) set_source_rgba (common_axis_color);
 						show_text(text_t);
-						context.stroke();
 					}
 
 					if (show_time) {
@@ -1595,7 +1586,6 @@ namespace Gtk.CairoChart {
 						context.move_to (svp.x - size.x / 2, y);
 						if (common_x_axes) set_source_rgba (common_axis_color);
 						show_text(text_t);
-						context.stroke();
 					}
 
 					if (show_date) {
@@ -1608,7 +1598,6 @@ namespace Gtk.CairoChart {
 						context.move_to (svp.x - size.x / 2, y);
 						if (common_x_axes) set_source_rgba (common_axis_color);
 						show_text(text_t);
-						context.stroke();
 					}
 
 					if (show_y) {
@@ -1617,7 +1606,6 @@ namespace Gtk.CairoChart {
 						context.move_to (svp.x + size.x / 2 - text_t.get_width(context), svp.y + text_t.get_height(context) / 2);
 						if (common_y_axes) set_source_rgba (common_axis_color);
 						show_text(text_t);
-						context.stroke();
 					}
 				}
 			}
