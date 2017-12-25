@@ -7,7 +7,7 @@ SET (PROJECT_DESCRIPTION "GtkChart for Gtk.DrawingArea (Cairo).")
 
 SET (MAJOR 0)
 SET (MINOR 1)
-SET (PATCH 0)
+SET (PATCH 1)
 
 LIST (APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/backbone)
 
