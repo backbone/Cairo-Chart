@@ -1143,7 +1143,7 @@ namespace Gtk.CairoChart {
 		}
 
 		protected virtual Point[] sort_points (Series s, Series.Sort sort) {
-			var points = s.points.copy();
+			var points = s.points;
 			switch(sort) {
 			case Series.Sort.BY_X:
 				sort_points_delegate(points, (a, b) => {
