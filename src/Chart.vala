@@ -219,7 +219,7 @@ namespace Gtk.CairoChart {
 			title_height = sz.height + (legend.position == Legend.Position.TOP ? title_vindent * 2 : title_vindent);
 			cur_y_min += title_height;
 			set_source_rgba(title.color);
-			context.move_to (width/2 - sz.width/2 - sz.x_bearing, sz.height + title_vindent);
+			context.move_to (width/2 - sz.width/2, sz.height + title_vindent);
 			show_text(title);
 		}
 
@@ -380,7 +380,7 @@ namespace Gtk.CairoChart {
 					var y = legend_y0 + leg_height_sum + max_font_heights[heights_idx];
 
 					// series title
-					context.move_to (x + legend_line_length - title_sz.x_bearing, y);
+					context.move_to (x + legend_line_length, y);
 					set_source_rgba (s.title.color);
 					show_text(s.title);
 
@@ -691,7 +691,7 @@ namespace Gtk.CairoChart {
 
 		protected virtual double compact_rec_x_pos (Series s, Float128 x, Text text) {
 			var sz = text.size(context);
-			return get_scr_x(s, x) - sz.width / 2.0 - sz.x_bearing
+			return get_scr_x(s, x) - sz.width / 2.0
 			       - sz.width * (x - (s.axis_x.zoom_min + s.axis_x.zoom_max) / 2.0) / (s.axis_x.zoom_max - s.axis_x.zoom_min);
 		}
 
@@ -943,7 +943,7 @@ namespace Gtk.CairoChart {
 					var text_sz = text_t.size(context);
 					switch (s.axis_y.position) {
 					case Axis.Position.LOW:
-						context.move_to (cur_x_min + max_rec_width - text_sz.width + s.axis_y.font_indent - text_sz.x_bearing
+						context.move_to (cur_x_min + max_rec_width - text_sz.width + s.axis_y.font_indent
 						                 + (s.axis_y.title.text == "" ? 0 : sz.width + s.axis_y.font_indent),
 						                 compact_rec_y_pos (s, y, text_t));
 						show_text(text_t);
@@ -959,7 +959,7 @@ namespace Gtk.CairoChart {
 							context.line_to (double.max (x, plot_area_x_min + (plot_area_x_max - plot_area_x_min) * s.place.zoom_x_high), scr_y);
 						break;
 					case Axis.Position.HIGH:
-						context.move_to (cur_x_max - text_sz.width - s.axis_y.font_indent - text_sz.x_bearing
+						context.move_to (cur_x_max - text_sz.width - s.axis_y.font_indent
 						                 - (s.axis_y.title.text == "" ? 0 : sz.width + s.axis_y.font_indent),
 						                 compact_rec_y_pos (s, y, text_t));
 						show_text(text_t);
