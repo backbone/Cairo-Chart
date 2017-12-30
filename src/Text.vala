@@ -6,9 +6,7 @@ namespace Gtk.CairoChart {
 		public Color color = Color();
 
 		public Cairo.TextExtents get_extents (Cairo.Context context) {
-			context.select_font_face (style.family,
-			                          style.slant,
-			                          style.weight);
+			context.select_font_face (style.family, style.slant, style.weight);
 			context.set_font_size (style.size);
 			Cairo.TextExtents extents;
 			context.text_extents (text, out extents);
@@ -33,19 +31,9 @@ namespace Gtk.CairoChart {
 			}
 		}
 
-		public double get_x_bearing (Cairo.Context context) {
-			var extents = get_extents (context);
-			switch (style.orientation) {
-			case FontOrient.HORIZONTAL: return extents.x_bearing;
-			case FontOrient.VERTICAL: return extents.y_bearing;
-			default: return 0.0;
-			}
-		}
-
 		public struct Size {
 			double width;
 			double height;
-			double x_bearing;
 		}
 
 		public Size size (Cairo.Context context) {
@@ -53,14 +41,12 @@ namespace Gtk.CairoChart {
 			var extents = get_extents (context);
 			switch (style.orientation) {
 			case FontOrient.HORIZONTAL:
-				sz.width = extents.width;
+				sz.width = extents.width + extents.x_bearing;
 				sz.height = extents.height;
-				sz.x_bearing = extents.x_bearing;
 				break;
 			case FontOrient.VERTICAL:
-				sz.width = extents.height;
-				sz.height = extents.width;
-				sz.x_bearing = extents.y_bearing;
+				sz.width = extents.height; // + extents.x_bearing ?
+				sz.height = extents.width; // +- extents.y_bearing ?
 				break;
 			}
 			return sz;
