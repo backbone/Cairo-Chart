@@ -1,211 +1,247 @@
 using Gtk, CairoChart;
 
 void plot_chart1 (Chart chart) {
-	var s1 = new Series ();
-	var s2 = new Series ();
-	var s3 = new Series ();
+	chart.title.text = "Chart №1";
+	var s1 = new Series (chart);
+	var s2 = new Series (chart);
+	var s3 = new Series (chart);
 
-	s1.title = new Text("Series 1"); s1.color = Color (1, 0, 0);
-	s1.points = {Point(0, 0), Point(2, 1), Point(1, 3)};
+	s1.title = new Text(chart, "Series 1"); s1.color = Color (1, 0, 0);
+	s1.points = {Point128(0, 0), Point128(2, 1), Point128(1, 3)};
 	s1.axis_x.position = Axis.Position.HIGH;
 	s1.axis_x.format = "%.3Lf";
-	s2.title = new Text("Series 2"); s2.color = Color (0, 1, 0);
-	s2.points = {Point(5, -3), Point(25, -18), Point(-11, 173)};
-	s3.title = new Text("Series 3"); s3.color = Color (0, 0, 1);
-	s3.points = {Point(9, 17), Point(2, 10), Point(122, 31)};
+	s2.title = new Text(chart, "Series 2"); s2.color = Color (0, 1, 0);
+	s2.points = {Point128(5, -3), Point128(25, -18), Point128(-11, 173)};
+	s3.title = new Text(chart, "Series 3"); s3.color = Color (0, 0, 1);
+	s3.points = {Point128(9, 17), Point128(2, 10), Point128(122, 31)};
 	s3.axis_y.position = Axis.Position.HIGH;
 
-	s1.axis_x.min = 0; s1.axis_x.max = 2;
-	s1.axis_y.min = 0; s1.axis_y.max = 3;
-	s1.place.x_low = 0.25; s1.place.x_high = 0.75;
-	s1.place.y_low = 0.3; s1.place.y_high = 0.9;
+	s1.axis_x.range.min = 0; s1.axis_x.range.max = 2;
+	s1.axis_y.range.min = 0; s1.axis_y.range.max = 3;
+	s1.axis_x.place.min = 0.25; s1.axis_x.place.max = 0.75;
+	s1.axis_y.place.min = 0.3; s1.axis_y.place.max = 0.9;
 
-	s2.axis_x.min = -15; s2.axis_x.max = 30;
-	s2.axis_y.min = -20; s2.axis_y.max = 200;
-	s2.place.x_low = 0.5; s2.place.x_high = 1;
-	s2.place.y_low = 0.0; s2.place.y_high = 0.5;
+	s2.axis_x.range.min = -15; s2.axis_x.range.max = 30;
+	s2.axis_y.range.min = -20; s2.axis_y.range.max = 200;
+	s2.axis_x.place.min = 0.5; s2.axis_x.place.max = 1;
+	s2.axis_y.place.min = 0.0; s2.axis_y.place.max = 0.5;
 
-	s3.axis_x.min = 0; s3.axis_x.max = 130;
-	s3.axis_y.min = 15; s3.axis_y.max = 35;
-	s3.place.x_low = 0; s3.place.x_high = 0.5;
-	s3.place.y_low = 0.5; s3.place.y_high = 1.0;
+	s3.axis_x.range.min = 0; s3.axis_x.range.max = 130;
+	s3.axis_y.range.min = 15; s3.axis_y.range.max = 35;
+	s3.axis_x.place.min = 0; s3.axis_x.place.max = 0.5;
+	s3.axis_y.place.min = 0.5; s3.axis_y.place.max = 1.0;
 
-	s2.marker_type = Series.MarkerType.CIRCLE;
-	s3.marker_type = Series.MarkerType.PRICLE_TRIANGLE;
+	s1.marker.shape = Marker.Shape.SQUARE;
+	s2.marker.shape = Marker.Shape.CIRCLE;
+	s3.marker.shape = Marker.Shape.PRICLE_TRIANGLE;
 
-	s1.axis_x.title = new Text("Series 1: Axis X.");
-	s1.axis_y.title = new Text("Series 1: Axis Y.");
-	s2.axis_x.title = new Text("Series 2: Axis X.");
-	s2.axis_y.title = new Text("Series 2: Axis Y.");
-	s3.axis_x.title = new Text("Series 3: Axis X.");
-	s3.axis_y.title = new Text("Series 3: Axis Y.");
+	s1.axis_x.title = new Text(chart, "Series 1: Axis X.");
+	s1.axis_y.title = new Text(chart, "Series 1: Axis Y.");
+	s2.axis_x.title = new Text(chart, "Series 2: Axis X.");
+	s2.axis_y.title = new Text(chart, "Series 2: Axis Y.");
+	s3.axis_x.title = new Text(chart, "Series 3: Axis X.");
+	s3.axis_y.title = new Text(chart, "Series 3: Axis Y.");
 
 	chart.series = { s1, s2, s3 };
+
+	chart.title.font.size = 24;
+	//chart.legend.show = false;
+	s1.title.font.size = 16;
+	s2.title.font.size = 16;
+	s2.title.font.slant = Cairo.FontSlant.ITALIC;
+	s2.title.font.weight = Cairo.FontWeight.BOLD;
+	s3.title.font.size = 18;
+	s1.axis_x.title.font.size = 14;
+	s2.axis_x.title.font.size = 14;
+	s2.axis_x.title.font.slant = Cairo.FontSlant.ITALIC;
+	s2.axis_x.title.font.weight = Cairo.FontWeight.BOLD;
+	s3.axis_x.title.font.size = 18;
+	s1.axis_y.title.font.size = 14;
+	s2.axis_y.title.font.size = 14;
+	s2.axis_y.title.font.slant = Cairo.FontSlant.ITALIC;
+	s2.axis_y.title.font.weight = Cairo.FontWeight.BOLD;
+	s3.axis_y.title.font.size = 18;
+	s1.axis_x.font.size = 12;
+	s2.axis_x.font.size = 12;
+	s3.axis_x.font.size = 12;
+	s1.axis_y.font.size = 12;
+	s2.axis_y.font.size = 12;
+	s3.axis_y.font.size = 14;
+	s1.marker.size = 6;
+	s2.marker.size = 8;
+	s3.marker.size = 7;
+	s3.line_style.width = 2;
 }
 
 void plot_chart2 (Chart chart) {
-	var s1 = new Series ();
-	var s2 = new Series ();
-	var s3 = new Series ();
+	var s1 = new Series (chart);
+	var s2 = new Series (chart);
+	var s3 = new Series (chart);
 
-	s1.title = new Text("Series 1"); s1.color = Color (1, 0, 0);
-	s1.points = {Point(-12, 0), Point(2, 1), Point(20, 3)};
+	s1.title = new Text(chart, "Series 1"); s1.color = Color (1, 0, 0);
+	s1.points = {Point128(-12, 0), Point128(2, 1), Point128(20, 3)};
 	s2.axis_y.position = Axis.Position.HIGH;
 	s1.axis_x.format = "%.3Lf";
-	s2.title = new Text("Series 2"); s2.color = Color (0, 1, 0);
-	s2.points = {Point(5, -3), Point(25, -18), Point(-11, 173)};
-	s3.title = new Text("Series 3"); s3.color = Color (0, 0, 1);
-	s3.points = {Point(9, 17), Point(2, 10), Point(-15, 31)};
+	s2.title = new Text(chart, "Series 2"); s2.color = Color (0, 1, 0);
+	s2.points = {Point128(5, -3), Point128(25, -18), Point128(-11, 173)};
+	s3.title = new Text(chart, "Series 3"); s3.color = Color (0, 0, 1);
+	s3.points = {Point128(9, 17), Point128(2, 10), Point128(-15, 31)};
 	s3.axis_y.position = Axis.Position.HIGH;
 
-	s1.axis_x.min = -15; s1.axis_x.max = 30;
-	s1.axis_y.min = 0; s1.axis_y.max = 3;
-	s1.place.x_low = 0.0; s1.place.x_high = 1.0;
-	s1.place.y_low = 0.3; s1.place.y_high = 0.9;
+	s1.axis_x.range.min = -15; s1.axis_x.range.max = 30;
+	s1.axis_y.range.min = 0; s1.axis_y.range.max = 3;
+	s1.axis_x.place.min = 0.0; s1.axis_x.place.max = 1.0;
+	s1.axis_y.place.min = 0.3; s1.axis_y.place.max = 0.9;
 
-	s2.axis_x.min = -15; s2.axis_x.max = 30;
-	s2.axis_y.min = -20; s2.axis_y.max = 200;
-	s2.place.x_low = 0.0; s2.place.x_high = 1.0;
-	s2.place.y_low = 0.0; s2.place.y_high = 0.5;
+	s2.axis_x.range.min = -15; s2.axis_x.range.max = 30;
+	s2.axis_y.range.min = -20; s2.axis_y.range.max = 200;
+	s2.axis_x.place.min = 0.0; s2.axis_x.place.max = 1.0;
+	s2.axis_y.place.min = 0.0; s2.axis_y.place.max = 0.5;
 
-	s3.axis_x.min = -15; s3.axis_x.max = 30;
-	s3.axis_y.min = 15; s3.axis_y.max = 35;
-	s3.place.x_low = 0.0; s3.place.x_high = 1.0;
-	s3.place.y_low = 0.5; s3.place.y_high = 1.0;
+	s3.axis_x.range.min = -15; s3.axis_x.range.max = 30;
+	s3.axis_y.range.min = 15; s3.axis_y.range.max = 35;
+	s3.axis_x.place.min = 0.0; s3.axis_x.place.max = 1.0;
+	s3.axis_y.place.min = 0.5; s3.axis_y.place.max = 1.0;
 
-	s1.marker_type = Series.MarkerType.PRICLE_CIRCLE;
-	s2.marker_type = Series.MarkerType.PRICLE_SQUARE;
+	s1.marker.shape = Marker.Shape.PRICLE_CIRCLE;
+	s2.marker.shape = Marker.Shape.PRICLE_SQUARE;
+	s3.marker.shape = Marker.Shape.SQUARE;
 
-	s1.axis_x.title = new Text("All Series: Axis X.");
-	s1.axis_y.title = new Text("Series 1: Axis Y.");
-	s2.axis_x.title = new Text("All Series: Axis X.");
-	s2.axis_y.title = new Text("Series 2: Axis Y.");
-	s3.axis_x.title = new Text("All Series: Axis X.");
-	s3.axis_y.title = new Text("Series 3: Axis Y.");
+	s1.axis_x.title = new Text(chart, "All Series: Axis X.");
+	s1.axis_y.title = new Text(chart, "Series 1: Axis Y.");
+	s2.axis_x.title = new Text(chart, "All Series: Axis X.");
+	s2.axis_y.title = new Text(chart, "Series 2: Axis Y.");
+	s3.axis_x.title = new Text(chart, "All Series: Axis X.");
+	s3.axis_y.title = new Text(chart, "Series 3: Axis Y.");
 
 	//s1.axis_x.position = s2.axis_x.position = s3.axis_x.position = Axis.Position.HIGH;
-	//s1.axis_x.type = s2.axis_x.type = s3.axis_x.type = Axis.Type.DATE_TIME;
-	//s1.axis_x.max = s2.axis_x.max = s3.axis_x.max = 5*24*3600;
+	//s1.axis_x.dtype = s2.axis_x.dtype = s3.axis_x.dtype = Axis.DType.DATE_TIME;
+	//s1.axis_x.range.max = s2.axis_x.range.max = s3.axis_x.range.max = 5*24*3600;
 
 	chart.series = { s1, s2, s3 };
 }
 
 void plot_chart3 (Chart chart) {
-	var s1 = new Series ();
-	var s2 = new Series ();
-	var s3 = new Series ();
+	var s1 = new Series (chart);
+	var s2 = new Series (chart);
+	var s3 = new Series (chart);
 
-	s1.title = new Text("Series 1"); s1.color = Color (1, 0, 0);
-	s1.points = {Point(0, 70), Point(2, 155), Point(1, -3)};
+	s1.title = new Text(chart, "Series 1"); s1.color = Color (1, 0, 0);
+	s1.points = {Point128(0, 70), Point128(2, 155), Point128(1, -3)};
 	s1.axis_x.position = Axis.Position.HIGH;
 	s1.axis_y.position = Axis.Position.HIGH;
 	s1.axis_x.format = "%.3Lf";
-	s2.title = new Text("Series 2"); s2.color = Color (0, 1, 0);
-	s2.points = {Point(5, -3), Point(25, -18), Point(-11, 173)};
+	s2.title = new Text(chart, "Series 2"); s2.color = Color (0, 1, 0);
+	s2.points = {Point128(5, -3), Point128(25, -18), Point128(-11, 173)};
 	s2.axis_y.position = Axis.Position.HIGH;
-	s3.title = new Text("Series 3"); s3.color = Color (0, 0, 1);
-	s3.points = {Point(9, -17), Point(2, 10), Point(122, 31)};
+	s3.title = new Text(chart, "Series 3"); s3.color = Color (0, 0, 1);
+	s3.points = {Point128(9, -17), Point128(2, 10), Point128(122, 31)};
 	s3.axis_y.position = Axis.Position.HIGH;
 
-	s1.axis_x.min = 0; s1.axis_x.max = 2;
-	s1.axis_y.min = -20; s1.axis_y.max = 200;
-	s1.place.x_low = 0.25; s1.place.x_high = 0.75;
-	s1.place.y_low = 0.0; s1.place.y_high = 1.0;
+	s1.axis_x.range.min = 0; s1.axis_x.range.max = 2;
+	s1.axis_y.range.min = -20; s1.axis_y.range.max = 200;
+	s1.axis_x.place.min = 0.25; s1.axis_x.place.max = 0.75;
+	s1.axis_y.place.min = 0.0; s1.axis_y.place.max = 1.0;
 
-	s2.axis_x.min = -15; s2.axis_x.max = 30;
-	s2.axis_y.min = -20; s2.axis_y.max = 200;
-	s2.place.x_low = 0.5; s2.place.x_high = 1;
-	s2.place.y_low = 0.0; s2.place.y_high = 1.0;
+	s2.axis_x.range.min = -15; s2.axis_x.range.max = 30;
+	s2.axis_y.range.min = -20; s2.axis_y.range.max = 200;
+	s2.axis_x.place.min = 0.5; s2.axis_x.place.max = 1;
+	s2.axis_y.place.min = 0.0; s2.axis_y.place.max = 1.0;
 
-	s3.axis_x.min = 0; s3.axis_x.max = 130;
-	s3.axis_y.min = -20; s3.axis_y.max = 200;
-	s3.place.x_low = 0; s3.place.x_high = 0.5;
-	s3.place.y_low = 0.0; s3.place.y_high = 1.0;
+	s3.axis_x.range.min = 0; s3.axis_x.range.max = 130;
+	s3.axis_y.range.min = -20; s3.axis_y.range.max = 200;
+	s3.axis_x.place.min = 0; s3.axis_x.place.max = 0.5;
+	s3.axis_y.place.min = 0.0; s3.axis_y.place.max = 1.0;
 
-	s2.marker_type = Series.MarkerType.PRICLE_CIRCLE;
-	s3.marker_type = Series.MarkerType.TRIANGLE;
+	s1.marker.shape = Marker.Shape.SQUARE;
+	s2.marker.shape = Marker.Shape.PRICLE_CIRCLE;
+	s3.marker.shape = Marker.Shape.TRIANGLE;
 
-	s1.axis_x.title = new Text("Series 1: Axis X.");
-	s1.axis_y.title = new Text("Series 1: Axis Y.");
-	s2.axis_x.title = new Text("Series 2: Axis X.");
-	s2.axis_y.title = new Text("Series 2: Axis Y.");
-	s3.axis_x.title = new Text("Series 3: Axis X.");
-	s3.axis_y.title = new Text("Series 3: Axis Y.");
+	s1.axis_x.title = new Text(chart, "Series 1: Axis X.");
+	s1.axis_y.title = new Text(chart, "All Series: Axis Y.");
+	s2.axis_x.title = new Text(chart, "Series 2: Axis X.");
+	s2.axis_y.title = new Text(chart, "All Series: Axis Y.");
+	s3.axis_x.title = new Text(chart, "Series 3: Axis X.");
+	s3.axis_y.title = new Text(chart, "All Series: Axis Y.");
 
 	//s1.axis_y.position = s2.axis_y.position = s3.axis_y.position = Axis.Position.LOW;
+	chart.cursors.style.orientation = Cursors.Orientation.HORIZONTAL;
 
 	chart.series = { s1, s2, s3 };
 }
 
 void plot_chart4 (Chart chart) {
-	var s1 = new Series ();
-	var s2 = new Series ();
-	var s3 = new Series ();
-	var s4 = new Series ();
+	var s1 = new Series (chart);
+	var s2 = new Series (chart);
+	var s3 = new Series (chart);
+	var s4 = new Series (chart);
 
-	s1.axis_x.type = Axis.Type.DATE_TIME;
-	s3.axis_x.type = Axis.Type.DATE_TIME;
-	s4.axis_x.type = Axis.Type.DATE_TIME;
+	s1.axis_x.dtype = Axis.DType.DATE_TIME;
+	s3.axis_x.dtype = Axis.DType.DATE_TIME;
+	s4.axis_x.dtype = Axis.DType.DATE_TIME;
 	s4.axis_x.dsec_signs = 5;
 
 	var now = new DateTime.now_local().to_unix();
 	var high = (uint64) (253000000000L);
 
-	s1.title = new Text("Series 1"); s1.color = Color (1, 0, 0);
-	s1.points = {Point(now, 70), Point(now - 100000, 155), Point(now + 100000, 30)};
+	s1.title = new Text(chart, "Series 1"); s1.color = Color (1, 0, 0);
+	s1.points = {Point128(now, 70), Point128(now - 100000, 155), Point128(now + 100000, 30)};
 	s1.axis_x.position = Axis.Position.HIGH;
 	s1.axis_y.position = Axis.Position.HIGH;
-	s2.title = new Text("Series 2"); s2.color = Color (0, 1, 0);
-	s2.points = {Point(5, -3), Point(25, -18), Point(-11, 173)};
+	s2.title = new Text(chart, "Series 2"); s2.color = Color (0, 1, 0);
+	s2.points = {Point128(5, -3), Point128(25, -18), Point128(-11, 173)};
 	s2.axis_y.position = Axis.Position.HIGH;
-	s3.title = new Text("Series 3"); s3.color = Color (0, 0, 1);
-	s3.points = {Point(high - 2 + 0.73, -17), Point(high - 1 + 0.234, 10), Point(high + 1 + 0.411, 31)};
+	s3.title = new Text(chart, "Series 3"); s3.color = Color (0, 0, 1);
+	s3.points = {Point128(high - 2 + 0.73, -17), Point128(high - 1 + 0.234, 10), Point128(high + 1 + 0.411, 31)};
 	s3.axis_y.position = Axis.Position.HIGH;
-	s4.title = new Text("Series 4"); s4.color = Color (0.5, 0.3, 0.9);
-	s4.points = {Point(high + 0.005, -19.05), Point(high + 0.0051, 28), Point(high + 0.0052, 55), Point(high + 0.0053, 44)};
+	s4.title = new Text(chart, "Series 4"); s4.color = Color (0.5, 0.3, 0.9);
+	s4.points = {Point128(high + 0.005, -19.05), Point128(high + 0.0051, 28), Point128(high + 0.0052, 55), Point128(high + 0.0053, 44)};
 	s4.axis_y.position = Axis.Position.HIGH;
 
-	s1.axis_x.min = now - 100000; s1.axis_x.max = now + 100000;
-	s1.axis_y.min = -20; s1.axis_y.max = 200;
-	s1.place.x_low = 0.25; s1.place.x_high = 0.75;
-	s1.place.y_low = 0.0; s1.place.y_high = 1.0;
+	s1.axis_x.range.min = now - 100000; s1.axis_x.range.max = now + 100000;
+	s1.axis_y.range.min = -20; s1.axis_y.range.max = 200;
+	s1.axis_x.place.min = 0.25; s1.axis_x.place.max = 0.75;
+	s1.axis_y.place.min = 0.0; s1.axis_y.place.max = 1.0;
 
-	s2.axis_x.min = -15; s2.axis_x.max = 30;
-	s2.axis_y.min = -20; s2.axis_y.max = 200;
-	s2.place.x_low = 0.2; s2.place.x_high = 1;
-	s2.place.y_low = 0.0; s2.place.y_high = 1.0;
+	s2.axis_x.range.min = -15; s2.axis_x.range.max = 30;
+	s2.axis_y.range.min = -20; s2.axis_y.range.max = 200;
+	s2.axis_x.place.min = 0.2; s2.axis_x.place.max = 1;
+	s2.axis_y.place.min = 0.0; s2.axis_y.place.max = 1.0;
 
-	s3.axis_x.min = high - 2; s3.axis_x.max = high + 1;
-	s3.axis_y.min = -20; s3.axis_y.max = 200;
-	s3.place.x_low = 0; s3.place.x_high = 0.8;
-	s3.place.y_low = 0.0; s3.place.y_high = 1.0;
+	s3.axis_x.range.min = high - 2; s3.axis_x.range.max = high + 1;
+	s3.axis_y.range.min = -20; s3.axis_y.range.max = 200;
+	s3.axis_x.place.min = 0; s3.axis_x.place.max = 0.8;
+	s3.axis_y.place.min = 0.0; s3.axis_y.place.max = 1.0;
 
-	s4.axis_x.min = high + 0.0049; s4.axis_x.max = high + 0.0054;
-	s4.axis_y.min = -20; s4.axis_y.max = 200;
-	s4.place.x_low = 0.2; s4.place.x_high = 1.0;
-	s4.place.y_low = 0.0; s4.place.y_high = 1.0;
+	s4.axis_x.range.min = high + 0.0049; s4.axis_x.range.max = high + 0.0054;
+	s4.axis_y.range.min = -20; s4.axis_y.range.max = 200;
+	s4.axis_x.place.min = 0.2; s4.axis_x.place.max = 1.0;
+	s4.axis_y.place.min = 0.0; s4.axis_y.place.max = 1.0;
 
-	s2.marker_type = Series.MarkerType.PRICLE_CIRCLE;
-	s3.marker_type = Series.MarkerType.TRIANGLE;
-	s4.marker_type = Series.MarkerType.PRICLE_SQUARE;
+	s1.marker.shape = Marker.Shape.SQUARE;
+	s2.marker.shape = Marker.Shape.PRICLE_CIRCLE;
+	s3.marker.shape = Marker.Shape.TRIANGLE;
+	s4.marker.shape = Marker.Shape.PRICLE_SQUARE;
 
-	s1.axis_x.title = new Text("Series 1: Axis X.");
-	s1.axis_y.title = new Text("Series 1: Axis Y.");
-	s2.axis_x.title = new Text("Series 2: Axis X.");
-	s2.axis_y.title = new Text("Series 2: Axis Y.");
-	s3.axis_x.title = new Text("Series 3: Axis X.");
-	s3.axis_y.title = new Text("Series 3: Axis Y.");
-	s4.axis_x.title = new Text("Series 4: Axis X.");
-	s4.axis_y.title = new Text("Series 4: Axis Y.");
+	s1.axis_x.title = new Text(chart, "Series 1: Axis X.");
+	s1.axis_y.title = new Text(chart, "All Series: Axis Y.");
+	s2.axis_x.title = new Text(chart, "Series 2: Axis X.");
+	s2.axis_y.title = new Text(chart, "All Series: Axis Y.");
+	s3.axis_x.title = new Text(chart, "Series 3: Axis X.");
+	s3.axis_y.title = new Text(chart, "All Series: Axis Y.");
+	s4.axis_x.title = new Text(chart, "Series 4: Axis X.");
+	s4.axis_y.title = new Text(chart, "All Series: Axis Y.");
+
+	chart.cursors.style.orientation = Cursors.Orientation.HORIZONTAL;
 
 	chart.series = { s1, s2, s3, s4 };
 }
 
 bool point_in_chart (Chart chart, double x, double y) {
-	if (x < chart.plot_area_x_min) return false;
-	if (x > chart.plot_area_x_max) return false;
-	if (y < chart.plot_area_y_min) return false;
-	if (y > chart.plot_area_y_max) return false;
+	if (x < chart.plarea.x0) return false;
+	if (x > chart.plarea.x1) return false;
+	if (y < chart.plarea.y0) return false;
+	if (y > chart.plarea.y1) return false;
 	return true;
 }
 
@@ -230,10 +266,10 @@ int main (string[] args) {
 	var chart2 = new Chart();
 	var chart3 = new Chart();
 	var chart4 = new Chart();
-	var label = new Label ("Chart Test!");
+	var label = new Gtk.Label ("Chart Test!");
 	var button1 = new Button.with_label("Separate axes");
-	var button2 = new Button.with_label("Common X axes");
-	var button3 = new Button.with_label("Common Y axes");
+	var button2 = new Button.with_label("Joint X axes");
+	var button3 = new Button.with_label("Joint Y axes");
 	var button4 = new Button.with_label("Dates/Times");
 	var button5 = new Button.with_label("rm Axis Titles");
 	var button6 = new Button.with_label("Dates only");
@@ -245,7 +281,7 @@ int main (string[] args) {
 	plot_chart3 (chart3);
 	plot_chart4 (chart4);
 
-	chart1.selection_style = LineStyle(Color(0.3, 0.3, 0.3, 0.7), 1);
+	chart1.selection_style = LineStyle(Color(0.3, 0.3, 0.3, 0.7));
 
 	var da = new DrawingArea();
 	da.set_events ( Gdk.EventMask.BUTTON_PRESS_MASK
@@ -270,9 +306,9 @@ int main (string[] args) {
 			case Legend.Position.LEFT: radio_button3.set_active(true); break;
 			case Legend.Position.BOTTOM: radio_button4.set_active(true); break;
 			}
-			switch (chart.cursors_orientation) {
-			case Chart.CursorOrientation.VERTICAL: radio_button7.set_active(true); break;
-			case Chart.CursorOrientation.HORIZONTAL: radio_button8.set_active(true); break;
+			switch (chart.cursors.style.orientation) {
+			case Cursors.Orientation.VERTICAL: radio_button7.set_active(true); break;
+			case Cursors.Orientation.HORIZONTAL: radio_button8.set_active(true); break;
 			}
 	});
 	button2.clicked.connect (() => {
@@ -283,9 +319,9 @@ int main (string[] args) {
 			case Legend.Position.LEFT: radio_button3.set_active(true); break;
 			case Legend.Position.BOTTOM: radio_button4.set_active(true); break;
 			}
-			switch (chart.cursors_orientation) {
-			case Chart.CursorOrientation.VERTICAL: radio_button7.set_active(true); break;
-			case Chart.CursorOrientation.HORIZONTAL: radio_button8.set_active(true); break;
+			switch (chart.cursors.style.orientation) {
+			case Cursors.Orientation.VERTICAL: radio_button7.set_active(true); break;
+			case Cursors.Orientation.HORIZONTAL: radio_button8.set_active(true); break;
 			}
 	});
 	button3.clicked.connect (() => {
@@ -296,9 +332,9 @@ int main (string[] args) {
 			case Legend.Position.LEFT: radio_button3.set_active(true); break;
 			case Legend.Position.BOTTOM: radio_button4.set_active(true); break;
 			}
-			switch (chart.cursors_orientation) {
-			case Chart.CursorOrientation.VERTICAL: radio_button7.set_active(true); break;
-			case Chart.CursorOrientation.HORIZONTAL: radio_button8.set_active(true); break;
+			switch (chart.cursors.style.orientation) {
+			case Cursors.Orientation.VERTICAL: radio_button7.set_active(true); break;
+			case Cursors.Orientation.HORIZONTAL: radio_button8.set_active(true); break;
 			}
 	});
 	button4.clicked.connect (() => {
@@ -309,9 +345,9 @@ int main (string[] args) {
 			case Legend.Position.LEFT: radio_button4.set_active(true); break;
 			case Legend.Position.BOTTOM: radio_button4.set_active(true); break;
 			}
-			switch (chart.cursors_orientation) {
-			case Chart.CursorOrientation.VERTICAL: radio_button7.set_active(true); break;
-			case Chart.CursorOrientation.HORIZONTAL: radio_button8.set_active(true); break;
+			switch (chart.cursors.style.orientation) {
+			case Cursors.Orientation.VERTICAL: radio_button7.set_active(true); break;
+			case Cursors.Orientation.HORIZONTAL: radio_button8.set_active(true); break;
 			}
 	});
 	button5.clicked.connect (() => {
@@ -393,13 +429,13 @@ int main (string[] args) {
 
 	radio_button7.toggled.connect ((button) => {
 		if (button.get_active()) {
-			chart.cursors_orientation = Chart.CursorOrientation.VERTICAL;
+			chart.cursors.style.orientation = Cursors.Orientation.VERTICAL;
 			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 		}
 	});
 	radio_button8.toggled.connect ((button) => {
 		if (button.get_active()) {
-			chart.cursors_orientation = Chart.CursorOrientation.HORIZONTAL;
+			chart.cursors.style.orientation = Cursors.Orientation.HORIZONTAL;
 			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 		}
 	});
@@ -409,10 +445,10 @@ int main (string[] args) {
 	double sel_x0 = 0, sel_x1 = 0, sel_y0 = 0, sel_y1 = 0;
 	double mov_x0 = 0, mov_y0 = 0;
 
-	da.draw.connect((context) => {
-		chart.context = context;
-		chart.width = da.get_allocated_width();
-		chart.height = da.get_allocated_height();
+	da.draw.connect((ctx) => {
+		chart.ctx = ctx;
+		chart.area.width = da.get_allocated_width();
+		chart.area.height = da.get_allocated_height();
 		chart.clear();
 
 		// user's pre draw operations here...
@@ -422,23 +458,23 @@ int main (string[] args) {
 
 	    // user's post draw operations here...
 		if (mouse_state == MouseState.DRAW_SELECTION)
-			chart.draw_selection (sel_x0, sel_y0, sel_x1, sel_y1);
+			chart.draw_selection (new Area.with_abs(sel_x0, sel_y0, sel_x1, sel_y1));
 
 		// show delta
-		var str = chart.get_cursors_delta_str();
+		var str = chart.cursors.get_delta_str();
 		if (str != "") {
 			var text = "Δ = " + str;
-			var text_t = new Text(text);
-			var w = text_t.get_width(context);
-			var h = text_t.get_height(context);
-			var x0 = chart.plot_area_x_max - w - 5;
-			var y0 = chart.plot_area_y_min + h + 5;
-			chart.set_source_rgba(chart.legend.bg_color);
-			context.rectangle (x0, y0 - h, w, h);
-			context.fill();
-			context.move_to (x0, y0);
-			chart.set_source_rgba(chart.common_axis_color);
-			context.show_text(text);
+			var text_t = new Text(chart, text);
+			var w = text_t.width;
+			var h = text_t.height;
+			var x0 = chart.plarea.x1 - w - 5;
+			var y0 = chart.plarea.y0 + h + 5;
+			chart.color = chart.legend.bg_color;
+			ctx.rectangle (x0, y0 - h, w, h);
+			ctx.fill();
+			ctx.move_to (x0, y0);
+			chart.color = chart.joint_color;
+			ctx.show_text(text);
 		}
 
 		return true;//ret;
@@ -450,11 +486,11 @@ int main (string[] args) {
 		switch (event.button) {
 		case 1:  // start cursor position selection
 			if ((event.state & Gdk.ModifierType.SHIFT_MASK) != 0) { // remove cursor
-				chart.set_active_cursor (event.x, event.y, true);
-				chart.remove_active_cursor();
+				chart.cursors.set_active (Point(event.x, event.y), true);
+				chart.cursors.remove_active();
 				mouse_state = MouseState.FREE;
 			} else { // add cursor
-				chart.set_active_cursor (event.x, event.y);
+				chart.cursors.set_active (Point(event.x, event.y));
 				mouse_state = MouseState.CURSOR_SELECTION;
 			}
 			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
@@ -482,11 +518,11 @@ int main (string[] args) {
 		switch (event.button) {
 		case 1:  // start cursor position selection
 			if ((event.state & Gdk.ModifierType.SHIFT_MASK) != 0) { // remove cursor
-				//chart.remove_active_cursor ();
+				//chart.remove_active ();
 				//da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 				//mouse_state = MouseState.FREE;
 			} else { // add cursor
-				chart.add_active_cursor ();
+				chart.cursors.add_active ();
 				mouse_state = MouseState.FREE;
 			}
 			break;
@@ -495,7 +531,7 @@ int main (string[] args) {
 			sel_x1 = event.x;
 			sel_y1 = event.y;
 			if (sel_x1 > sel_x0 && sel_y1 > sel_y0)
-				chart.zoom_in (sel_x0, sel_y0, sel_x1, sel_y1);
+				chart.zoom_in (new Area.with_abs(sel_x0, sel_y0, sel_x1, sel_y1));
 			else
 				chart.zoom_out ();
 			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
@@ -521,14 +557,14 @@ int main (string[] args) {
 
 		case MouseState.MOVING_CHART:
 			var delta_x = event.x - mov_x0, delta_y = event.y - mov_y0;
-			chart.move (delta_x, delta_y);
+			chart.move (Point(){x = delta_x, y = delta_y});
 			mov_x0 = event.x;
 			mov_y0 = event.y;
 			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 			break;
 
 		case MouseState.CURSOR_SELECTION:
-			chart.set_active_cursor (event.x, event.y);
+			chart.cursors.set_active (Point(event.x, event.y));
 			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 			break;
 		}
