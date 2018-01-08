@@ -1,4 +1,4 @@
-namespace Gtk.CairoChart {
+namespace CairoChart {
 	public struct Color {
 		double red;
 		double green;

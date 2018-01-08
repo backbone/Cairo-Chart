@@ -17,18 +17,18 @@ void plot_chart1 (Chart chart) {
 
 	s1.axis_x.min = 0; s1.axis_x.max = 2;
 	s1.axis_y.min = 0; s1.axis_y.max = 3;
-	s1.place.x_low = 0.25; s1.place.x_high = 0.75;
-	s1.place.y_low = 0.3; s1.place.y_high = 0.9;
+	s1.place.x_min = 0.25; s1.place.x_max = 0.75;
+	s1.place.y_min = 0.3; s1.place.y_max = 0.9;
 
 	s2.axis_x.min = -15; s2.axis_x.max = 30;
 	s2.axis_y.min = -20; s2.axis_y.max = 200;
-	s2.place.x_low = 0.5; s2.place.x_high = 1;
-	s2.place.y_low = 0.0; s2.place.y_high = 0.5;
+	s2.place.x_min = 0.5; s2.place.x_max = 1;
+	s2.place.y_min = 0.0; s2.place.y_max = 0.5;
 
 	s3.axis_x.min = 0; s3.axis_x.max = 130;
 	s3.axis_y.min = 15; s3.axis_y.max = 35;
-	s3.place.x_low = 0; s3.place.x_high = 0.5;
-	s3.place.y_low = 0.5; s3.place.y_high = 1.0;
+	s3.place.x_min = 0; s3.place.x_max = 0.5;
+	s3.place.y_min = 0.5; s3.place.y_max = 1.0;
 
 	s2.marker_type = Series.MarkerType.CIRCLE;
 	s3.marker_type = Series.MarkerType.PRICLE_TRIANGLE;
@@ -60,18 +60,18 @@ void plot_chart2 (Chart chart) {
 
 	s1.axis_x.min = -15; s1.axis_x.max = 30;
 	s1.axis_y.min = 0; s1.axis_y.max = 3;
-	s1.place.x_low = 0.0; s1.place.x_high = 1.0;
-	s1.place.y_low = 0.3; s1.place.y_high = 0.9;
+	s1.place.x_min = 0.0; s1.place.x_max = 1.0;
+	s1.place.y_min = 0.3; s1.place.y_max = 0.9;
 
 	s2.axis_x.min = -15; s2.axis_x.max = 30;
 	s2.axis_y.min = -20; s2.axis_y.max = 200;
-	s2.place.x_low = 0.0; s2.place.x_high = 1.0;
-	s2.place.y_low = 0.0; s2.place.y_high = 0.5;
+	s2.place.x_min = 0.0; s2.place.x_max = 1.0;
+	s2.place.y_min = 0.0; s2.place.y_max = 0.5;
 
 	s3.axis_x.min = -15; s3.axis_x.max = 30;
 	s3.axis_y.min = 15; s3.axis_y.max = 35;
-	s3.place.x_low = 0.0; s3.place.x_high = 1.0;
-	s3.place.y_low = 0.5; s3.place.y_high = 1.0;
+	s3.place.x_min = 0.0; s3.place.x_max = 1.0;
+	s3.place.y_min = 0.5; s3.place.y_max = 1.0;
 
 	s1.marker_type = Series.MarkerType.PRICLE_CIRCLE;
 	s2.marker_type = Series.MarkerType.PRICLE_SQUARE;
@@ -109,18 +109,18 @@ void plot_chart3 (Chart chart) {
 
 	s1.axis_x.min = 0; s1.axis_x.max = 2;
 	s1.axis_y.min = -20; s1.axis_y.max = 200;
-	s1.place.x_low = 0.25; s1.place.x_high = 0.75;
-	s1.place.y_low = 0.0; s1.place.y_high = 1.0;
+	s1.place.x_min = 0.25; s1.place.x_max = 0.75;
+	s1.place.y_min = 0.0; s1.place.y_max = 1.0;
 
 	s2.axis_x.min = -15; s2.axis_x.max = 30;
 	s2.axis_y.min = -20; s2.axis_y.max = 200;
-	s2.place.x_low = 0.5; s2.place.x_high = 1;
-	s2.place.y_low = 0.0; s2.place.y_high = 1.0;
+	s2.place.x_min = 0.5; s2.place.x_max = 1;
+	s2.place.y_min = 0.0; s2.place.y_max = 1.0;
 
 	s3.axis_x.min = 0; s3.axis_x.max = 130;
 	s3.axis_y.min = -20; s3.axis_y.max = 200;
-	s3.place.x_low = 0; s3.place.x_high = 0.5;
-	s3.place.y_low = 0.0; s3.place.y_high = 1.0;
+	s3.place.x_min = 0; s3.place.x_max = 0.5;
+	s3.place.y_min = 0.0; s3.place.y_max = 1.0;
 
 	s2.marker_type = Series.MarkerType.PRICLE_CIRCLE;
 	s3.marker_type = Series.MarkerType.TRIANGLE;
@@ -167,23 +167,23 @@ void plot_chart4 (Chart chart) {
 
 	s1.axis_x.min = now - 100000; s1.axis_x.max = now + 100000;
 	s1.axis_y.min = -20; s1.axis_y.max = 200;
-	s1.place.x_low = 0.25; s1.place.x_high = 0.75;
-	s1.place.y_low = 0.0; s1.place.y_high = 1.0;
+	s1.place.x_min = 0.25; s1.place.x_max = 0.75;
+	s1.place.y_min = 0.0; s1.place.y_max = 1.0;
 
 	s2.axis_x.min = -15; s2.axis_x.max = 30;
 	s2.axis_y.min = -20; s2.axis_y.max = 200;
-	s2.place.x_low = 0.2; s2.place.x_high = 1;
-	s2.place.y_low = 0.0; s2.place.y_high = 1.0;
+	s2.place.x_min = 0.2; s2.place.x_max = 1;
+	s2.place.y_min = 0.0; s2.place.y_max = 1.0;
 
 	s3.axis_x.min = high - 2; s3.axis_x.max = high + 1;
 	s3.axis_y.min = -20; s3.axis_y.max = 200;
-	s3.place.x_low = 0; s3.place.x_high = 0.8;
-	s3.place.y_low = 0.0; s3.place.y_high = 1.0;
+	s3.place.x_min = 0; s3.place.x_max = 0.8;
+	s3.place.y_min = 0.0; s3.place.y_max = 1.0;
 
 	s4.axis_x.min = high + 0.0049; s4.axis_x.max = high + 0.0054;
 	s4.axis_y.min = -20; s4.axis_y.max = 200;
-	s4.place.x_low = 0.2; s4.place.x_high = 1.0;
-	s4.place.y_low = 0.0; s4.place.y_high = 1.0;
+	s4.place.x_min = 0.2; s4.place.x_max = 1.0;
+	s4.place.y_min = 0.0; s4.place.y_max = 1.0;
 
 	s2.marker_type = Series.MarkerType.PRICLE_CIRCLE;
 	s3.marker_type = Series.MarkerType.TRIANGLE;
@@ -202,10 +202,10 @@ void plot_chart4 (Chart chart) {
 }
 
 bool point_in_chart (Chart chart, double x, double y) {
-	if (x < chart.plot_area_x_min) return false;
-	if (x > chart.plot_area_x_max) return false;
-	if (y < chart.plot_area_y_min) return false;
-	if (y > chart.plot_area_y_max) return false;
+	if (x < chart.plot_x_min) return false;
+	if (x > chart.plot_x_max) return false;
+	if (y < chart.plot_y_min) return false;
+	if (y > chart.plot_y_max) return false;
 	return true;
 }
 
@@ -230,10 +230,10 @@ int main (string[] args) {
 	var chart2 = new Chart();
 	var chart3 = new Chart();
 	var chart4 = new Chart();
-	var label = new Label ("Chart Test!");
+	var label = new Gtk.Label ("Chart Test!");
 	var button1 = new Button.with_label("Separate axes");
-	var button2 = new Button.with_label("Common X axes");
-	var button3 = new Button.with_label("Common Y axes");
+	var button2 = new Button.with_label("Joint X axes");
+	var button3 = new Button.with_label("Joint Y axes");
 	var button4 = new Button.with_label("Dates/Times");
 	var button5 = new Button.with_label("rm Axis Titles");
 	var button6 = new Button.with_label("Dates only");
@@ -245,7 +245,7 @@ int main (string[] args) {
 	plot_chart3 (chart3);
 	plot_chart4 (chart4);
 
-	chart1.selection_style = LineStyle(Color(0.3, 0.3, 0.3, 0.7), 1);
+	chart1.selection_style = Line.Style(Color(0.3, 0.3, 0.3, 0.7), 1);
 
 	var da = new DrawingArea();
 	da.set_events ( Gdk.EventMask.BUTTON_PRESS_MASK
@@ -270,9 +270,9 @@ int main (string[] args) {
 			case Legend.Position.LEFT: radio_button3.set_active(true); break;
 			case Legend.Position.BOTTOM: radio_button4.set_active(true); break;
 			}
-			switch (chart.cursors_orientation) {
-			case Chart.CursorOrientation.VERTICAL: radio_button7.set_active(true); break;
-			case Chart.CursorOrientation.HORIZONTAL: radio_button8.set_active(true); break;
+			switch (chart.cursor_style.orientation) {
+			case Cursor.Orientation.VERTICAL: radio_button7.set_active(true); break;
+			case Cursor.Orientation.HORIZONTAL: radio_button8.set_active(true); break;
 			}
 	});
 	button2.clicked.connect (() => {
@@ -283,9 +283,9 @@ int main (string[] args) {
 			case Legend.Position.LEFT: radio_button3.set_active(true); break;
 			case Legend.Position.BOTTOM: radio_button4.set_active(true); break;
 			}
-			switch (chart.cursors_orientation) {
-			case Chart.CursorOrientation.VERTICAL: radio_button7.set_active(true); break;
-			case Chart.CursorOrientation.HORIZONTAL: radio_button8.set_active(true); break;
+			switch (chart.cursor_style.orientation) {
+			case Cursor.Orientation.VERTICAL: radio_button7.set_active(true); break;
+			case Cursor.Orientation.HORIZONTAL: radio_button8.set_active(true); break;
 			}
 	});
 	button3.clicked.connect (() => {
@@ -296,9 +296,9 @@ int main (string[] args) {
 			case Legend.Position.LEFT: radio_button3.set_active(true); break;
 			case Legend.Position.BOTTOM: radio_button4.set_active(true); break;
 			}
-			switch (chart.cursors_orientation) {
-			case Chart.CursorOrientation.VERTICAL: radio_button7.set_active(true); break;
-			case Chart.CursorOrientation.HORIZONTAL: radio_button8.set_active(true); break;
+			switch (chart.cursor_style.orientation) {
+			case Cursor.Orientation.VERTICAL: radio_button7.set_active(true); break;
+			case Cursor.Orientation.HORIZONTAL: radio_button8.set_active(true); break;
 			}
 	});
 	button4.clicked.connect (() => {
@@ -309,9 +309,9 @@ int main (string[] args) {
 			case Legend.Position.LEFT: radio_button4.set_active(true); break;
 			case Legend.Position.BOTTOM: radio_button4.set_active(true); break;
 			}
-			switch (chart.cursors_orientation) {
-			case Chart.CursorOrientation.VERTICAL: radio_button7.set_active(true); break;
-			case Chart.CursorOrientation.HORIZONTAL: radio_button8.set_active(true); break;
+			switch (chart.cursor_style.orientation) {
+			case Cursor.Orientation.VERTICAL: radio_button7.set_active(true); break;
+			case Cursor.Orientation.HORIZONTAL: radio_button8.set_active(true); break;
 			}
 	});
 	button5.clicked.connect (() => {
@@ -393,13 +393,13 @@ int main (string[] args) {
 
 	radio_button7.toggled.connect ((button) => {
 		if (button.get_active()) {
-			chart.cursors_orientation = Chart.CursorOrientation.VERTICAL;
+			chart.cursor_style.orientation = Cursor.Orientation.VERTICAL;
 			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 		}
 	});
 	radio_button8.toggled.connect ((button) => {
 		if (button.get_active()) {
-			chart.cursors_orientation = Chart.CursorOrientation.HORIZONTAL;
+			chart.cursor_style.orientation = Cursor.Orientation.HORIZONTAL;
 			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 		}
 	});
@@ -431,13 +431,13 @@ int main (string[] args) {
 			var text_t = new Text(text);
 			var w = text_t.get_width(context);
 			var h = text_t.get_height(context);
-			var x0 = chart.plot_area_x_max - w - 5;
-			var y0 = chart.plot_area_y_min + h + 5;
+			var x0 = chart.plot_x_max - w - 5;
+			var y0 = chart.plot_y_min + h + 5;
 			chart.set_source_rgba(chart.legend.bg_color);
 			context.rectangle (x0, y0 - h, w, h);
 			context.fill();
 			context.move_to (x0, y0);
-			chart.set_source_rgba(chart.common_axis_color);
+			chart.set_source_rgba(chart.joint_axis_color);
 			context.show_text(text);
 		}
 

@@ -1,4 +1,4 @@
-namespace Gtk.CairoChart {
+namespace CairoChart {
 	public struct Point {
 		Float128 x;
 		Float128 y;

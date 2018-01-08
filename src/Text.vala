@@ -1,8 +1,8 @@
-namespace Gtk.CairoChart {
+namespace CairoChart {
 	[Compact]
 	public class Text {
 		public string text = "";
-		public FontStyle style = FontStyle ();
+		public Font.Style style = Font.Style ();
 		public Color color = Color();
 
 		public Cairo.TextExtents get_extents (Cairo.Context context) {
@@ -16,8 +16,8 @@ namespace Gtk.CairoChart {
 		public double get_width (Cairo.Context context) {
 			var extents = get_extents (context);
 			switch (style.orientation) {
-			case FontOrient.HORIZONTAL: return extents.width;
-			case FontOrient.VERTICAL: return extents.height;
+			case Font.Orientation.HORIZONTAL: return extents.width;
+			case Font.Orientation.VERTICAL: return extents.height;
 			default: return 0.0;
 			}
 		}
@@ -25,8 +25,8 @@ namespace Gtk.CairoChart {
 		public double get_height (Cairo.Context context) {
 			var extents = get_extents (context);
 			switch (style.orientation) {
-			case FontOrient.HORIZONTAL: return extents.height;
-			case FontOrient.VERTICAL: return extents.width;
+			case Font.Orientation.HORIZONTAL: return extents.height;
+			case Font.Orientation.VERTICAL: return extents.width;
 			default: return 0.0;
 			}
 		}
@@ -36,15 +36,15 @@ namespace Gtk.CairoChart {
 			double height;
 		}
 
-		public Size size (Cairo.Context context) {
+		public Size get_size (Cairo.Context context) {
 			var sz = Size();
 			var extents = get_extents (context);
 			switch (style.orientation) {
-			case FontOrient.HORIZONTAL:
+			case Font.Orientation.HORIZONTAL:
 				sz.width = extents.width + extents.x_bearing;
 				sz.height = extents.height;
 				break;
-			case FontOrient.VERTICAL:
+			case Font.Orientation.VERTICAL:
 				sz.width = extents.height; // + extents.x_bearing ?
 				sz.height = extents.width; // +- extents.y_bearing ?
 				break;
@@ -53,7 +53,7 @@ namespace Gtk.CairoChart {
 		}
 
 		public Text (string text = "",
-		             FontStyle style = FontStyle(),
+		             Font.Style style = Font.Style(),
 		             Color color = Color()) {
 			this.text = text;
 			this.style = style;

@@ -1,6 +1,6 @@
 using Cairo;
 
-namespace Gtk.CairoChart {
+namespace CairoChart {
 
 	public class Series {
 
@@ -8,7 +8,7 @@ namespace Gtk.CairoChart {
 		public enum Sort {
 			BY_X = 0,
 			BY_Y = 1,
-			NO_SORT
+			UNSORTED
 		}
 		public Sort sort = Sort.BY_X;
 
@@ -31,7 +31,7 @@ namespace Gtk.CairoChart {
 
 		public Grid grid = new Grid ();
 
-		public LineStyle line_style = LineStyle ();
+		public Line.Style line_style = Line.Style ();
 
 		protected Color _color = Color (0.0, 0.0, 0.0, 1.0);
 		public Color color {

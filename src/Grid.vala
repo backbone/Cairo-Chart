@@ -1,4 +1,4 @@
-namespace Gtk.CairoChart {
+namespace CairoChart {
 	public class Grid {
 		/*public enum GridType {
 			PRICK_LINE = 0, // default
@@ -6,7 +6,7 @@ namespace Gtk.CairoChart {
 		}*/
 		public Color color = Color (0, 0, 0, 0.1);
 
-		public LineStyle line_style = LineStyle ();
+		public Line.Style line_style = Line.Style ();
 
 		public Grid copy () {
 			var grid = new Grid ();

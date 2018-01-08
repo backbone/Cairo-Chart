@@ -1,4 +1,4 @@
-namespace Gtk.CairoChart {
+namespace CairoChart {
 	// If one of axis:title or axis:min/max are different
 	// then draw separate axis for each/all series
 	// or specify series name near the axis
@@ -72,9 +72,9 @@ namespace Gtk.CairoChart {
 			}
 			default = 2;
 		}
-		public FontStyle font_style = FontStyle ();
+		public Font.Style font_style = Font.Style ();
 		public Color color = Color ();
-		public LineStyle line_style = LineStyle ();
+		public Line.Style line_style = Line.Style ();
 		public double font_indent = 5;
 
 		public Axis copy () {
