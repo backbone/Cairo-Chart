@@ -201,17 +201,7 @@ namespace CairoChart {
 		public double title_indent = 4;
 
 		public virtual void show_text(Text text) {
-			context.select_font_face(text.style.family,
-			                         text.style.slant,
-			                         text.style.weight);
-			context.set_font_size(text.style.size);
-			if (text.style.orientation == Font.Orientation.VERTICAL) {
-				context.rotate(- Math.PI / 2.0);
-				context.show_text(text.text);
-				context.rotate(Math.PI / 2.0);
-			} else {
-				context.show_text(text.text);
-			}
+			text.show(context);
 		}
 
 		protected virtual void draw_chart_title () {
