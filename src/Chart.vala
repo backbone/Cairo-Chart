@@ -55,7 +55,7 @@ namespace CairoChart {
 
 			get_cursors_crossings();
 
-			calc_plot_area (); // Calculate plot area
+			calc_plot_area ();
 
 			draw_horizontal_axis ();
 			check_cur_values ();
@@ -87,10 +87,11 @@ namespace CairoChart {
 			}
 		}
 
-		protected double rel_zoom_x_min = 0.0;
-		protected double rel_zoom_x_max = 1.0;
-		protected double rel_zoom_y_min = 0.0;
-		protected double rel_zoom_y_max = 1.0;
+		// relative zoom limits
+		protected double rz_x_min = 0.0;
+		protected double rz_x_max = 1.0;
+		protected double rz_y_min = 0.0;
+		protected double rz_y_max = 1.0;
 
 		int zoom_first_show = 0;
 
@@ -141,14 +142,14 @@ namespace CairoChart {
 					break;
 				}
 
-			var new_rel_zoom_x_min = rel_zoom_x_min + (x0 - plot_x_min) / (plot_x_max - plot_x_min) * (rel_zoom_x_max - rel_zoom_x_min);
-			var new_rel_zoom_x_max = rel_zoom_x_min + (x1 - plot_x_min) / (plot_x_max - plot_x_min) * (rel_zoom_x_max - rel_zoom_x_min);
-			var new_rel_zoom_y_min = rel_zoom_y_min + (y0 - plot_y_min) / (plot_y_max - plot_y_min) * (rel_zoom_y_max - rel_zoom_y_min);
-			var new_rel_zoom_y_max = rel_zoom_y_min + (y1 - plot_y_min) / (plot_y_max - plot_y_min) * (rel_zoom_y_max - rel_zoom_y_min);
-			rel_zoom_x_min = new_rel_zoom_x_min;
-			rel_zoom_x_max = new_rel_zoom_x_max;
-			rel_zoom_y_min = new_rel_zoom_y_min;
-			rel_zoom_y_max = new_rel_zoom_y_max;
+			var new_rz_x_min = rz_x_min + (x0 - plot_x_min) / (plot_x_max - plot_x_min) * (rz_x_max - rz_x_min);
+			var new_rz_x_max = rz_x_min + (x1 - plot_x_min) / (plot_x_max - plot_x_min) * (rz_x_max - rz_x_min);
+			var new_rz_y_min = rz_y_min + (y0 - plot_y_min) / (plot_y_max - plot_y_min) * (rz_y_max - rz_y_min);
+			var new_rz_y_max = rz_y_min + (y1 - plot_y_min) / (plot_y_max - plot_y_min) * (rz_y_max - rz_y_min);
+			rz_x_min = new_rz_x_min;
+			rz_x_max = new_rz_x_max;
+			rz_y_min = new_rz_y_min;
+			rz_y_max = new_rz_y_max;
 		}
 
 		public virtual void zoom_out () {
@@ -163,10 +164,10 @@ namespace CairoChart {
 				s.place.zoom_y_min = s.place.y_min;
 				s.place.zoom_y_max = s.place.y_max;
 			}
-			rel_zoom_x_min = 0;
-			rel_zoom_x_max = 1;
-			rel_zoom_y_min = 0;
-			rel_zoom_y_max = 1;
+			rz_x_min = 0;
+			rz_x_max = 1;
+			rz_y_min = 0;
+			rz_y_max = 1;
 
 			zoom_first_show = 0;
 		}
@@ -174,7 +175,7 @@ namespace CairoChart {
 		public virtual void move (double delta_x, double delta_y) {
 			delta_x /= plot_x_max - plot_x_min; delta_x *= - 1.0;
 			delta_y /= plot_y_max - plot_y_min; delta_y *= - 1.0;
-			var rzxmin = rel_zoom_x_min, rzxmax = rel_zoom_x_max, rzymin = rel_zoom_y_min, rzymax = rel_zoom_y_max;
+			var rzxmin = rz_x_min, rzxmax = rz_x_max, rzymin = rz_y_min, rzymax = rz_y_max;
 			zoom_out();
 			//draw(); // TODO: optimize here
 			delta_x *= plot_x_max - plot_x_min;
@@ -1049,21 +1050,21 @@ namespace CairoChart {
 		}
 
 		protected virtual Float128 scr2rel_x (Float128 x) {
-			return rel_zoom_x_min + (x - plot_x_min) / (plot_x_max - plot_x_min) * (rel_zoom_x_max - rel_zoom_x_min);
+			return rz_x_min + (x - plot_x_min) / (plot_x_max - plot_x_min) * (rz_x_max - rz_x_min);
 		}
 		protected virtual Float128 scr2rel_y (Float128 y) {
-			return rel_zoom_y_max - (plot_y_max - y) / (plot_y_max - plot_y_min) * (rel_zoom_y_max - rel_zoom_y_min);
+			return rz_y_max - (plot_y_max - y) / (plot_y_max - plot_y_min) * (rz_y_max - rz_y_min);
 		}
 		protected virtual Point scr2rel_point (Point p) {
 			return Point (scr2rel_x(p.x), scr2rel_y(p.y));
 		}
 
 		protected virtual Float128 rel2scr_x(Float128 x) {
-			return plot_x_min + (plot_x_max - plot_x_min) * (x - rel_zoom_x_min) / (rel_zoom_x_max - rel_zoom_x_min);
+			return plot_x_min + (plot_x_max - plot_x_min) * (x - rz_x_min) / (rz_x_max - rz_x_min);
 		}
 
 		protected virtual Float128 rel2scr_y(Float128 y) {
-			return plot_y_min + (plot_y_max - plot_y_min) * (y - rel_zoom_y_min) / (rel_zoom_y_max - rel_zoom_y_min);
+			return plot_y_min + (plot_y_max - plot_y_min) * (y - rz_y_min) / (rz_y_max - rz_y_min);
 		}
 
 		protected virtual Point rel2scr_point (Point p) {
@@ -1104,9 +1105,9 @@ namespace CairoChart {
 				var c = all_cursors.nth_data(ci);
 				switch (cursor_style.orientation) {
 				case Cursor.Orientation.VERTICAL:
-					if (c.x <= rel_zoom_x_min || c.x >= rel_zoom_x_max) continue; break;
+					if (c.x <= rz_x_min || c.x >= rz_x_max) continue; break;
 				case Cursor.Orientation.HORIZONTAL:
-					if (c.y <= rel_zoom_y_min || c.y >= rel_zoom_y_max) continue; break;
+					if (c.y <= rz_y_min || c.y >= rz_y_max) continue; break;
 				}
 
 				CursorCross[] crossings = {};
@@ -1502,10 +1503,10 @@ namespace CairoChart {
 			chart.plot_x_min = this.plot_x_min;
 			chart.plot_y_max = this.plot_y_max;
 			chart.plot_y_min = this.plot_y_min;
-			chart.rel_zoom_x_min = this.rel_zoom_x_min;
-			chart.rel_zoom_x_max = this.rel_zoom_x_max;
-			chart.rel_zoom_y_min = this.rel_zoom_y_min;
-			chart.rel_zoom_y_max = this.rel_zoom_y_max;
+			chart.rz_x_min = this.rz_x_min;
+			chart.rz_x_max = this.rz_x_max;
+			chart.rz_y_min = this.rz_y_min;
+			chart.rz_y_max = this.rz_y_max;
 			chart.selection_style = this.selection_style;
 			chart.series = this.series;
 			chart.title = this.title.copy();
