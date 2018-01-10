@@ -212,50 +212,6 @@ namespace CairoChart {
 
 		public double marker_size = 8.0;
 
-		public virtual void draw_marker_at_pos (Series.MarkerType marker_type,
-		                                           double x, double y) {
-			context.move_to (x, y);
-			switch (marker_type) {
-			case Series.MarkerType.SQUARE:
-				context.rectangle (x - marker_size / 2, y - marker_size / 2,
-				                   marker_size, marker_size);
-				context.fill();
-				break;
-
-			case Series.MarkerType.CIRCLE:
-				context.arc (x, y, marker_size / 2, 0, 2*Math.PI);
-				context.fill();
-				break;
-
-			case Series.MarkerType.TRIANGLE:
-				context.move_to (x - marker_size / 2, y - marker_size / 2);
-				context.line_to (x + marker_size / 2, y - marker_size / 2);
-				context.line_to (x, y + marker_size / 2);
-				context.line_to (x - marker_size / 2, y - marker_size / 2);
-				context.fill();
-				break;
-
-			case Series.MarkerType.PRICLE_SQUARE:
-				context.rectangle (x - marker_size / 2, y - marker_size / 2,
-				                   marker_size, marker_size);
-				context.stroke();
-				break;
-
-			case Series.MarkerType.PRICLE_CIRCLE:
-				context.arc (x, y, marker_size / 2, 0, 2*Math.PI);
-				context.stroke();
-				break;
-
-			case Series.MarkerType.PRICLE_TRIANGLE:
-				context.move_to (x - marker_size / 2, y - marker_size / 2);
-				context.line_to (x + marker_size / 2, y - marker_size / 2);
-				context.line_to (x, y + marker_size / 2);
-				context.line_to (x - marker_size / 2, y - marker_size / 2);
-				context.stroke();
-				break;
-			}
-		}
-
 		public Line.Style selection_style = Line.Style ();
 
 		public virtual void draw_selection (double x0, double y0, double x1, double y1) {
@@ -994,7 +950,7 @@ namespace CairoChart {
 					var x = get_scr_x(s, points[i].x);
 					var y = get_scr_y(s, points[i].y);
 					if (point_in_plot_area (Point (x, y)))
-						draw_marker_at_pos(s.marker_type, x, y);
+						Marker.draw_at_pos(this, s.marker_type, x, y, marker_size);
 				}
 			}
 		}
