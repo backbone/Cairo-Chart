@@ -15,19 +15,9 @@ namespace CairoChart {
 		public Axis axis_x = new Axis();
 		public Axis axis_y = new Axis();
 
-		public enum MarkerType {
-			NONE = 0,	// default
-			SQUARE,
-			CIRCLE,
-			TRIANGLE,
-			PRICLE_SQUARE,
-			PRICLE_CIRCLE,
-			PRICLE_TRIANGLE
-		}
-
 		public Place place = new Place();
 		public Text title = new Text ();
-		public MarkerType marker_type = MarkerType.SQUARE;
+		public Marker marker = new Marker ();
 
 		public Grid grid = new Grid ();
 
@@ -58,7 +48,7 @@ namespace CairoChart {
 			series.axis_y = this.axis_y.copy ();
 			series.grid = this.grid.copy ();
 			series.line_style = this.line_style;
-			series.marker_type = this.marker_type;
+			series.marker = this.marker;
 			series.place = this.place.copy();
 			series.points = this.points;
 			series.sort = this.sort;

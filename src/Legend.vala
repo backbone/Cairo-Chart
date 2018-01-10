@@ -152,11 +152,7 @@ namespace CairoChart {
 					s.line_style.set(chart);
 					chart.context.rel_line_to (line_length, 0);
 					chart.context.stroke();
-					Marker.draw_at_pos (chart,
-					                           s.marker_type,
-					                           x + line_length / 2,
-					                           y - title_sz.height / 2,
-					                           chart.marker_size);
+					s.marker.draw_at_pos (chart, x + line_length / 2, y - title_sz.height / 2);
 					break;
 				}
 

@@ -210,8 +210,6 @@ namespace CairoChart {
 			title.show(context);
 		}
 
-		public double marker_size = 8.0;
-
 		public Line.Style selection_style = Line.Style ();
 
 		public virtual void draw_selection (double x0, double y0, double x1, double y1) {
@@ -950,7 +948,7 @@ namespace CairoChart {
 					var x = get_scr_x(s, points[i].x);
 					var y = get_scr_y(s, points[i].y);
 					if (point_in_plot_area (Point (x, y)))
-						Marker.draw_at_pos(this, s.marker_type, x, y, marker_size);
+						s.marker.draw_at_pos(this, x, y);
 				}
 			}
 		}
@@ -1446,7 +1444,6 @@ namespace CairoChart {
 			chart.height = this.height;
 			chart.is_cursor_active = this.is_cursor_active;
 			chart.legend = this.legend.copy();
-			chart.marker_size = this.marker_size;
 			chart.plot_x_max = this.plot_x_max;
 			chart.plot_x_min = this.plot_x_min;
 			chart.plot_y_max = this.plot_y_max;

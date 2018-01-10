@@ -30,8 +30,8 @@ void plot_chart1 (Chart chart) {
 	s3.place.x_min = 0; s3.place.x_max = 0.5;
 	s3.place.y_min = 0.5; s3.place.y_max = 1.0;
 
-	s2.marker_type = Series.MarkerType.CIRCLE;
-	s3.marker_type = Series.MarkerType.PRICLE_TRIANGLE;
+	s2.marker.type = Marker.Type.CIRCLE;
+	s3.marker.type = Marker.Type.PRICLE_TRIANGLE;
 
 	s1.axis_x.title = new Text("Series 1: Axis X.");
 	s1.axis_y.title = new Text("Series 1: Axis Y.");
@@ -73,8 +73,8 @@ void plot_chart2 (Chart chart) {
 	s3.place.x_min = 0.0; s3.place.x_max = 1.0;
 	s3.place.y_min = 0.5; s3.place.y_max = 1.0;
 
-	s1.marker_type = Series.MarkerType.PRICLE_CIRCLE;
-	s2.marker_type = Series.MarkerType.PRICLE_SQUARE;
+	s1.marker.type = Marker.Type.PRICLE_CIRCLE;
+	s2.marker.type = Marker.Type.PRICLE_SQUARE;
 
 	s1.axis_x.title = new Text("All Series: Axis X.");
 	s1.axis_y.title = new Text("Series 1: Axis Y.");
@@ -122,8 +122,8 @@ void plot_chart3 (Chart chart) {
 	s3.place.x_min = 0; s3.place.x_max = 0.5;
 	s3.place.y_min = 0.0; s3.place.y_max = 1.0;
 
-	s2.marker_type = Series.MarkerType.PRICLE_CIRCLE;
-	s3.marker_type = Series.MarkerType.TRIANGLE;
+	s2.marker.type = Marker.Type.PRICLE_CIRCLE;
+	s3.marker.type = Marker.Type.TRIANGLE;
 
 	s1.axis_x.title = new Text("Series 1: Axis X.");
 	s1.axis_y.title = new Text("Series 1: Axis Y.");
@@ -185,9 +185,9 @@ void plot_chart4 (Chart chart) {
 	s4.place.x_min = 0.2; s4.place.x_max = 1.0;
 	s4.place.y_min = 0.0; s4.place.y_max = 1.0;
 
-	s2.marker_type = Series.MarkerType.PRICLE_CIRCLE;
-	s3.marker_type = Series.MarkerType.TRIANGLE;
-	s4.marker_type = Series.MarkerType.PRICLE_SQUARE;
+	s2.marker.type = Marker.Type.PRICLE_CIRCLE;
+	s3.marker.type = Marker.Type.TRIANGLE;
+	s4.marker.type = Marker.Type.PRICLE_SQUARE;
 
 	s1.axis_x.title = new Text("Series 1: Axis X.");
 	s1.axis_y.title = new Text("Series 1: Axis Y.");

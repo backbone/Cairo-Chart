@@ -2,48 +2,65 @@ namespace CairoChart {
 
 	public class Marker {
 
-		public static void draw_at_pos (Chart chart,
-		                                Series.MarkerType marker_type,
-		                                double x,
-		                                double y,
-		                                double marker_size = 8.0) {
+		public enum Type {
+			NONE = 0,	// default
+			SQUARE,
+			CIRCLE,
+			TRIANGLE,
+			PRICLE_SQUARE,
+			PRICLE_CIRCLE,
+			PRICLE_TRIANGLE
+		}
+
+		public Type type = Type.NONE;
+		public double size = 8.0;
+
+		public Marker (Type type = Type.NONE, double size = 8.0) {
+			this.type = type;
+			this.size = size;
+		}
+
+		public Marker copy () {
+			return new Marker (type, size);
+		}
+
+		public virtual void draw_at_pos (Chart chart, double x, double y) {
 			chart.context.move_to (x, y);
-			switch (marker_type) {
-			case Series.MarkerType.SQUARE:
-				chart.context.rectangle (x - marker_size / 2, y - marker_size / 2,
-				                   marker_size, marker_size);
+			switch (type) {
+			case Type.SQUARE:
+				chart.context.rectangle (x - size / 2, y - size / 2, size, size);
 				chart.context.fill();
 				break;
 
-			case Series.MarkerType.CIRCLE:
-				chart.context.arc (x, y, marker_size / 2, 0, 2*Math.PI);
+			case Type.CIRCLE:
+				chart.context.arc (x, y, size / 2, 0, 2*Math.PI);
 				chart.context.fill();
 				break;
 
-			case Series.MarkerType.TRIANGLE:
-				chart.context.move_to (x - marker_size / 2, y - marker_size / 2);
-				chart.context.line_to (x + marker_size / 2, y - marker_size / 2);
-				chart.context.line_to (x, y + marker_size / 2);
-				chart.context.line_to (x - marker_size / 2, y - marker_size / 2);
+			case Type.TRIANGLE:
+				chart.context.move_to (x - size / 2, y - size / 2);
+				chart.context.line_to (x + size / 2, y - size / 2);
+				chart.context.line_to (x, y + size / 2);
+				chart.context.line_to (x - size / 2, y - size / 2);
 				chart.context.fill();
 				break;
 
-			case Series.MarkerType.PRICLE_SQUARE:
-				chart.context.rectangle (x - marker_size / 2, y - marker_size / 2,
-				                   marker_size, marker_size);
+			case Type.PRICLE_SQUARE:
+				chart.context.rectangle (x - size / 2, y - size / 2,
+				                   size, size);
 				chart.context.stroke();
 				break;
 
-			case Series.MarkerType.PRICLE_CIRCLE:
-				chart.context.arc (x, y, marker_size / 2, 0, 2*Math.PI);
+			case Type.PRICLE_CIRCLE:
+				chart.context.arc (x, y, size / 2, 0, 2*Math.PI);
 				chart.context.stroke();
 				break;
 
-			case Series.MarkerType.PRICLE_TRIANGLE:
-				chart.context.move_to (x - marker_size / 2, y - marker_size / 2);
-				chart.context.line_to (x + marker_size / 2, y - marker_size / 2);
-				chart.context.line_to (x, y + marker_size / 2);
-				chart.context.line_to (x - marker_size / 2, y - marker_size / 2);
+			case Type.PRICLE_TRIANGLE:
+				chart.context.move_to (x - size / 2, y - size / 2);
+				chart.context.line_to (x + size / 2, y - size / 2);
+				chart.context.line_to (x, y + size / 2);
+				chart.context.line_to (x - size / 2, y - size / 2);
 				chart.context.stroke();
 				break;
 			}
