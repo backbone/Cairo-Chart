@@ -216,42 +216,6 @@ namespace CairoChart {
 			context.stroke();
 		}
 
-		protected int axis_rec_npoints = 128;
-
-		protected virtual void calc_axis_rec_sizes (Axis axis, out double max_rec_width, out double max_rec_height, bool is_horizontal = true) {
-			max_rec_width = max_rec_height = 0;
-			for (var i = 0; i < axis_rec_npoints; ++i) {
-				Float128 x = (int64)(axis.zoom_min + (axis.zoom_max - axis.zoom_min) / axis_rec_npoints * i) + 1.0/3.0;
-				switch (axis.type) {
-				case Axis.Type.NUMBERS:
-					var text = new Text (axis.format.printf((LongDouble)x) + (is_horizontal ? "_" : ""), axis.font_style);
-					var sz = text.get_size(context);
-					max_rec_width = double.max (max_rec_width, sz.width);
-					max_rec_height = double.max (max_rec_height, sz.height);
-					break;
-				case Axis.Type.DATE_TIME:
-					string date, time;
-					format_date_time(axis, x, out date, out time);
-
-					var h = 0.0;
-					if (axis.date_format != "") {
-						var text = new Text (date + (is_horizontal ? "_" : ""), axis.font_style);
-						var sz = text.get_size(context);
-						max_rec_width = double.max (max_rec_width, sz.width);
-						h = sz.height;
-					}
-					if (axis.time_format != "") {
-						var text = new Text (time + (is_horizontal ? "_" : ""), axis.font_style);
-						var sz = text.get_size(context);
-						max_rec_width = double.max (max_rec_width, sz.width);
-						h += sz.height;
-					}
-					max_rec_height = double.max (max_rec_height, h);
-					break;
-				}
-			}
-		}
-
 		protected virtual Float128 calc_round_step (Float128 aver_step, bool date_time = false) {
 			Float128 step = 1.0;
 
@@ -329,7 +293,7 @@ namespace CairoChart {
 				if (!s.zoom_show) continue;
 				if (nskip != 0) {--nskip; continue;}
 				double max_rec_width = 0; double max_rec_height = 0;
-				calc_axis_rec_sizes (s.axis_x, out max_rec_width, out max_rec_height, true);
+				s.axis_x.calc_rec_sizes (this, out max_rec_width, out max_rec_height, true);
 				var max_font_indent = s.axis_x.font_indent;
 				var max_axis_font_height = s.axis_x.title.text == "" ? 0 : s.axis_x.title.get_height(context) + s.axis_x.font_indent;
 
@@ -350,7 +314,7 @@ namespace CairoChart {
 					}
 					if (!has_intersection) {
 						double tmp_max_rec_width = 0; double tmp_max_rec_height = 0;
-						calc_axis_rec_sizes (s2.axis_x, out tmp_max_rec_width, out tmp_max_rec_height, true);
+						s2.axis_x.calc_rec_sizes (this, out tmp_max_rec_width, out tmp_max_rec_height, true);
 						max_rec_width = double.max (max_rec_width, tmp_max_rec_width);
 						max_rec_height = double.max (max_rec_height, tmp_max_rec_height);
 						max_font_indent = double.max (max_font_indent, s2.axis_x.font_indent);
@@ -383,7 +347,7 @@ namespace CairoChart {
 				if (!s.zoom_show) continue;
 				if (nskip != 0) {--nskip; continue;}
 				double max_rec_width = 0; double max_rec_height = 0;
-				calc_axis_rec_sizes (s.axis_y, out max_rec_width, out max_rec_height, false);
+				s.axis_y.calc_rec_sizes (this, out max_rec_width, out max_rec_height, false);
 				var max_font_indent = s.axis_y.font_indent;
 				var max_axis_font_width = s.axis_y.title.text == "" ? 0 : s.axis_y.title.get_width(context) + s.axis_y.font_indent;
 
@@ -404,7 +368,7 @@ namespace CairoChart {
 					}
 					if (!has_intersection) {
 						double tmp_max_rec_width = 0; double tmp_max_rec_height = 0;
-						calc_axis_rec_sizes (s2.axis_y, out tmp_max_rec_width, out tmp_max_rec_height, false);
+						s2.axis_y.calc_rec_sizes (this, out tmp_max_rec_width, out tmp_max_rec_height, false);
 						max_rec_width = double.max (max_rec_width, tmp_max_rec_width);
 						max_rec_height = double.max (max_rec_height, tmp_max_rec_height);
 						max_font_indent = double.max (max_font_indent, s2.axis_y.font_indent);
@@ -450,24 +414,15 @@ namespace CairoChart {
 			       + sz.height * (y - (s.axis_y.zoom_min + s.axis_y.zoom_max) / 2.0) / (s.axis_y.zoom_max - s.axis_y.zoom_min);
 		}
 
-		protected virtual void format_date_time (Axis axis, Float128 x, out string date, out string time) {
-			date = time = "";
-			var dt = new DateTime.from_unix_utc((int64)x);
-			date = dt.format(axis.date_format);
-			var dsec_str =
-				("%."+(axis.dsec_signs.to_string())+"Lf").printf((LongDouble)(x - (int64)x)).offset(1);
-			time = dt.format(axis.time_format) + dsec_str;
-		}
-
 		protected virtual void draw_horizontal_axis () {
 			for (var si = series.length - 1, nskip = 0; si >=0; --si) {
 				var s = series[si];
 				if (!s.zoom_show) continue;
 				if (joint_x && si != zoom_first_show) continue;
 
-				// 1. Detect max record width/height by axis_rec_npoints equally selected points using format.
+				// 1. Detect max record width/height by axis.nrecords equally selected points using format.
 				double max_rec_width, max_rec_height;
-				calc_axis_rec_sizes (s.axis_x, out max_rec_width, out max_rec_height, true);
+				s.axis_x.calc_rec_sizes (this, out max_rec_width, out max_rec_height, true);
 
 				// 2. Calculate maximal available number of records, take into account the space width.
 				long max_nrecs = (long) ((plot_x_max - plot_x_min) * (s.place.zoom_x_max - s.place.zoom_x_min) / max_rec_width);
@@ -523,7 +478,7 @@ namespace CairoChart {
 						text = s.axis_x.format.printf((LongDouble)x);
 						break;
 					case Axis.Type.DATE_TIME:
-						format_date_time(s.axis_x, x, out text, out time_text);
+						s.axis_x.format_date_time(x, out text, out time_text);
 						break;
 					}
 					var scr_x = get_scr_x (s, x);
@@ -630,9 +585,9 @@ namespace CairoChart {
 				var s = series[si];
 				if (!s.zoom_show) continue;
 				if (joint_y && si != zoom_first_show) continue;
-				// 1. Detect max record width/height by axis_rec_npoints equally selected points using format.
+				// 1. Detect max record width/height by axis.nrecords equally selected points using format.
 				double max_rec_width, max_rec_height;
-				calc_axis_rec_sizes (s.axis_y, out max_rec_width, out max_rec_height, false);
+				s.axis_y.calc_rec_sizes (this, out max_rec_width, out max_rec_height, false);
 
 				// 2. Calculate maximal available number of records, take into account the space width.
 				long max_nrecs = (long) ((plot_y_max - plot_y_min) * (s.place.zoom_y_max - s.place.zoom_y_min) / max_rec_height);
@@ -1153,7 +1108,7 @@ namespace CairoChart {
 				cross_what_to_show(s, out show_x, out show_time, out show_date, out show_y);
 			size = Point ();
 			string date, time;
-			format_date_time(s.axis_x, p.x, out date, out time);
+			s.axis_x.format_date_time(p.x, out date, out time);
 			var date_t = new Text (date, s.axis_x.font_style, s.axis_x.color);
 			var time_t = new Text (time, s.axis_x.font_style, s.axis_x.color);
 			var x_t = new Text (s.axis_x.format.printf((LongDouble)p.x), s.axis_x.font_style, s.axis_x.color);
@@ -1233,7 +1188,7 @@ namespace CairoChart {
 							text = s.axis_x.format.printf((LongDouble)x);
 							break;
 						case Axis.Type.DATE_TIME:
-							format_date_time(s.axis_x, x, out text, out time_text);
+							s.axis_x.format_date_time(x, out text, out time_text);
 							break;
 						default:
 							break;
@@ -1332,7 +1287,7 @@ namespace CairoChart {
 					if (show_time) {
 						set_source_rgba(s.axis_x.color);
 						string date = "", time = "";
-						format_date_time(s.axis_x, point.x, out date, out time);
+						s.axis_x.format_date_time(point.x, out date, out time);
 						var text_t = new Text(time, s.axis_x.font_style);
 						var sz = text_t.get_size(context);
 						var y = svp.y + sz.height / 2;
@@ -1345,7 +1300,7 @@ namespace CairoChart {
 					if (show_date) {
 						set_source_rgba(s.axis_x.color);
 						string date = "", time = "";
-						format_date_time(s.axis_x, point.x, out date, out time);
+						s.axis_x.format_date_time(point.x, out date, out time);
 						var text_t = new Text(date, s.axis_x.font_style);
 						var sz = text_t.get_size(context);
 						var y = svp.y + sz.height / 2;
@@ -1413,7 +1368,7 @@ namespace CairoChart {
 				case Axis.Type.DATE_TIME:
 					var date = "", time = "";
 					int64 days = (int64)(delta / 24 / 3600);
-					format_date_time(s.axis_x, delta, out date, out time);
+					s.axis_x.format_date_time(delta, out date, out time);
 					str = days.to_string() + " + " + time;
 					break;
 				}
@@ -1426,7 +1381,6 @@ namespace CairoChart {
 		public Chart copy () {
 			var chart = new Chart ();
 			chart.active_cursor = this.active_cursor;
-			chart.axis_rec_npoints = this.axis_rec_npoints;
 			chart.bg_color = this.bg_color;
 			chart.border_color = this.border_color;
 			chart.joint_x = this.joint_x;

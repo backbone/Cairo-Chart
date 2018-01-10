@@ -93,9 +93,55 @@ namespace CairoChart {
 			axis.scale_type = this.scale_type;
 			axis.title = this.title.copy();
 			axis.type = this.type;
+			axis.nrecords = this.nrecords;
 			return axis;
 		}
 
 		public Axis () {}
+
+		public int nrecords = 128;
+
+		public virtual void format_date_time (Float128 x, out string date, out string time) {
+			date = time = "";
+			var dt = new DateTime.from_unix_utc((int64)x);
+			date = dt.format(date_format);
+			var dsec_str =
+				("%."+(dsec_signs.to_string())+"Lf").printf((LongDouble)(x - (int64)x)).offset(1);
+			time = dt.format(time_format) + dsec_str;
+		}
+
+		public virtual void calc_rec_sizes (Chart chart, out double max_rec_width, out double max_rec_height, bool is_horizontal = true) {
+			max_rec_width = max_rec_height = 0;
+			for (var i = 0; i < nrecords; ++i) {
+				Float128 x = (int64)(zoom_min + (zoom_max - zoom_min) / nrecords * i) + 1.0/3.0;
+				switch (type) {
+				case Axis.Type.NUMBERS:
+					var text = new Text (format.printf((LongDouble)x) + (is_horizontal ? "_" : ""), font_style);
+					var sz = text.get_size(chart.context);
+					max_rec_width = double.max (max_rec_width, sz.width);
+					max_rec_height = double.max (max_rec_height, sz.height);
+					break;
+				case Axis.Type.DATE_TIME:
+					string date, time;
+					format_date_time(x, out date, out time);
+
+					var h = 0.0;
+					if (date_format != "") {
+						var text = new Text (date + (is_horizontal ? "_" : ""), font_style);
+						var sz = text.get_size(chart.context);
+						max_rec_width = double.max (max_rec_width, sz.width);
+						h = sz.height;
+					}
+					if (time_format != "") {
+						var text = new Text (time + (is_horizontal ? "_" : ""), font_style);
+						var sz = text.get_size(chart.context);
+						max_rec_width = double.max (max_rec_width, sz.width);
+						h += sz.height;
+					}
+					max_rec_height = double.max (max_rec_height, h);
+					break;
+				}
+			}
+		}
 	}
 }
