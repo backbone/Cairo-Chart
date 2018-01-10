@@ -72,6 +72,79 @@ namespace CairoChart {
 			return false;
 		}
 
+		public delegate int PointComparator(Point a, Point b);
+
+		public virtual void sort_points_delegate(Point[] points, PointComparator compare) {
+			for(var i = 0; i < points.length; ++i) {
+				for(var j = i + 1; j < points.length; ++j) {
+					if(compare(points[i], points[j]) > 0) {
+						var tmp = points[i];
+						points[i] = points[j];
+						points[j] = tmp;
+					}
+				}
+			}
+		}
+
+		public virtual bool cut_line (Point p_min, Point p_max, Point a, Point b, out Point c, out Point d) {
+			int ncross = 0;
+			Float128 x = 0, y = 0;
+			Point pc[4];
+			if (hcross(a, b, p_min.x, p_max.x, p_min.y, out x))
+				pc[ncross++] = Point(x, p_min.y);
+			if (hcross(a, b, p_min.x, p_max.x, p_max.y, out x))
+				pc[ncross++] = Point(x, p_max.y);
+			if (vcross(a, b, p_min.x, p_min.y, p_max.y, out y))
+				pc[ncross++] = Point(p_min.x, y);
+			if (vcross(a, b, p_max.x, p_min.y, p_max.y, out y))
+				pc[ncross++] = Point(p_max.x, y);
+			c = a;
+			d = b;
+			if (ncross == 0) {
+				if (   point_in_rect (a, p_min.x, p_max.x, p_min.y, p_max.y)
+				    && point_in_rect (b, p_min.x, p_max.x, p_min.y, p_max.y))
+					return true;
+				return false;
+			}
+			if (ncross >= 2) {
+				c = pc[0]; d = pc[1];
+				return true;
+			}
+			if (ncross == 1) {
+				if (point_in_rect (a, p_min.x, p_max.x, p_min.y, p_max.y)) {
+					c = a;
+					d = pc[0];
+					return true;
+				} else if (point_in_rect (b, p_min.x, p_max.x, p_min.y, p_max.y)) {
+					c = b;
+					d = pc[0];
+					return true;
+				}
+			}
+			return false;
+		}
+
+		public virtual Point[] sort_points (Series s, Series.Sort sort) {
+			var points = s.points;
+			switch(sort) {
+			case Series.Sort.BY_X:
+				sort_points_delegate(points, (a, b) => {
+				    if (a.x < b.x) return -1;
+				    if (a.x > b.x) return 1;
+				    return 0;
+				});
+				break;
+			case Series.Sort.BY_Y:
+				sort_points_delegate(points, (a, b) => {
+				    if (a.y < b.y) return -1;
+				    if (a.y > b.y) return 1;
+				    return 0;
+				});
+				break;
+			}
+			return points;
+		}
+
 
 		public Math () {}
 	}

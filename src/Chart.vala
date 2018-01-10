@@ -740,89 +740,19 @@ namespace CairoChart {
 			return false;
 		}
 
-		delegate int PointComparator(Point a, Point b);
-		void sort_points_delegate(Point[] points, PointComparator compare) {
-			for(var i = 0; i < points.length; ++i) {
-				for(var j = i + 1; j < points.length; ++j) {
-					if(compare(points[i], points[j]) > 0) {
-						var tmp = points[i];
-						points[i] = points[j];
-						points[j] = tmp;
-					}
-				}
-			}
-		}
-
-		protected virtual bool cut_line (Point a, Point b, out Point c, out Point d) {
-			int ncross = 0;
-			Float128 x = 0, y = 0;
-			Point pc[4];
-			if (math.hcross(a, b, plot_x_min, plot_x_max, plot_y_min, out x))
-				pc[ncross++] = Point(x, plot_y_min);
-			if (math.hcross(a, b, plot_x_min, plot_x_max, plot_y_max, out x))
-				pc[ncross++] = Point(x, plot_y_max);
-			if (math.vcross(a, b, plot_x_min, plot_y_min, plot_y_max, out y))
-				pc[ncross++] = Point(plot_x_min, y);
-			if (math.vcross(a, b, plot_x_max, plot_y_min, plot_y_max, out y))
-				pc[ncross++] = Point(plot_x_max, y);
-			c = a;
-			d = b;
-			if (ncross == 0) {
-				if (point_in_plot_area (a) && point_in_plot_area (b))
-					return true;
-				return false;
-			}
-			if (ncross >= 2) {
-				c = pc[0]; d = pc[1];
-				return true;
-			}
-			if (ncross == 1) {
-				if (point_in_plot_area (a)) {
-					c = a;
-					d = pc[0];
-					return true;
-				} else if (point_in_plot_area (b)) {
-					c = b;
-					d = pc[0];
-					return true;
-				}
-			}
-			return false;
-		}
-
-		protected virtual Point[] sort_points (Series s, Series.Sort sort) {
-			var points = s.points;
-			switch(sort) {
-			case Series.Sort.BY_X:
-				sort_points_delegate(points, (a, b) => {
-				    if (a.x < b.x) return -1;
-				    if (a.x > b.x) return 1;
-				    return 0;
-				});
-				break;
-			case Series.Sort.BY_Y:
-				sort_points_delegate(points, (a, b) => {
-				    if (a.y < b.y) return -1;
-				    if (a.y > b.y) return 1;
-				    return 0;
-				});
-				break;
-			}
-			return points;
-		}
-
 		protected virtual void draw_series () {
 			for (var si = 0; si < series.length; ++si) {
 				var s = series[si];
 				if (!s.zoom_show) continue;
 				if (s.points.length == 0) continue;
-				var points = sort_points(s, s.sort);
+				var points = math.sort_points(s, s.sort);
 				s.line_style.set(this);
 				// draw series line
 				for (int i = 1; i < points.length; ++i) {
 					Point c, d;
-					if (cut_line (Point(get_scr_x(s, points[i - 1].x), get_scr_y(s, points[i - 1].y)),
-					              Point(get_scr_x(s, points[i].x), get_scr_y(s, points[i].y)),
+					if (math.cut_line (Point(plot_x_min, plot_y_min), Point(plot_x_max, plot_y_max),
+					                   Point(get_scr_x(s, points[i - 1].x), get_scr_y(s, points[i - 1].y)),
+					                   Point(get_scr_x(s, points[i].x), get_scr_y(s, points[i].y)),
 					              out c, out d)) {
 						context.move_to (c.x, c.y);
 						context.line_to (d.x, d.y);
@@ -949,10 +879,10 @@ namespace CairoChart {
 					Point[] points = {};
 					switch (cursor_style.orientation) {
 					case Cursor.Orientation.VERTICAL:
-						points = sort_points (s, s.sort);
+						points = math.sort_points (s, s.sort);
 						break;
 					case Cursor.Orientation.HORIZONTAL:
-						points = sort_points (s, s.sort);
+						points = math.sort_points (s, s.sort);
 						break;
 					}
 
