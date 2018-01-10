@@ -58,9 +58,9 @@ namespace CairoChart {
 			                         style.weight);
 			context.set_font_size(style.size);
 			if (style.orientation == Font.Orientation.VERTICAL) {
-				context.rotate(- Math.PI / 2.0);
+				context.rotate(- GLib.Math.PI / 2.0);
 				context.show_text(text);
-				context.rotate(Math.PI / 2.0);
+				context.rotate(GLib.Math.PI / 2.0);
 			} else {
 				context.show_text(text);
 			}

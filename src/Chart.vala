@@ -216,25 +216,6 @@ namespace CairoChart {
 			context.stroke();
 		}
 
-		protected virtual Float128 calc_round_step (Float128 aver_step, bool date_time = false) {
-			Float128 step = 1.0;
-
-			if (aver_step > 1.0) {
-				if (date_time) while (step < aver_step) step *= 60;
-				if (date_time) while (step < aver_step) step *= 60;
-				if (date_time) while (step < aver_step) step *= 24;
-				while (step < aver_step) step *= 10;
-				if (step / 5 > aver_step) step /= 5;
-				while (step / 2 > aver_step) step /= 2;
-			} else if (aver_step > 0) {
-				while (step / 10 > aver_step) step /= 10;
-				if (step / 5 > aver_step) step /= 5;
-				while (step / 2 > aver_step) step /= 2;
-			}
-
-			return step;
-		}
-
 		public double plot_x_min = 0;
 		public double plot_x_max = 0;
 		public double plot_y_min = 0;
@@ -243,13 +224,6 @@ namespace CairoChart {
 		public bool joint_x { get; protected set; default = false; }
 		public bool joint_y { get; protected set; default = false; }
 		public Color joint_axis_color = Color (0, 0, 0, 1);
-
-		bool are_intersect (double a_min, double a_max, double b_min, double b_max) {
-			if (   a_min < a_max <= b_min < b_max
-			    || b_min < b_max <= a_min < a_max)
-				return false;
-			return true;
-		}
 
 		protected virtual void set_vertical_axes_titles () {
 			for (var si = 0; si < series.length; ++si) {
@@ -305,7 +279,7 @@ namespace CairoChart {
 					for (int sk = si; sk > sj; --sk) {
 						var s3 = series[sk];
 						if (!s3.zoom_show) continue;
-						if (are_intersect(s2.place.zoom_x_min, s2.place.zoom_x_max, s3.place.zoom_x_min, s3.place.zoom_x_max)
+						if (math.are_intersect(s2.place.zoom_x_min, s2.place.zoom_x_max, s3.place.zoom_x_min, s3.place.zoom_x_max)
 						    || s2.axis_x.position != s3.axis_x.position
 						    || s2.axis_x.type != s3.axis_x.type) {
 							has_intersection = true;
@@ -359,7 +333,7 @@ namespace CairoChart {
 					for (int sk = si; sk > sj; --sk) {
 						var s3 = series[sk];
 						if (!s3.zoom_show) continue;
-						if (are_intersect(s2.place.zoom_y_min, s2.place.zoom_y_max, s3.place.zoom_y_min, s3.place.zoom_y_max)
+						if (math.are_intersect(s2.place.zoom_y_min, s2.place.zoom_y_max, s3.place.zoom_y_min, s3.place.zoom_y_max)
 						    || s2.axis_y.position != s3.axis_y.position
 						    || s2.axis_x.type != s3.axis_x.type) {
 							has_intersection = true;
@@ -396,12 +370,6 @@ namespace CairoChart {
 			}
 		}
 
-		bool point_belong (Float128 p, Float128 a, Float128 b) {
-			if (a > b) { Float128 tmp = a; a = b; b = tmp; }
-			if (a <= p <= b) return true;
-			return false;
-		}
-
 		protected virtual double compact_rec_x_pos (Series s, Float128 x, Text text) {
 			var sz = text.get_size(context);
 			return get_scr_x(s, x) - sz.width / 2.0
@@ -413,6 +381,8 @@ namespace CairoChart {
 			return get_scr_y(s, y) + sz.height / 2.0
 			       + sz.height * (y - (s.axis_y.zoom_min + s.axis_y.zoom_max) / 2.0) / (s.axis_y.zoom_max - s.axis_y.zoom_min);
 		}
+
+		protected CairoChart.Math math = new Math();
 
 		protected virtual void draw_horizontal_axis () {
 			for (var si = series.length - 1, nskip = 0; si >=0; --si) {
@@ -428,7 +398,7 @@ namespace CairoChart {
 				long max_nrecs = (long) ((plot_x_max - plot_x_min) * (s.place.zoom_x_max - s.place.zoom_x_min) / max_rec_width);
 
 				// 3. Calculate grid step.
-				Float128 step = calc_round_step ((s.axis_x.zoom_max - s.axis_x.zoom_min) / max_nrecs, s.axis_x.type == Axis.Type.DATE_TIME);
+				Float128 step = math.calc_round_step ((s.axis_x.zoom_max - s.axis_x.zoom_min) / max_nrecs, s.axis_x.type == Axis.Type.DATE_TIME);
 				if (step > s.axis_x.zoom_max - s.axis_x.zoom_min)
 					step = s.axis_x.zoom_max - s.axis_x.zoom_min;
 
@@ -469,7 +439,7 @@ namespace CairoChart {
 				}
 
 				// 5. Draw records, update cur_{x,y}_{min,max}.
-				for (Float128 x = x_min, x_max = s.axis_x.zoom_max; point_belong (x, x_min, x_max); x += step) {
+				for (Float128 x = x_min, x_max = s.axis_x.zoom_max; math.point_belong (x, x_min, x_max); x += step) {
 					if (joint_x) set_source_rgba(joint_axis_color);
 					else set_source_rgba(s.axis_x.color);
 					string text = "", time_text = "";
@@ -551,7 +521,7 @@ namespace CairoChart {
 					for (int sk = si; sk > sj; --sk) {
 						var s3 = series[sk];
 						if (!s3.zoom_show) continue;
-						if (are_intersect(s2.place.zoom_x_min, s2.place.zoom_x_max, s3.place.zoom_x_min, s3.place.zoom_x_max)
+						if (math.are_intersect(s2.place.zoom_x_min, s2.place.zoom_x_max, s3.place.zoom_x_min, s3.place.zoom_x_max)
 						    || s2.axis_x.position != s3.axis_x.position
 						    || s2.axis_x.type != s3.axis_x.type) {
 							has_intersection = true;
@@ -593,7 +563,7 @@ namespace CairoChart {
 				long max_nrecs = (long) ((plot_y_max - plot_y_min) * (s.place.zoom_y_max - s.place.zoom_y_min) / max_rec_height);
 
 				// 3. Calculate grid step.
-				Float128 step = calc_round_step ((s.axis_y.zoom_max - s.axis_y.zoom_min) / max_nrecs);
+				Float128 step = math.calc_round_step ((s.axis_y.zoom_max - s.axis_y.zoom_min) / max_nrecs);
 				if (step > s.axis_y.zoom_max - s.axis_y.zoom_min)
 					step = s.axis_y.zoom_max - s.axis_y.zoom_min;
 
@@ -638,7 +608,7 @@ namespace CairoChart {
 				}
 
 				// 5. Draw records, update cur_{x,y}_{min,max}.
-				for (Float128 y = y_min, y_max = s.axis_y.zoom_max; point_belong (y, y_min, y_max); y += step) {
+				for (Float128 y = y_min, y_max = s.axis_y.zoom_max; math.point_belong (y, y_min, y_max); y += step) {
 					if (joint_y) set_source_rgba(joint_axis_color);
 					else set_source_rgba(s.axis_y.color);
 					var text = s.axis_y.format.printf((LongDouble)y);
@@ -690,7 +660,7 @@ namespace CairoChart {
 					for (int sk = si; sk > sj; --sk) {
 						var s3 = series[sk];
 						if (!s3.zoom_show) continue;
-						if (are_intersect(s2.place.zoom_y_min, s2.place.zoom_y_max, s3.place.zoom_y_min, s3.place.zoom_y_max)
+						if (math.are_intersect(s2.place.zoom_y_min, s2.place.zoom_y_max, s3.place.zoom_y_min, s3.place.zoom_y_max)
 						    || s2.axis_y.position != s3.axis_y.position) {
 							has_intersection = true;
 							break;

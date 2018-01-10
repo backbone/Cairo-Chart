@@ -33,7 +33,7 @@ namespace CairoChart {
 				break;
 
 			case Type.CIRCLE:
-				chart.context.arc (x, y, size / 2, 0, 2*Math.PI);
+				chart.context.arc (x, y, size / 2, 0, 2 * GLib.Math.PI);
 				chart.context.fill();
 				break;
 
@@ -52,7 +52,7 @@ namespace CairoChart {
 				break;
 
 			case Type.PRICLE_CIRCLE:
-				chart.context.arc (x, y, size / 2, 0, 2*Math.PI);
+				chart.context.arc (x, y, size / 2, 0, 2 * GLib.Math.PI);
 				chart.context.stroke();
 				break;
 
