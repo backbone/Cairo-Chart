@@ -210,14 +210,6 @@ namespace CairoChart {
 			title.show(context);
 		}
 
-		public virtual void set_line_style (Line.Style style) {
-			set_source_rgba(style.color);
-			context.set_line_join(style.join);
-			context.set_line_cap(style.cap);
-			context.set_line_width(style.width);
-			context.set_dash(style.dashes, style.dash_offset);
-		}
-
 		public double marker_size = 8.0;
 
 		public virtual void draw_marker_at_pos (Series.MarkerType marker_type,
@@ -267,7 +259,7 @@ namespace CairoChart {
 		public Line.Style selection_style = Line.Style ();
 
 		public virtual void draw_selection (double x0, double y0, double x1, double y1) {
-			set_line_style (selection_style);
+			selection_style.set(this);
 			context.rectangle (x0, y0, x1 - x0, y1 - y0);
 			context.stroke();
 		}
@@ -604,7 +596,7 @@ namespace CairoChart {
 						// 6. Draw grid lines to the s.place.zoom_y_min.
 						var line_style = s.grid.line_style;
 						if (joint_x) line_style.color = Color(0, 0, 0, 0.5);
-						set_line_style(line_style);
+						line_style.set(this);
 						double y = cur_y_max - max_rec_height - s.axis_x.font_indent - (s.axis_x.title.text == "" ? 0 : sz.height + s.axis_x.font_indent);
 						context.move_to (scr_x, y);
 						if (joint_x)
@@ -632,7 +624,7 @@ namespace CairoChart {
 						// 6. Draw grid lines to the s.place.zoom_y_max.
 						var line_style = s.grid.line_style;
 						if (joint_x) line_style.color = Color(0, 0, 0, 0.5);
-						set_line_style(line_style);
+						line_style.set(this);
 						double y = cur_y_min + max_rec_height + s.axis_x.font_indent + (s.axis_x.title.text == "" ? 0 : sz.height + s.axis_x.font_indent);
 						context.move_to (scr_x, y);
 						if (joint_x)
@@ -755,7 +747,7 @@ namespace CairoChart {
 						// 6. Draw grid lines to the s.place.zoom_x_min.
 						var line_style = s.grid.line_style;
 						if (joint_y) line_style.color = Color(0, 0, 0, 0.5);
-						set_line_style(line_style);
+						line_style.set(this);
 						double x = cur_x_min + max_rec_width + s.axis_y.font_indent + (s.axis_y.title.text == "" ? 0 : sz.width + s.axis_y.font_indent);
 						context.move_to (x, scr_y);
 						if (joint_y)
@@ -771,7 +763,7 @@ namespace CairoChart {
 						// 6. Draw grid lines to the s.place.zoom_x_max.
 						var line_style = s.grid.line_style;
 						if (joint_y) line_style.color = Color(0, 0, 0, 0.5);
-						set_line_style(line_style);
+						line_style.set(this);
 						double x = cur_x_max - max_rec_width - s.axis_y.font_indent - (s.axis_y.title.text == "" ? 0 : sz.width + s.axis_y.font_indent);
 						context.move_to (x, scr_y);
 						if (joint_y)
@@ -986,7 +978,7 @@ namespace CairoChart {
 				if (!s.zoom_show) continue;
 				if (s.points.length == 0) continue;
 				var points = sort_points(s, s.sort);
-				set_line_style(s.line_style);
+				s.line_style.set(this);
 				// draw series line
 				for (int i = 1; i < points.length; ++i) {
 					Point c, d;
@@ -1234,7 +1226,7 @@ namespace CairoChart {
 				var low = Point(plot_x_max, plot_y_max);  // low and high
 				var high = Point(plot_x_min, plot_y_min); //              points of the cursor
 				unowned CursorCross[] ccs = cursors_crossings[cci].crossings;
-				set_line_style(cursor_style.line_style);
+				cursor_style.line_style.set(this);
 				for (var ci = 0, max_ci = ccs.length; ci < max_ci; ++ci) {
 					var si = ccs[ci].series_index;
 					var s = series[si];

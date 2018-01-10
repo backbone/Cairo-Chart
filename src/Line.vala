@@ -24,6 +24,14 @@ namespace CairoChart {
 				this.dash_offset = dash_offset;
 				this.color = color;
 			}
+
+			public void set (Chart chart) {
+				chart.set_source_rgba(color);
+				chart.context.set_line_join(join);
+				chart.context.set_line_cap(cap);
+				chart.context.set_line_width(width);
+				chart.context.set_dash(dashes, dash_offset);
+			}
 		}
 	}
 }
