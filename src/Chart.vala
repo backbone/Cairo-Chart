@@ -722,58 +722,20 @@ namespace CairoChart {
 			return Point (get_real_x(s, p.x), get_real_y(s, p.y));
 		}
 
-		protected virtual bool x_in_range (double x, double x0, double x1) {
-			if (x0 <= x <= x1 || x1 <= x <= x0)
-				return true;
-			return false;
-		}
-
-		protected virtual bool y_in_range (double y, double y0, double y1) {
-			if (y0 <= y <= y1 || y1 <= y <= y0)
-				return true;
-			return false;
-		}
-
 		protected virtual bool x_in_plot_area (double x) {
-			if (x_in_range(x, plot_x_min, plot_x_max))
+			if (math.x_in_range(x, plot_x_min, plot_x_max))
 				return true;
 			return false;
 		}
 
 		protected virtual bool y_in_plot_area (double y) {
-			if (y_in_range(y, plot_y_min, plot_y_max))
-				return true;
-			return false;
-		}
-
-		protected virtual bool point_in_rect (Point p, double x0, double x1, double y0, double y1) {
-			if (x_in_range(p.x, x0, x1) && y_in_range(p.y, y0, y1))
+			if (math.y_in_range(y, plot_y_min, plot_y_max))
 				return true;
 			return false;
 		}
 
 		protected virtual bool point_in_plot_area (Point p) {
-			if (point_in_rect (p, plot_x_min, plot_x_max, plot_y_min, plot_y_max))
-				return true;
-			return false;
-		}
-
-		protected virtual bool hcross (Point a1, Point a2, Float128 h_x1, Float128 h_x2, Float128 h_y, out Float128 x) {
-			x = 0;
-			if (a1.y == a2.y) return false;
-			if (a1.y >= h_y && a2.y >= h_y || a1.y <= h_y && a2.y <= h_y) return false;
-			x = a1.x + (a2.x - a1.x) * (h_y - a1.y) / (a2.y - a1.y);
-			if (h_x1 <= x <= h_x2 || h_x2 <= x <= h_x1)
-				return true;
-			return false;
-		}
-
-		protected virtual bool vcross (Point a1, Point a2, Float128 v_x, Float128 v_y1, Float128 v_y2, out Float128 y) {
-			y = 0;
-			if (a1.x == a2.x) return false;
-			if (a1.x >= v_x && a2.x >= v_x || a1.x <= v_x && a2.x <= v_x) return false;
-			y = a1.y + (a2.y - a1.y) * (v_x - a1.x) / (a2.x - a1.x);
-			if (v_y1 <= y <= v_y2 || v_y2 <= y <= v_y1)
+			if (math.point_in_rect (p, plot_x_min, plot_x_max, plot_y_min, plot_y_max))
 				return true;
 			return false;
 		}
@@ -795,13 +757,13 @@ namespace CairoChart {
 			int ncross = 0;
 			Float128 x = 0, y = 0;
 			Point pc[4];
-			if (hcross(a, b, plot_x_min, plot_x_max, plot_y_min, out x))
+			if (math.hcross(a, b, plot_x_min, plot_x_max, plot_y_min, out x))
 				pc[ncross++] = Point(x, plot_y_min);
-			if (hcross(a, b, plot_x_min, plot_x_max, plot_y_max, out x))
+			if (math.hcross(a, b, plot_x_min, plot_x_max, plot_y_max, out x))
 				pc[ncross++] = Point(x, plot_y_max);
-			if (vcross(a, b, plot_x_min, plot_y_min, plot_y_max, out y))
+			if (math.vcross(a, b, plot_x_min, plot_y_min, plot_y_max, out y))
 				pc[ncross++] = Point(plot_x_min, y);
-			if (vcross(a, b, plot_x_max, plot_y_min, plot_y_max, out y))
+			if (math.vcross(a, b, plot_x_max, plot_y_min, plot_y_max, out y))
 				pc[ncross++] = Point(plot_x_max, y);
 			c = a;
 			d = b;
@@ -998,8 +960,8 @@ namespace CairoChart {
 						switch (cursor_style.orientation) {
 						case Cursor.Orientation.VERTICAL:
 							Float128 y = 0.0;
-							if (vcross(get_scr_point(s, points[i]), get_scr_point(s, points[i+1]), rel2scr_x(c.x),
-							           plot_y_min, plot_y_max, out y)) {
+							if (math.vcross(get_scr_point(s, points[i]), get_scr_point(s, points[i+1]), rel2scr_x(c.x),
+							                plot_y_min, plot_y_max, out y)) {
 								var point = Point(get_real_x(s, rel2scr_x(c.x)), get_real_y(s, y));
 								Point size; bool show_x, show_date, show_time, show_y;
 								cross_what_to_show(s, out show_x, out show_time, out show_date, out show_y);
@@ -1010,8 +972,8 @@ namespace CairoChart {
 							break;
 						case Cursor.Orientation.HORIZONTAL:
 							Float128 x = 0.0;
-							if (hcross(get_scr_point(s, points[i]), get_scr_point(s, points[i+1]),
-							           plot_x_min, plot_x_max, rel2scr_y(c.y), out x)) {
+							if (math.hcross(get_scr_point(s, points[i]), get_scr_point(s, points[i+1]),
+							                plot_x_min, plot_x_max, rel2scr_y(c.y), out x)) {
 								var point = Point(get_real_x(s, x), get_real_y(s, rel2scr_y(c.y)));
 								Point size; bool show_x, show_date, show_time, show_y;
 								cross_what_to_show(s, out show_x, out show_time, out show_date, out show_y);
