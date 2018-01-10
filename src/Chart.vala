@@ -177,7 +177,6 @@ namespace CairoChart {
 			delta_y /= plot_y_max - plot_y_min; delta_y *= - 1.0;
 			var rzxmin = rz_x_min, rzxmax = rz_x_max, rzymin = rz_y_min, rzymax = rz_y_max;
 			zoom_out();
-			//draw(); // TODO: optimize here
 			delta_x *= plot_x_max - plot_x_min;
 			delta_y *= plot_y_max - plot_y_min;
 			var xmin = plot_x_min + (plot_x_max - plot_x_min) * rzxmin;
@@ -193,7 +192,6 @@ namespace CairoChart {
 			if (ymax + delta_y > plot_y_max) delta_y = plot_y_max - ymax;
 
 			zoom_in (xmin + delta_x, ymin + delta_y, xmax + delta_x, ymax + delta_y);
-			//draw(); // TODO: optimize here
 		}
 
 		public double title_width { get; protected set; default = 0.0; }
