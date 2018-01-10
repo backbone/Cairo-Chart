@@ -200,17 +200,13 @@ namespace CairoChart {
 
 		public double title_indent = 4;
 
-		public virtual void show_text(Text text) {
-			text.show(context);
-		}
-
 		protected virtual void draw_chart_title () {
 			var sz = title.get_size(context);
 			title_height = sz.height + (legend.position == Legend.Position.TOP ? title_indent * 2 : title_indent);
 			cur_y_min += title_height;
 			set_source_rgba(title.color);
 			context.move_to (width/2 - sz.width/2, sz.height + title_indent);
-			show_text(title);
+			title.show(context);
 		}
 
 		public virtual void set_line_style (Line.Style style) {
@@ -569,7 +565,7 @@ namespace CairoChart {
 					context.move_to(scr_x - sz.width / 2.0, scr_y);
 					set_source_rgba(s.axis_x.color);
 					if (joint_x) set_source_rgba(joint_axis_color);
-					show_text(s.axis_x.title);
+					s.axis_x.title.show(context);
 				}
 
 				// 5. Draw records, update cur_{x,y}_{min,max}.
@@ -594,14 +590,14 @@ namespace CairoChart {
 						context.move_to (print_x, print_y);
 						switch (s.axis_x.type) {
 						case Axis.Type.NUMBERS:
-							show_text(text_t);
+							text_t.show(context);
 							break;
 						case Axis.Type.DATE_TIME:
-							if (s.axis_x.date_format != "") show_text(text_t);
+							if (s.axis_x.date_format != "") text_t.show(context);
 							var time_text_t = new Text(time_text, s.axis_x.font_style, s.axis_x.color);
 							print_x = compact_rec_x_pos (s, x, time_text_t);
 							context.move_to (print_x, print_y - (s.axis_x.date_format == "" ? 0 : text_t.get_height(context) + s.axis_x.font_indent));
-							if (s.axis_x.time_format != "") show_text(time_text_t);
+							if (s.axis_x.time_format != "") time_text_t.show(context);
 							break;
 						}
 						// 6. Draw grid lines to the s.place.zoom_y_min.
@@ -622,14 +618,14 @@ namespace CairoChart {
 
 						switch (s.axis_x.type) {
 						case Axis.Type.NUMBERS:
-							show_text(text_t);
+							text_t.show(context);
 							break;
 						case Axis.Type.DATE_TIME:
-							if (s.axis_x.date_format != "") show_text(text_t);
+							if (s.axis_x.date_format != "") text_t.show(context);
 							var time_text_t = new Text(time_text, s.axis_x.font_style, s.axis_x.color);
 							print_x = compact_rec_x_pos (s, x, time_text_t);
 							context.move_to (print_x, print_y - (s.axis_x.date_format == "" ? 0 : text_t.get_height(context) + s.axis_x.font_indent));
-							if (s.axis_x.time_format != "") show_text(time_text_t);
+							if (s.axis_x.time_format != "") time_text_t.show(context);
 							break;
 						}
 						// 6. Draw grid lines to the s.place.zoom_y_max.
@@ -738,7 +734,7 @@ namespace CairoChart {
 					}
 					set_source_rgba(s.axis_y.color);
 					if (joint_y) set_source_rgba(joint_axis_color);
-					show_text(s.axis_y.title);
+					s.axis_y.title.show(context);
 				}
 
 				// 5. Draw records, update cur_{x,y}_{min,max}.
@@ -754,7 +750,7 @@ namespace CairoChart {
 						context.move_to (cur_x_min + max_rec_width - text_sz.width + s.axis_y.font_indent
 						                 + (s.axis_y.title.text == "" ? 0 : sz.width + s.axis_y.font_indent),
 						                 compact_rec_y_pos (s, y, text_t));
-						show_text(text_t);
+						text_t.show(context);
 						// 6. Draw grid lines to the s.place.zoom_x_min.
 						var line_style = s.grid.line_style;
 						if (joint_y) line_style.color = Color(0, 0, 0, 0.5);
@@ -770,7 +766,7 @@ namespace CairoChart {
 						context.move_to (cur_x_max - text_sz.width - s.axis_y.font_indent
 						                 - (s.axis_y.title.text == "" ? 0 : sz.width + s.axis_y.font_indent),
 						                 compact_rec_y_pos (s, y, text_t));
-						show_text(text_t);
+						text_t.show(context);
 						// 6. Draw grid lines to the s.place.zoom_x_max.
 						var line_style = s.grid.line_style;
 						if (joint_y) line_style.color = Color(0, 0, 0, 0.5);
@@ -1324,13 +1320,13 @@ namespace CairoChart {
 
 						switch (s.axis_x.type) {
 						case Axis.Type.NUMBERS:
-							show_text(text_t);
+							text_t.show(context);
 							break;
 						case Axis.Type.DATE_TIME:
-							if (s.axis_x.date_format != "") show_text(text_t);
+							if (s.axis_x.date_format != "") text_t.show(context);
 							print_x = compact_rec_x_pos (s, x, time_text_t);
 							context.move_to (print_x, print_y - (s.axis_x.date_format == "" ? 0 : sz.height + s.axis_x.font_indent));
-							if (s.axis_x.time_format != "") show_text(time_text_t);
+							if (s.axis_x.time_format != "") time_text_t.show(context);
 							break;
 						}
 					}
@@ -1358,7 +1354,7 @@ namespace CairoChart {
 							break;
 						}
 						context.move_to (print_x, print_y);
-						show_text(text_t);
+						text_t.show(context);
 					}
 					break;
 				}
@@ -1385,7 +1381,7 @@ namespace CairoChart {
 						var text_t = new Text(s.axis_x.format.printf((LongDouble)point.x), s.axis_x.font_style);
 						context.move_to (svp.x - size.x / 2, svp.y + text_t.get_height(context) / 2);
 						if (joint_x) set_source_rgba (joint_axis_color);
-						show_text(text_t);
+						text_t.show(context);
 					}
 
 					if (show_time) {
@@ -1398,7 +1394,7 @@ namespace CairoChart {
 						if (show_date) y -= sz.height / 2 + s.axis_x.font_indent / 2;
 						context.move_to (svp.x - size.x / 2, y);
 						if (joint_x) set_source_rgba (joint_axis_color);
-						show_text(text_t);
+						text_t.show(context);
 					}
 
 					if (show_date) {
@@ -1411,7 +1407,7 @@ namespace CairoChart {
 						if (show_time) y += sz.height / 2 + s.axis_x.font_indent / 2;
 						context.move_to (svp.x - size.x / 2, y);
 						if (joint_x) set_source_rgba (joint_axis_color);
-						show_text(text_t);
+						text_t.show(context);
 					}
 
 					if (show_y) {
@@ -1420,7 +1416,7 @@ namespace CairoChart {
 						var sz = text_t.get_size(context);
 						context.move_to (svp.x + size.x / 2 - sz.width, svp.y + sz.height / 2);
 						if (joint_y) set_source_rgba (joint_axis_color);
-						show_text(text_t);
+						text_t.show(context);
 					}
 				}
 			}

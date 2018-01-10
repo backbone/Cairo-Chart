@@ -145,7 +145,7 @@ namespace CairoChart {
 					// series title
 					chart.context.move_to (x + line_length, y);
 					chart.set_source_rgba (s.title.color);
-					chart.show_text(s.title);
+					s.title.show(chart.context);
 
 					// series line style
 					chart.context.move_to (x, y - title_sz.height / 2);
