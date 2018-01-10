@@ -706,6 +706,7 @@ namespace CairoChart {
 			return plot_y_max - (plot_y_max - plot_y_min) * (s.place.zoom_y_min + (y - s.axis_y.zoom_min)
 			                         / (s.axis_y.zoom_max - s.axis_y.zoom_min) * (s.place.zoom_y_max - s.place.zoom_y_min));
 		}
+
 		protected virtual Point get_scr_point (Series s, Point p) {
 			return Point (get_scr_x(s, p.x), get_scr_y(s, p.y));
 		}
@@ -714,10 +715,12 @@ namespace CairoChart {
 			return s.axis_x.zoom_min + ((scr_x - plot_x_min) / (plot_x_max - plot_x_min) - s.place.zoom_x_min)
 			       * (s.axis_x.zoom_max - s.axis_x.zoom_min) / (s.place.zoom_x_max - s.place.zoom_x_min);
 		}
+
 		protected virtual Float128 get_real_y (Series s, double scr_y) {
 			return s.axis_y.zoom_min + ((plot_y_max - scr_y) / (plot_y_max - plot_y_min) - s.place.zoom_y_min)
 			       * (s.axis_y.zoom_max - s.axis_y.zoom_min) / (s.place.zoom_y_max - s.place.zoom_y_min);
 		}
+
 		protected virtual Point get_real_point (Series s, Point p) {
 			return Point (get_real_x(s, p.x), get_real_y(s, p.y));
 		}
