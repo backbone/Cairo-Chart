@@ -93,7 +93,7 @@ namespace CairoChart {
 		protected double rz_y_min = 0.0;
 		protected double rz_y_max = 1.0;
 
-		int zoom_first_show = 0;
+		public int zoom_first_show { get; protected set; default = 0; }
 
 		public virtual void zoom_in (double x0, double y0, double x1, double y1) {
 			for (var si = 0, max_i = series.length; si < max_i; ++si) {
@@ -304,13 +304,13 @@ namespace CairoChart {
 			join_calc (false);
 		}
 
-		protected virtual double compact_rec_x_pos (Series s, Float128 x, Text text) {
+		public virtual double compact_rec_x_pos (Series s, Float128 x, Text text) {
 			var sz = text.get_size(context);
 			return get_scr_x(s, x) - sz.width / 2.0
 			       - sz.width * (x - (s.axis_x.zoom_min + s.axis_x.zoom_max) / 2.0) / (s.axis_x.zoom_max - s.axis_x.zoom_min);
 		}
 
-		protected virtual double compact_rec_y_pos (Series s, Float128 y, Text text) {
+		public virtual double compact_rec_y_pos (Series s, Float128 y, Text text) {
 			var sz = text.get_size(context);
 			return get_scr_y(s, y) + sz.height / 2.0
 			       + sz.height * (y - (s.axis_y.zoom_min + s.axis_y.zoom_max) / 2.0) / (s.axis_y.zoom_max - s.axis_y.zoom_min);
@@ -318,157 +318,9 @@ namespace CairoChart {
 
 		public CairoChart.Math math = new Math();
 
-		protected virtual void draw_horizontal_records (Series s, Float128 step, double max_rec_height, Float128 x_min) {
-			// 5. Draw records, update cur_{x,y}_{min,max}.
-			for (Float128 x = x_min, x_max = s.axis_x.zoom_max; math.point_belong (x, x_min, x_max); x += step) {
-				if (joint_x) set_source_rgba(joint_axis_color);
-				else set_source_rgba(s.axis_x.color);
-				string text = "", time_text = "";
-				switch (s.axis_x.type) {
-				case Axis.Type.NUMBERS:
-					text = s.axis_x.format.printf((LongDouble)x);
-					break;
-				case Axis.Type.DATE_TIME:
-					s.axis_x.format_date_time(x, out text, out time_text);
-					break;
-				}
-				var scr_x = get_scr_x (s, x);
-				var text_t = new Text(text, s.axis_x.font_style, s.axis_x.color);
-				var sz = s.axis_x.title.get_size(context);
-
-				switch (s.axis_x.position) {
-				case Axis.Position.LOW:
-					var print_y = cur_y_max - s.axis_x.font_indent - (s.axis_x.title.text == "" ? 0 : sz.height + s.axis_x.font_indent);
-					var print_x = compact_rec_x_pos (s, x, text_t);
-					context.move_to (print_x, print_y);
-					switch (s.axis_x.type) {
-					case Axis.Type.NUMBERS:
-						text_t.show(context);
-						break;
-					case Axis.Type.DATE_TIME:
-						if (s.axis_x.date_format != "") text_t.show(context);
-						var time_text_t = new Text(time_text, s.axis_x.font_style, s.axis_x.color);
-						print_x = compact_rec_x_pos (s, x, time_text_t);
-						context.move_to (print_x, print_y - (s.axis_x.date_format == "" ? 0 : text_t.get_height(context) + s.axis_x.font_indent));
-						if (s.axis_x.time_format != "") time_text_t.show(context);
-						break;
-					}
-					// 6. Draw grid lines to the s.place.zoom_y_min.
-					var line_style = s.grid.line_style;
-					if (joint_x) line_style.color = Color(0, 0, 0, 0.5);
-					line_style.set(this);
-					double y = cur_y_max - max_rec_height - s.axis_x.font_indent - (s.axis_x.title.text == "" ? 0 : sz.height + s.axis_x.font_indent);
-					context.move_to (scr_x, y);
-					if (joint_x)
-						context.line_to (scr_x, plot_y_min);
-					else
-						context.line_to (scr_x, double.min (y, plot_y_max - (plot_y_max - plot_y_min) * s.place.zoom_y_max));
-					break;
-				case Axis.Position.HIGH:
-					var print_y = cur_y_min + max_rec_height + s.axis_x.font_indent + (s.axis_x.title.text == "" ? 0 : sz.height + s.axis_x.font_indent);
-					var print_x = compact_rec_x_pos (s, x, text_t);
-					context.move_to (print_x, print_y);
-
-					switch (s.axis_x.type) {
-					case Axis.Type.NUMBERS:
-						text_t.show(context);
-						break;
-					case Axis.Type.DATE_TIME:
-						if (s.axis_x.date_format != "") text_t.show(context);
-						var time_text_t = new Text(time_text, s.axis_x.font_style, s.axis_x.color);
-						print_x = compact_rec_x_pos (s, x, time_text_t);
-						context.move_to (print_x, print_y - (s.axis_x.date_format == "" ? 0 : text_t.get_height(context) + s.axis_x.font_indent));
-						if (s.axis_x.time_format != "") time_text_t.show(context);
-						break;
-					}
-					// 6. Draw grid lines to the s.place.zoom_y_max.
-					var line_style = s.grid.line_style;
-					if (joint_x) line_style.color = Color(0, 0, 0, 0.5);
-					line_style.set(this);
-					double y = cur_y_min + max_rec_height + s.axis_x.font_indent + (s.axis_x.title.text == "" ? 0 : sz.height + s.axis_x.font_indent);
-					context.move_to (scr_x, y);
-					if (joint_x)
-						context.line_to (scr_x, plot_y_max);
-					else
-						context.line_to (scr_x, double.max (y, plot_y_max - (plot_y_max - plot_y_min) * s.place.zoom_y_min));
-					break;
-				}
-			}
-		}
-
 		protected virtual void draw_horizontal_axes () {
 			for (var si = series.length - 1, nskip = 0; si >=0; --si) {
-				var s = series[si];
-				if (!s.zoom_show) continue;
-				if (joint_x && si != zoom_first_show) continue;
-
-				// 1. Detect max record width/height by axis.nrecords equally selected points using format.
-				double max_rec_width, max_rec_height;
-				s.axis_x.calc_rec_sizes (this, out max_rec_width, out max_rec_height, true);
-
-				// 2. Calculate maximal available number of records, take into account the space width.
-				long max_nrecs = (long) ((plot_x_max - plot_x_min) * (s.place.zoom_x_max - s.place.zoom_x_min) / max_rec_width);
-
-				// 3. Calculate grid step.
-				Float128 step = math.calc_round_step ((s.axis_x.zoom_max - s.axis_x.zoom_min) / max_nrecs, s.axis_x.type == Axis.Type.DATE_TIME);
-				if (step > s.axis_x.zoom_max - s.axis_x.zoom_min)
-					step = s.axis_x.zoom_max - s.axis_x.zoom_min;
-
-				// 4. Calculate x_min (s.axis_x.zoom_min / step, round, multiply on step, add step if < s.axis_x.zoom_min).
-				Float128 x_min = 0.0;
-				if (step >= 1) {
-					int64 x_min_nsteps = (int64) (s.axis_x.zoom_min / step);
-					x_min = x_min_nsteps * step;
-				} else {
-					int64 round_axis_x_min = (int64)s.axis_x.zoom_min;
-					int64 x_min_nsteps = (int64) ((s.axis_x.zoom_min - round_axis_x_min) / step);
-					x_min = round_axis_x_min + x_min_nsteps * step;
-				}
-				if (x_min < s.axis_x.zoom_min) x_min += step;
-
-				// 4.2. Cursor values for joint X axis
-				if (joint_x && cursor_style.orientation == Cursor.Orientation.VERTICAL && cursors_crossings.length != 0) {
-					switch (s.axis_x.position) {
-					case Axis.Position.LOW: cur_y_max -= max_rec_height + s.axis_x.font_indent; break;
-					case Axis.Position.HIGH: cur_y_min += max_rec_height + s.axis_x.font_indent; break;
-					}
-				}
-
-				var sz = s.axis_x.title.get_size(context);
-
-				// 4.5. Draw Axis title
-				if (s.axis_x.title.text != "") {
-					var scr_x = plot_x_min + (plot_x_max - plot_x_min) * (s.place.zoom_x_min + s.place.zoom_x_max) / 2.0;
-					double scr_y = 0.0;
-					switch (s.axis_x.position) {
-					case Axis.Position.LOW: scr_y = cur_y_max - s.axis_x.font_indent; break;
-					case Axis.Position.HIGH: scr_y = cur_y_min + s.axis_x.font_indent + sz.height; break;
-					}
-					context.move_to(scr_x - sz.width / 2.0, scr_y);
-					set_source_rgba(s.axis_x.color);
-					if (joint_x) set_source_rgba(joint_axis_color);
-					s.axis_x.title.show(context);
-				}
-
-				draw_horizontal_records (s, step, max_rec_height, x_min);
-
-				context.stroke ();
-
-				double tmp1 = 0, tmp2 = 0, tmp3 = 0, tmp4 = 0;
-				s.join_relative_x_axes (this, si, false, ref tmp1, ref tmp2, ref tmp3, ref tmp4, ref nskip);
-
-				if (nskip != 0) {--nskip; continue;}
-
-				switch (s.axis_x.position) {
-				case Axis.Position.LOW:
-					cur_y_max -= max_rec_height + s.axis_x.font_indent
-					             + (s.axis_x.title.text == "" ? 0 : sz.height + s.axis_x.font_indent);
-					break;
-				case Axis.Position.HIGH:
-					cur_y_min += max_rec_height +  s.axis_x.font_indent
-					             + (s.axis_x.title.text == "" ? 0 : sz.height + s.axis_x.font_indent);
-					break;
-				}
+				series[si].draw_horizontal_axis (this, si, ref nskip);
 			}
 		}
 
@@ -742,7 +594,7 @@ namespace CairoChart {
 			CursorCross[] crossings;
 		}
 
-		protected CursorCrossings[] cursors_crossings = {};
+		public CursorCrossings[] cursors_crossings = {};
 
 		protected List<Point?> get_all_cursors () {
 			var all_cursors = cursors.copy_deep ((src) => { return src; });

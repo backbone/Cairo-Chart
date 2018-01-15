@@ -185,5 +185,160 @@ namespace CairoChart {
 				}
 			}
 		}
+
+		protected virtual void draw_horizontal_records (Chart chart, Series s, Float128 step, double max_rec_height, Float128 x_min) {
+			// 5. Draw records, update cur_{x,y}_{min,max}.
+			var context = chart.context;
+			var joint_x = chart.joint_x;
+
+			for (Float128 x = x_min, x_max = s.axis_x.zoom_max; chart.math.point_belong (x, x_min, x_max); x += step) {
+				if (joint_x) chart.set_source_rgba(chart.joint_axis_color);
+				else chart.set_source_rgba(s.axis_x.color);
+				string text = "", time_text = "";
+				switch (s.axis_x.type) {
+				case Axis.Type.NUMBERS:
+					text = s.axis_x.format.printf((LongDouble)x);
+					break;
+				case Axis.Type.DATE_TIME:
+					s.axis_x.format_date_time(x, out text, out time_text);
+					break;
+				}
+				var scr_x = chart.get_scr_x (s, x);
+				var text_t = new Text(text, s.axis_x.font_style, s.axis_x.color);
+				var sz = s.axis_x.title.get_size(context);
+
+				switch (s.axis_x.position) {
+				case Axis.Position.LOW:
+					var print_y = chart.cur_y_max - s.axis_x.font_indent - (s.axis_x.title.text == "" ? 0 : sz.height + s.axis_x.font_indent);
+					var print_x = chart.compact_rec_x_pos (s, x, text_t);
+					context.move_to (print_x, print_y);
+					switch (s.axis_x.type) {
+					case Axis.Type.NUMBERS:
+						text_t.show(context);
+						break;
+					case Axis.Type.DATE_TIME:
+						if (s.axis_x.date_format != "") text_t.show(context);
+						var time_text_t = new Text(time_text, s.axis_x.font_style, s.axis_x.color);
+						print_x = chart.compact_rec_x_pos (s, x, time_text_t);
+						context.move_to (print_x, print_y - (s.axis_x.date_format == "" ? 0 : text_t.get_height(context) + s.axis_x.font_indent));
+						if (s.axis_x.time_format != "") time_text_t.show(context);
+						break;
+					}
+					// 6. Draw grid lines to the s.place.zoom_y_min.
+					var line_style = s.grid.line_style;
+					if (joint_x) line_style.color = Color(0, 0, 0, 0.5);
+					line_style.set(chart);
+					double y = chart.cur_y_max - max_rec_height - s.axis_x.font_indent - (s.axis_x.title.text == "" ? 0 : sz.height + s.axis_x.font_indent);
+					context.move_to (scr_x, y);
+					if (joint_x)
+						context.line_to (scr_x, chart.plot_y_min);
+					else
+						context.line_to (scr_x, double.min (y, chart.plot_y_max - (chart.plot_y_max - chart.plot_y_min) * s.place.zoom_y_max));
+					break;
+				case Axis.Position.HIGH:
+					var print_y = chart.cur_y_min + max_rec_height + s.axis_x.font_indent + (s.axis_x.title.text == "" ? 0 : sz.height + s.axis_x.font_indent);
+					var print_x = chart.compact_rec_x_pos (s, x, text_t);
+					context.move_to (print_x, print_y);
+
+					switch (s.axis_x.type) {
+					case Axis.Type.NUMBERS:
+						text_t.show(context);
+						break;
+					case Axis.Type.DATE_TIME:
+						if (s.axis_x.date_format != "") text_t.show(context);
+						var time_text_t = new Text(time_text, s.axis_x.font_style, s.axis_x.color);
+						print_x = chart.compact_rec_x_pos (s, x, time_text_t);
+						context.move_to (print_x, print_y - (s.axis_x.date_format == "" ? 0 : text_t.get_height(context) + s.axis_x.font_indent));
+						if (s.axis_x.time_format != "") time_text_t.show(context);
+						break;
+					}
+					// 6. Draw grid lines to the s.place.zoom_y_max.
+					var line_style = s.grid.line_style;
+					if (joint_x) line_style.color = Color(0, 0, 0, 0.5);
+					line_style.set(chart);
+					double y = chart.cur_y_min + max_rec_height + s.axis_x.font_indent + (s.axis_x.title.text == "" ? 0 : sz.height + s.axis_x.font_indent);
+					context.move_to (scr_x, y);
+					if (joint_x)
+						context.line_to (scr_x, chart.plot_y_max);
+					else
+						context.line_to (scr_x, double.max (y, chart.plot_y_max - (chart.plot_y_max - chart.plot_y_min) * s.place.zoom_y_min));
+					break;
+				}
+			}
+		}
+
+		public virtual void draw_horizontal_axis (Chart chart, int si, ref int nskip) {
+			var s = chart.series[si];
+			if (!s.zoom_show) return;
+			if (chart.joint_x && si != chart.zoom_first_show) return;
+
+			// 1. Detect max record width/height by axis.nrecords equally selected points using format.
+			double max_rec_width, max_rec_height;
+			s.axis_x.calc_rec_sizes (chart, out max_rec_width, out max_rec_height, true);
+
+			// 2. Calculate maximal available number of records, take into account the space width.
+			long max_nrecs = (long) ((chart.plot_x_max - chart.plot_x_min) * (s.place.zoom_x_max - s.place.zoom_x_min) / max_rec_width);
+
+			// 3. Calculate grid step.
+			Float128 step = chart.math.calc_round_step ((s.axis_x.zoom_max - s.axis_x.zoom_min) / max_nrecs, s.axis_x.type == Axis.Type.DATE_TIME);
+			if (step > s.axis_x.zoom_max - s.axis_x.zoom_min)
+				step = s.axis_x.zoom_max - s.axis_x.zoom_min;
+
+			// 4. Calculate x_min (s.axis_x.zoom_min / step, round, multiply on step, add step if < s.axis_x.zoom_min).
+			Float128 x_min = 0.0;
+			if (step >= 1) {
+				int64 x_min_nsteps = (int64) (s.axis_x.zoom_min / step);
+				x_min = x_min_nsteps * step;
+			} else {
+				int64 round_axis_x_min = (int64)s.axis_x.zoom_min;
+				int64 x_min_nsteps = (int64) ((s.axis_x.zoom_min - round_axis_x_min) / step);
+				x_min = round_axis_x_min + x_min_nsteps * step;
+			}
+			if (x_min < s.axis_x.zoom_min) x_min += step;
+
+			// 4.2. Cursor values for joint X axis
+			if (chart.joint_x && chart.cursor_style.orientation == Cursor.Orientation.VERTICAL && chart.cursors_crossings.length != 0) {
+				switch (s.axis_x.position) {
+				case Axis.Position.LOW: chart.cur_y_max -= max_rec_height + s.axis_x.font_indent; break;
+				case Axis.Position.HIGH: chart.cur_y_min += max_rec_height + s.axis_x.font_indent; break;
+				}
+			}
+
+			var sz = s.axis_x.title.get_size(chart.context);
+
+			// 4.5. Draw Axis title
+			if (s.axis_x.title.text != "") {
+				var scr_x = chart.plot_x_min + (chart.plot_x_max - chart.plot_x_min) * (s.place.zoom_x_min + s.place.zoom_x_max) / 2.0;
+				double scr_y = 0.0;
+				switch (s.axis_x.position) {
+				case Axis.Position.LOW: scr_y = chart.cur_y_max - s.axis_x.font_indent; break;
+				case Axis.Position.HIGH: scr_y = chart.cur_y_min + s.axis_x.font_indent + sz.height; break;
+				}
+				chart.context.move_to(scr_x - sz.width / 2.0, scr_y);
+				chart.set_source_rgba(s.axis_x.color);
+				if (chart.joint_x) chart.set_source_rgba(chart.joint_axis_color);
+				s.axis_x.title.show(chart.context);
+			}
+
+			draw_horizontal_records (chart, s, step, max_rec_height, x_min);
+
+			chart.context.stroke ();
+
+			double tmp1 = 0, tmp2 = 0, tmp3 = 0, tmp4 = 0;
+			s.join_relative_x_axes (chart, si, false, ref tmp1, ref tmp2, ref tmp3, ref tmp4, ref nskip);
+
+			if (nskip != 0) {--nskip; return;}
+
+			switch (s.axis_x.position) {
+			case Axis.Position.LOW:
+				chart.cur_y_max -= max_rec_height + s.axis_x.font_indent
+				             + (s.axis_x.title.text == "" ? 0 : sz.height + s.axis_x.font_indent);
+				break;
+			case Axis.Position.HIGH:
+				chart.cur_y_min += max_rec_height +  s.axis_x.font_indent
+				             + (s.axis_x.title.text == "" ? 0 : sz.height + s.axis_x.font_indent);
+				break;
+			}
+		}
 	}
 }
