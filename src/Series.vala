@@ -110,14 +110,53 @@ namespace CairoChart {
 			return true;
 		}
 
+		public virtual void join_relative_x_axes (Chart chart,
+		                                          int si,
+		                                          bool calc_max_values,
+		                                          ref double max_rec_width,
+		                                          ref double max_rec_height,
+		                                          ref double max_font_indent,
+		                                          ref double max_axis_font_height,
+		                                          ref int nskip) {
+			for (int sj = si - 1; sj >= 0; --sj) {
+				var s2 = chart.series[sj];
+				if (!s2.zoom_show) continue;
+				bool has_intersection = false;
+				for (int sk = si; sk > sj; --sk) {
+					var s3 = chart.series[sk];
+					if (!s3.zoom_show) continue;
+					if (chart.math.are_intersect(s2.place.zoom_x_min, s2.place.zoom_x_max, s3.place.zoom_x_min, s3.place.zoom_x_max)
+					    || s2.axis_x.position != s3.axis_x.position
+					    || s2.axis_x.type != s3.axis_x.type) {
+						has_intersection = true;
+						break;
+					}
+				}
+				if (!has_intersection) {
+					if (calc_max_values) {
+						double tmp_max_rec_width = 0; double tmp_max_rec_height = 0;
+						s2.axis_x.calc_rec_sizes (chart, out tmp_max_rec_width, out tmp_max_rec_height, true);
+						max_rec_width = double.max (max_rec_width, tmp_max_rec_width);
+						max_rec_height = double.max (max_rec_height, tmp_max_rec_height);
+						max_font_indent = double.max (max_font_indent, s2.axis_x.font_indent);
+						max_axis_font_height = double.max (max_axis_font_height, s2.axis_x.title.text == "" ? 0 :
+						                                   s2.axis_x.title.get_height(chart.context) + this.axis_x.font_indent);
+					}
+					++nskip;
+				} else {
+					break;
+				}
+			}
+		}
+
 		public virtual void join_relative_y_axes (Chart chart,
-		                                             int si,
-		                                             bool calc_max_values,
-		                                             ref double max_rec_width,
-		                                             ref double max_rec_height,
-		                                             ref double max_font_indent,
-		                                             ref double max_axis_font_width,
-		                                             ref int nskip) {
+		                                          int si,
+		                                          bool calc_max_values,
+		                                          ref double max_rec_width,
+		                                          ref double max_rec_height,
+		                                          ref double max_font_indent,
+		                                          ref double max_axis_font_width,
+		                                          ref int nskip) {
 			for (int sj = si - 1; sj >= 0; --sj) {
 				var s2 = chart.series[sj];
 				if (!s2.zoom_show) continue;
@@ -146,7 +185,5 @@ namespace CairoChart {
 				}
 			}
 		}
-
-
 	}
 }
