@@ -318,7 +318,7 @@ namespace CairoChart {
 
 		public CairoChart.Math math = new Math();
 
-		protected virtual void draw_records_h (Series s, Float128 step, double max_rec_height, Float128 x_min) {
+		protected virtual void draw_horizontal_records (Series s, Float128 step, double max_rec_height, Float128 x_min) {
 			// 5. Draw records, update cur_{x,y}_{min,max}.
 			for (Float128 x = x_min, x_max = s.axis_x.zoom_max; math.point_belong (x, x_min, x_max); x += step) {
 				if (joint_x) set_source_rgba(joint_axis_color);
@@ -396,10 +396,6 @@ namespace CairoChart {
 			}
 		}
 
-		protected virtual void draw_horizontal_axis (int si, ref int nskip) {
-
-		}
-
 		protected virtual void draw_horizontal_axes () {
 			for (var si = series.length - 1, nskip = 0; si >=0; --si) {
 				var s = series[si];
@@ -454,7 +450,7 @@ namespace CairoChart {
 					s.axis_x.title.show(context);
 				}
 
-				draw_records_h (s, step, max_rec_height, x_min);
+				draw_horizontal_records (s, step, max_rec_height, x_min);
 
 				context.stroke ();
 
