@@ -251,7 +251,7 @@ namespace CairoChart {
 			if (nzoom_series_show == 1) joint_x = joint_y = false;
 
 			// Join and calc X-axes
-			for (var si = series.length - 1, nskip = 0; si >=0; --si) {
+			for (var si = series.length - 1, nskip = 0; si >= 0; --si) {
 				var s = series[si];
 				if (!s.zoom_show) continue;
 				if (nskip != 0) {--nskip; continue;}
@@ -278,7 +278,7 @@ namespace CairoChart {
 			}
 
 			// Join and calc Y-axes
-			for (var si = series.length - 1, nskip = 0; si >=0; --si) {
+			for (var si = series.length - 1, nskip = 0; si >= 0; --si) {
 				var s = series[si];
 				if (!s.zoom_show) continue;
 				if (nskip != 0) {--nskip; continue;}

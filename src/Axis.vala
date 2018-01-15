@@ -110,13 +110,13 @@ namespace CairoChart {
 			time = dt.format(time_format) + dsec_str;
 		}
 
-		public virtual void calc_rec_sizes (Chart chart, out double max_rec_width, out double max_rec_height, bool is_horizontal = true) {
+		public virtual void calc_rec_sizes (Chart chart, out double max_rec_width, out double max_rec_height, bool horizontal = true) {
 			max_rec_width = max_rec_height = 0;
 			for (var i = 0; i < nrecords; ++i) {
 				Float128 x = (int64)(zoom_min + (zoom_max - zoom_min) / nrecords * i) + 1.0/3.0;
 				switch (type) {
 				case Axis.Type.NUMBERS:
-					var text = new Text (format.printf((LongDouble)x) + (is_horizontal ? "_" : ""), font_style);
+					var text = new Text (format.printf((LongDouble)x) + (horizontal ? "_" : ""), font_style);
 					var sz = text.get_size(chart.context);
 					max_rec_width = double.max (max_rec_width, sz.width);
 					max_rec_height = double.max (max_rec_height, sz.height);
@@ -127,13 +127,13 @@ namespace CairoChart {
 
 					var h = 0.0;
 					if (date_format != "") {
-						var text = new Text (date + (is_horizontal ? "_" : ""), font_style);
+						var text = new Text (date + (horizontal ? "_" : ""), font_style);
 						var sz = text.get_size(chart.context);
 						max_rec_width = double.max (max_rec_width, sz.width);
 						h = sz.height;
 					}
 					if (time_format != "") {
-						var text = new Text (time + (is_horizontal ? "_" : ""), font_style);
+						var text = new Text (time + (horizontal ? "_" : ""), font_style);
 						var sz = text.get_size(chart.context);
 						max_rec_width = double.max (max_rec_width, sz.width);
 						h += sz.height;
