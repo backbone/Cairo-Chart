@@ -382,7 +382,7 @@ namespace CairoChart {
 			       + sz.height * (y - (s.axis_y.zoom_min + s.axis_y.zoom_max) / 2.0) / (s.axis_y.zoom_max - s.axis_y.zoom_min);
 		}
 
-		protected CairoChart.Math math = new Math();
+		public CairoChart.Math math = new Math();
 
 		protected virtual void draw_horizontal_axis () {
 			for (var si = series.length - 1, nskip = 0; si >=0; --si) {
@@ -697,17 +697,17 @@ namespace CairoChart {
 			context.stroke ();
 		}
 
-		protected virtual double get_scr_x (Series s, Float128 x) {
+		public virtual double get_scr_x (Series s, Float128 x) {
 			return plot_x_min + (plot_x_max - plot_x_min) * (s.place.zoom_x_min + (x - s.axis_x.zoom_min)
 			                         / (s.axis_x.zoom_max - s.axis_x.zoom_min) * (s.place.zoom_x_max - s.place.zoom_x_min));
 		}
 
-		protected virtual double get_scr_y (Series s, Float128 y) {
+		public virtual double get_scr_y (Series s, Float128 y) {
 			return plot_y_max - (plot_y_max - plot_y_min) * (s.place.zoom_y_min + (y - s.axis_y.zoom_min)
 			                         / (s.axis_y.zoom_max - s.axis_y.zoom_min) * (s.place.zoom_y_max - s.place.zoom_y_min));
 		}
 
-		protected virtual Point get_scr_point (Series s, Point p) {
+		public virtual Point get_scr_point (Series s, Point p) {
 			return Point (get_scr_x(s, p.x), get_scr_y(s, p.y));
 		}
 
@@ -737,7 +737,7 @@ namespace CairoChart {
 			return false;
 		}
 
-		protected virtual bool point_in_plot_area (Point p) {
+		public virtual bool point_in_plot_area (Point p) {
 			if (math.point_in_rect (p, plot_x_min, plot_x_max, plot_y_min, plot_y_max))
 				return true;
 			return false;
@@ -746,28 +746,8 @@ namespace CairoChart {
 		protected virtual void draw_series () {
 			for (var si = 0; si < series.length; ++si) {
 				var s = series[si];
-				if (!s.zoom_show) continue;
-				if (s.points.length == 0) continue;
-				var points = math.sort_points(s, s.sort);
-				s.line_style.set(this);
-				// draw series line
-				for (int i = 1; i < points.length; ++i) {
-					Point c, d;
-					if (math.cut_line (Point(plot_x_min, plot_y_min), Point(plot_x_max, plot_y_max),
-					                   Point(get_scr_x(s, points[i - 1].x), get_scr_y(s, points[i - 1].y)),
-					                   Point(get_scr_x(s, points[i].x), get_scr_y(s, points[i].y)),
-					              out c, out d)) {
-						context.move_to (c.x, c.y);
-						context.line_to (d.x, d.y);
-					}
-				}
-				context.stroke();
-				for (int i = 0; i < points.length; ++i) {
-					var x = get_scr_x(s, points[i].x);
-					var y = get_scr_y(s, points[i].y);
-					if (point_in_plot_area (Point (x, y)))
-						s.marker.draw_at_pos(this, x, y);
-				}
+				if (s.zoom_show && s.points.length != 0)
+					s.draw(this);
 			}
 		}
 

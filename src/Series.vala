@@ -59,5 +59,31 @@ namespace CairoChart {
 
 		public Series () {
 		}
+
+		public virtual void draw (Chart chart) {
+			var points = chart.math.sort_points(this, sort);
+			line_style.set(chart);
+			// draw series line
+			for (int i = 1; i < points.length; ++i) {
+				Point c, d;
+				if (chart.math.cut_line (
+				        Point(chart.plot_x_min, chart.plot_y_min),
+				        Point(chart.plot_x_max, chart.plot_y_max),
+				        Point(chart.get_scr_x(this, points[i - 1].x), chart.get_scr_y(this, points[i - 1].y)),
+				        Point(chart.get_scr_x(this, points[i].x), chart.get_scr_y(this, points[i].y)),
+				        out c, out d)
+				) {
+					chart.context.move_to (c.x, c.y);
+					chart.context.line_to (d.x, d.y);
+				}
+			}
+			chart.context.stroke();
+			for (int i = 0; i < points.length; ++i) {
+				var x = chart.get_scr_x(this, points[i].x);
+				var y = chart.get_scr_y(this, points[i].y);
+				if (chart.point_in_plot_area (Point (x, y)))
+					marker.draw_at_pos(chart, x, y);
+			}
+		}
 	}
 }
