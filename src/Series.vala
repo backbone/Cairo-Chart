@@ -85,5 +85,29 @@ namespace CairoChart {
 					marker.draw_at_pos(chart, x, y);
 			}
 		}
+
+		public virtual bool equal_x_axis (Series s) {
+			if (   axis_x.position != s.axis_x.position
+			    || axis_x.zoom_min != s.axis_x.zoom_min
+			    || axis_x.zoom_max != s.axis_x.zoom_max
+			    || place.zoom_x_min != s.place.zoom_x_min
+			    || place.zoom_x_max != s.place.zoom_x_max
+			    || axis_x.type != s.axis_x.type
+			)
+				return false;
+			return true;
+		}
+
+		public virtual bool equal_y_axis (Series s) {
+			if (   axis_y.position != s.axis_y.position
+			    || axis_y.zoom_min != s.axis_y.zoom_min
+			    || axis_y.zoom_max != s.axis_y.zoom_max
+			    || place.zoom_y_min != s.place.zoom_y_min
+			    || place.zoom_y_max != s.place.zoom_y_max
+			    || axis_y.type != s.axis_y.type
+			)
+				return false;
+			return true;
+		}
 	}
 }

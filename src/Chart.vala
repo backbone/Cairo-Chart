@@ -242,22 +242,11 @@ namespace CairoChart {
 			joint_x = joint_y = true;
 			int nzoom_series_show = 0;
 			for (var si = series.length - 1; si >=0; --si) {
-				var s = series[si];
+				var s = series[si], s0 = series[0];
 				if (!s.zoom_show) continue;
 				++nzoom_series_show;
-				if (   s.axis_x.position != series[0].axis_x.position
-				    || s.axis_x.zoom_min != series[0].axis_x.zoom_min
-				    || s.axis_x.zoom_max != series[0].axis_x.zoom_max
-				    || s.place.zoom_x_min != series[0].place.zoom_x_min
-				    || s.place.zoom_x_max != series[0].place.zoom_x_max
-				    || s.axis_x.type != series[0].axis_x.type)
-					joint_x = false;
-				if (   s.axis_y.position != series[0].axis_y.position
-				    || s.axis_y.zoom_min != series[0].axis_y.zoom_min
-				    || s.axis_y.zoom_max != series[0].axis_y.zoom_max
-				    || s.place.zoom_y_min != series[0].place.zoom_y_min
-				    || s.place.zoom_y_max != series[0].place.zoom_y_max)
-					joint_y = false;
+				if (!s.equal_x_axis(s0)) joint_x = false;
+				if (!s.equal_y_axis(s0)) joint_y = false;
 			}
 			if (nzoom_series_show == 1) joint_x = joint_y = false;
 
