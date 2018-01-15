@@ -232,57 +232,49 @@ namespace CairoChart {
 			}
 		}
 
-		protected virtual void join_calc_x () {
-			// Join and calc X-axes
+		protected virtual void join_calc (bool is_x) {
 			for (var si = series.length - 1, nskip = 0; si >= 0; --si) {
 				var s = series[si];
+				Axis axis = s.axis_x;
+				if (!is_x) axis = s.axis_y;
 				if (!s.zoom_show) continue;
 				if (nskip != 0) {--nskip; continue;}
 				double max_rec_width = 0; double max_rec_height = 0;
-				s.axis_x.calc_rec_sizes (this, out max_rec_width, out max_rec_height, true);
-				var max_font_indent = s.axis_x.font_indent;
-				var max_axis_font_height = s.axis_x.title.text == "" ? 0 : s.axis_x.title.get_height(context) + s.axis_x.font_indent;
+				axis.calc_rec_sizes (this, out max_rec_width, out max_rec_height, is_x);
+				var max_font_indent = axis.font_indent;
+				var max_axis_font_width = axis.title.text == "" ? 0 : axis.title.get_width(context) + axis.font_indent;
+				var max_axis_font_height = axis.title.text == "" ? 0 : axis.title.get_height(context) + axis.font_indent;
 
-				s.join_relative_x_axes (this, si, true, ref max_rec_width, ref max_rec_height, ref max_font_indent, ref max_axis_font_height, ref nskip);
+				if (is_x)
+					s.join_relative_x_axes (this, si, true, ref max_rec_width, ref max_rec_height, ref max_font_indent, ref max_axis_font_height, ref nskip);
+				else
+					s.join_relative_y_axes (this, si, true, ref max_rec_width, ref max_rec_height, ref max_font_indent, ref max_axis_font_width, ref nskip);
 
 				// for 4.2. Cursor values for joint X axis
-				if (joint_x && si == zoom_first_show && cursor_style.orientation == Cursor.Orientation.VERTICAL && cursors_crossings.length != 0) {
-					switch (s.axis_x.position) {
-					case Axis.Position.LOW: plot_y_max -= max_rec_height + s.axis_x.font_indent; break;
-					case Axis.Position.HIGH: plot_y_min += max_rec_height + s.axis_x.font_indent; break;
+				if (si == zoom_first_show && cursors_crossings.length != 0) {
+					switch (cursor_style.orientation) {
+					case Cursor.Orientation.VERTICAL:
+						if (is_x && joint_x)
+							switch (axis.position) {
+							case Axis.Position.LOW: plot_y_max -= max_rec_height + axis.font_indent; break;
+							case Axis.Position.HIGH: plot_y_min += max_rec_height + axis.font_indent; break;
+							}
+						break;
+					case Cursor.Orientation.HORIZONTAL:
+						if (!is_x && joint_y)
+							switch (s.axis_y.position) {
+							case Axis.Position.LOW: plot_x_min += max_rec_width + s.axis_y.font_indent; break;
+							case Axis.Position.HIGH: plot_x_max -= max_rec_width + s.axis_y.font_indent; break;
+							}
+						break;
 					}
 				}
-
-				if (!joint_x || si == zoom_first_show)
-					switch (s.axis_x.position) {
+				if (is_x && (!joint_x || si == zoom_first_show))
+					switch (axis.position) {
 					case Axis.Position.LOW: plot_y_max -= max_rec_height + max_font_indent + max_axis_font_height; break;
 					case Axis.Position.HIGH: plot_y_min += max_rec_height + max_font_indent + max_axis_font_height; break;
 					}
-			}
-		}
-
-		protected virtual void join_calc_y () {
-			// Join and calc Y-axes
-			for (var si = series.length - 1, nskip = 0; si >= 0; --si) {
-				var s = series[si];
-				if (!s.zoom_show) continue;
-				if (nskip != 0) {--nskip; continue;}
-				double max_rec_width = 0; double max_rec_height = 0;
-				s.axis_y.calc_rec_sizes (this, out max_rec_width, out max_rec_height, false);
-				var max_font_indent = s.axis_y.font_indent;
-				var max_axis_font_width = s.axis_y.title.text == "" ? 0 : s.axis_y.title.get_width(context) + s.axis_y.font_indent;
-
-				s.join_relative_y_axes (this, si, true, ref max_rec_width, ref max_rec_height, ref max_font_indent, ref max_axis_font_width, ref nskip);
-
-				// for 4.2. Cursor values for joint Y axis
-				if (joint_y && si == zoom_first_show && cursor_style.orientation == Cursor.Orientation.HORIZONTAL && cursors_crossings.length != 0) {
-					switch (s.axis_y.position) {
-					case Axis.Position.LOW: plot_x_min += max_rec_width + s.axis_y.font_indent; break;
-					case Axis.Position.HIGH: plot_x_max -= max_rec_width + s.axis_y.font_indent; break;
-					}
-				}
-
-				if (!joint_y || si == zoom_first_show)
+				if (!is_x && (!joint_y || si == zoom_first_show))
 					switch (s.axis_y.position) {
 					case Axis.Position.LOW: plot_x_min += max_rec_width + max_font_indent + max_axis_font_width; break;
 					case Axis.Position.HIGH: plot_x_max -= max_rec_width + max_font_indent + max_axis_font_width; break;
@@ -308,8 +300,8 @@ namespace CairoChart {
 			}
 			if (nzoom_series_show == 1) joint_x = joint_y = false;
 
-			join_calc_x ();
-			join_calc_y ();
+			join_calc (true);
+			join_calc (false);
 		}
 
 		protected virtual double compact_rec_x_pos (Series s, Float128 x, Text text) {
