@@ -232,24 +232,7 @@ namespace CairoChart {
 			}
 		}
 
-		protected virtual void calc_plot_area () {
-			plot_x_min = cur_x_min + legend.indent;
-			plot_x_max = cur_x_max - legend.indent;
-			plot_y_min = cur_y_min + legend.indent;
-			plot_y_max = cur_y_max - legend.indent;
-
-			// Check for joint axes
-			joint_x = joint_y = true;
-			int nzoom_series_show = 0;
-			for (var si = series.length - 1; si >=0; --si) {
-				var s = series[si], s0 = series[0];
-				if (!s.zoom_show) continue;
-				++nzoom_series_show;
-				if (!s.equal_x_axis(s0)) joint_x = false;
-				if (!s.equal_y_axis(s0)) joint_y = false;
-			}
-			if (nzoom_series_show == 1) joint_x = joint_y = false;
-
+		protected virtual void join_calc_x () {
 			// Join and calc X-axes
 			for (var si = series.length - 1, nskip = 0; si >= 0; --si) {
 				var s = series[si];
@@ -276,7 +259,9 @@ namespace CairoChart {
 					case Axis.Position.HIGH: plot_y_min += max_rec_height + max_font_indent + max_axis_font_height; break;
 					}
 			}
+		}
 
+		protected virtual void join_calc_y () {
 			// Join and calc Y-axes
 			for (var si = series.length - 1, nskip = 0; si >= 0; --si) {
 				var s = series[si];
@@ -303,6 +288,28 @@ namespace CairoChart {
 					case Axis.Position.HIGH: plot_x_max -= max_rec_width + max_font_indent + max_axis_font_width; break;
 					}
 			}
+		}
+
+		protected virtual void calc_plot_area () {
+			plot_x_min = cur_x_min + legend.indent;
+			plot_x_max = cur_x_max - legend.indent;
+			plot_y_min = cur_y_min + legend.indent;
+			plot_y_max = cur_y_max - legend.indent;
+
+			// Check for joint axes
+			joint_x = joint_y = true;
+			int nzoom_series_show = 0;
+			for (var si = series.length - 1; si >=0; --si) {
+				var s = series[si], s0 = series[0];
+				if (!s.zoom_show) continue;
+				++nzoom_series_show;
+				if (!s.equal_x_axis(s0)) joint_x = false;
+				if (!s.equal_y_axis(s0)) joint_y = false;
+			}
+			if (nzoom_series_show == 1) joint_x = joint_y = false;
+
+			join_calc_x ();
+			join_calc_y ();
 		}
 
 		protected virtual double compact_rec_x_pos (Series s, Float128 x, Text text) {
