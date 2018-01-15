@@ -233,13 +233,13 @@ namespace CairoChart {
 		}
 
 		protected virtual void join_relative_x_axes (Series s,
-		                                  int si,
-		                                  bool calc_max_values,
-		                                  ref double max_rec_width,
-		                                  ref double max_rec_height,
-		                                  ref double max_font_indent,
-		                                  ref double max_axis_font_height,
-		                                  ref int nskip) {
+		                                             int si,
+		                                             bool calc_max_values,
+		                                             ref double max_rec_width,
+		                                             ref double max_rec_height,
+		                                             ref double max_font_indent,
+		                                             ref double max_axis_font_height,
+		                                             ref int nskip) {
 			for (int sj = si - 1; sj >= 0; --sj) {
 				var s2 = series[sj];
 				if (!s2.zoom_show) continue;
@@ -264,6 +264,43 @@ namespace CairoChart {
 						max_axis_font_height = double.max (max_axis_font_height, s2.axis_x.title.text == "" ? 0 :
 						                                   s2.axis_x.title.get_height(context) + s.axis_x.font_indent);
 					}
+					++nskip;
+				} else {
+					break;
+				}
+			}
+		}
+
+		protected virtual void join_relative_y_axes (Series s,
+		                                             int si,
+		                                             bool calc_max_values,
+		                                             ref double max_rec_width,
+		                                             ref double max_rec_height,
+		                                             ref double max_font_indent,
+		                                             ref double max_axis_font_width,
+		                                             ref int nskip) {
+			for (int sj = si - 1; sj >= 0; --sj) {
+				var s2 = series[sj];
+				if (!s2.zoom_show) continue;
+				bool has_intersection = false;
+				for (int sk = si; sk > sj; --sk) {
+					var s3 = series[sk];
+					if (!s3.zoom_show) continue;
+					if (math.are_intersect(s2.place.zoom_y_min, s2.place.zoom_y_max, s3.place.zoom_y_min, s3.place.zoom_y_max)
+					    || s2.axis_y.position != s3.axis_y.position
+					    || s2.axis_y.type != s3.axis_y.type) {
+						has_intersection = true;
+						break;
+					}
+				}
+				if (!has_intersection) {
+					double tmp_max_rec_width = 0; double tmp_max_rec_height = 0;
+					s2.axis_y.calc_rec_sizes (this, out tmp_max_rec_width, out tmp_max_rec_height, false);
+					max_rec_width = double.max (max_rec_width, tmp_max_rec_width);
+					max_rec_height = double.max (max_rec_height, tmp_max_rec_height);
+					max_font_indent = double.max (max_font_indent, s2.axis_y.font_indent);
+					max_axis_font_width = double.max (max_axis_font_width, s2.axis_y.title.text == "" ? 0
+					                                   : s2.axis_y.title.get_width(context) + s.axis_y.font_indent);
 					++nskip;
 				} else {
 					break;
@@ -326,34 +363,7 @@ namespace CairoChart {
 				var max_font_indent = s.axis_y.font_indent;
 				var max_axis_font_width = s.axis_y.title.text == "" ? 0 : s.axis_y.title.get_width(context) + s.axis_y.font_indent;
 
-				// join relative y-axes with non-intersect places
-				for (int sj = si - 1; sj >= 0; --sj) {
-					var s2 = series[sj];
-					if (!s2.zoom_show) continue;
-					bool has_intersection = false;
-					for (int sk = si; sk > sj; --sk) {
-						var s3 = series[sk];
-						if (!s3.zoom_show) continue;
-						if (math.are_intersect(s2.place.zoom_y_min, s2.place.zoom_y_max, s3.place.zoom_y_min, s3.place.zoom_y_max)
-						    || s2.axis_y.position != s3.axis_y.position
-						    || s2.axis_y.type != s3.axis_y.type) {
-							has_intersection = true;
-							break;
-						}
-					}
-					if (!has_intersection) {
-						double tmp_max_rec_width = 0; double tmp_max_rec_height = 0;
-						s2.axis_y.calc_rec_sizes (this, out tmp_max_rec_width, out tmp_max_rec_height, false);
-						max_rec_width = double.max (max_rec_width, tmp_max_rec_width);
-						max_rec_height = double.max (max_rec_height, tmp_max_rec_height);
-						max_font_indent = double.max (max_font_indent, s2.axis_y.font_indent);
-						max_axis_font_width = double.max (max_axis_font_width, s2.axis_y.title.text == "" ? 0
-						                                   : s2.axis_y.title.get_width(context) + s.axis_y.font_indent);
-						++nskip;
-					} else {
-						break;
-					}
-				}
+				join_relative_y_axes (s, si, true, ref max_rec_width, ref max_rec_height, ref max_font_indent, ref max_axis_font_width, ref nskip);
 
 				// for 4.2. Cursor values for joint Y axis
 				if (joint_y && si == zoom_first_show && cursor_style.orientation == Cursor.Orientation.HORIZONTAL && cursors_crossings.length != 0) {
@@ -634,26 +644,8 @@ namespace CairoChart {
 				}
 				context.stroke ();
 
-				// join relative y-axes with non-intersect places
-				for (int sj = si - 1; sj >= 0; --sj) {
-					var s2 = series[sj];
-					if (!s2.zoom_show) continue;
-					bool has_intersection = false;
-					for (int sk = si; sk > sj; --sk) {
-						var s3 = series[sk];
-						if (!s3.zoom_show) continue;
-						if (math.are_intersect(s2.place.zoom_y_min, s2.place.zoom_y_max, s3.place.zoom_y_min, s3.place.zoom_y_max)
-						    || s2.axis_y.position != s3.axis_y.position) {
-							has_intersection = true;
-							break;
-						}
-					}
-					if (!has_intersection) {
-						++nskip;
-					} else {
-						break;
-					}
-				}
+				double tmp1 = 0, tmp2 = 0, tmp3 = 0, tmp4 = 0;
+				join_relative_y_axes (s, si, false, ref tmp1, ref tmp2, ref tmp3, ref tmp4, ref nskip);
 
 				if (nskip != 0) {--nskip; continue;}
 
