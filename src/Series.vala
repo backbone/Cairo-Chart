@@ -109,5 +109,44 @@ namespace CairoChart {
 				return false;
 			return true;
 		}
+
+		public virtual void join_relative_y_axes (Chart chart,
+		                                             int si,
+		                                             bool calc_max_values,
+		                                             ref double max_rec_width,
+		                                             ref double max_rec_height,
+		                                             ref double max_font_indent,
+		                                             ref double max_axis_font_width,
+		                                             ref int nskip) {
+			for (int sj = si - 1; sj >= 0; --sj) {
+				var s2 = chart.series[sj];
+				if (!s2.zoom_show) continue;
+				bool has_intersection = false;
+				for (int sk = si; sk > sj; --sk) {
+					var s3 = chart.series[sk];
+					if (!s3.zoom_show) continue;
+					if (chart.math.are_intersect(s2.place.zoom_y_min, s2.place.zoom_y_max, s3.place.zoom_y_min, s3.place.zoom_y_max)
+					    || s2.axis_y.position != s3.axis_y.position
+					    || s2.axis_y.type != s3.axis_y.type) {
+						has_intersection = true;
+						break;
+					}
+				}
+				if (!has_intersection) {
+					double tmp_max_rec_width = 0; double tmp_max_rec_height = 0;
+					s2.axis_y.calc_rec_sizes (chart, out tmp_max_rec_width, out tmp_max_rec_height, false);
+					max_rec_width = double.max (max_rec_width, tmp_max_rec_width);
+					max_rec_height = double.max (max_rec_height, tmp_max_rec_height);
+					max_font_indent = double.max (max_font_indent, s2.axis_y.font_indent);
+					max_axis_font_width = double.max (max_axis_font_width, s2.axis_y.title.text == "" ? 0
+					                                   : s2.axis_y.title.get_width(chart.context) + this.axis_y.font_indent);
+					++nskip;
+				} else {
+					break;
+				}
+			}
+		}
+
+
 	}
 }
