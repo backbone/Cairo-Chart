@@ -397,9 +397,14 @@ namespace CairoChart {
 		}
 
 		protected virtual void draw_horizontal_axis (int si, ref int nskip) {
+
+		}
+
+		protected virtual void draw_horizontal_axes () {
+			for (var si = series.length - 1, nskip = 0; si >=0; --si) {
 				var s = series[si];
-				if (!s.zoom_show) return;
-				if (joint_x && si != zoom_first_show) return;
+				if (!s.zoom_show) continue;
+				if (joint_x && si != zoom_first_show) continue;
 
 				// 1. Detect max record width/height by axis.nrecords equally selected points using format.
 				double max_rec_width, max_rec_height;
@@ -456,7 +461,7 @@ namespace CairoChart {
 				double tmp1 = 0, tmp2 = 0, tmp3 = 0, tmp4 = 0;
 				s.join_relative_x_axes (this, si, false, ref tmp1, ref tmp2, ref tmp3, ref tmp4, ref nskip);
 
-				if (nskip != 0) {--nskip; return;}
+				if (nskip != 0) {--nskip; continue;}
 
 				switch (s.axis_x.position) {
 				case Axis.Position.LOW:
@@ -468,11 +473,6 @@ namespace CairoChart {
 					             + (s.axis_x.title.text == "" ? 0 : sz.height + s.axis_x.font_indent);
 					break;
 				}
-		}
-
-		protected virtual void draw_horizontal_axes () {
-			for (var si = series.length - 1, nskip = 0; si >=0; --si) {
-				draw_horizontal_axis (si, ref nskip);
 			}
 		}
 
