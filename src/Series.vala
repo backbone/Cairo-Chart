@@ -41,7 +41,7 @@ namespace CairoChart {
 
 		public bool zoom_show = true;
 
-		public Series copy () {
+		public virtual Series copy () {
 			var series = new Series ();
 			series._color = this._color;
 			series.axis_x = this.axis_x.copy ();

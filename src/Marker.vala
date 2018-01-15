@@ -20,7 +20,7 @@ namespace CairoChart {
 			this.size = size;
 		}
 
-		public Marker copy () {
+		public virtual Marker copy () {
 			return new Marker (type, size);
 		}
 

@@ -1,11 +1,10 @@
 namespace CairoChart {
-	[Compact]
 	public class Text {
 		public string text = "";
 		public Font.Style style = Font.Style ();
 		public Color color = Color();
 
-		public Cairo.TextExtents get_extents (Cairo.Context context) {
+		public virtual Cairo.TextExtents get_extents (Cairo.Context context) {
 			context.select_font_face (style.family, style.slant, style.weight);
 			context.set_font_size (style.size);
 			Cairo.TextExtents extents;
@@ -13,7 +12,7 @@ namespace CairoChart {
 			return extents;
 		}
 
-		public double get_width (Cairo.Context context) {
+		public virtual double get_width (Cairo.Context context) {
 			var extents = get_extents (context);
 			switch (style.orientation) {
 			case Font.Orientation.HORIZONTAL: return extents.width;
@@ -22,7 +21,7 @@ namespace CairoChart {
 			}
 		}
 
-		public double get_height (Cairo.Context context) {
+		public virtual double get_height (Cairo.Context context) {
 			var extents = get_extents (context);
 			switch (style.orientation) {
 			case Font.Orientation.HORIZONTAL: return extents.height;
@@ -36,7 +35,7 @@ namespace CairoChart {
 			double height;
 		}
 
-		public Size get_size (Cairo.Context context) {
+		public virtual Size get_size (Cairo.Context context) {
 			var sz = Size();
 			var extents = get_extents (context);
 			switch (style.orientation) {
@@ -52,7 +51,7 @@ namespace CairoChart {
 			return sz;
 		}
 
-		public void show (Cairo.Context context) {
+		public virtual void show (Cairo.Context context) {
 			context.select_font_face(style.family,
 			                         style.slant,
 			                         style.weight);
@@ -74,7 +73,7 @@ namespace CairoChart {
 			this.color = color;
 		}
 
-		public Text copy () {
+		public virtual Text copy () {
 			var text = new Text ();
 			text.text = this.text;
 			text.style = this.style;

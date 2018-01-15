@@ -77,7 +77,7 @@ namespace CairoChart {
 		public Line.Style line_style = Line.Style ();
 		public double font_indent = 5;
 
-		public Axis copy () {
+		public virtual Axis copy () {
 			var axis = new Axis ();
 			axis._date_format = this._date_format;
 			axis._dsec_signs = this._dsec_signs;

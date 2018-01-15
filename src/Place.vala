@@ -29,7 +29,7 @@ namespace CairoChart {
 		public double zoom_y_min = 0;
 		public double zoom_y_max = 1;
 
-		public Place copy () {
+		public virtual Place copy () {
 			var place = new Place ();
 			place.x_min = this.x_min;
 			place.x_max = this.x_max;

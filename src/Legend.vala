@@ -21,7 +21,7 @@ namespace CairoChart {
 		public double text_vspace = 2.0;
 		public bool show = true;
 
-		public Legend copy () {
+		public virtual Legend copy () {
 			var legend = new Legend ();
 			legend.position = this.position;
 			legend.font_style = this.font_style;

@@ -8,7 +8,7 @@ namespace CairoChart {
 
 		public Line.Style line_style = Line.Style ();
 
-		public Grid copy () {
+		public virtual Grid copy () {
 			var grid = new Grid ();
 			grid.color = this.color;
 			grid.line_style = this.line_style;
