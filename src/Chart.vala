@@ -296,9 +296,9 @@ namespace CairoChart {
 				var max_axis_font_height = axis.title.text == "" ? 0 : axis.title.get_height(context) + axis.font_indent;
 
 				if (is_x)
-					s.join_relative_x_axes (this, si, true, ref max_rec_width, ref max_rec_height, ref max_font_indent, ref max_axis_font_height, ref nskip);
+					s.join_relative_x_axes (si, true, ref max_rec_width, ref max_rec_height, ref max_font_indent, ref max_axis_font_height, ref nskip);
 				else
-					s.join_relative_y_axes (this, si, true, ref max_rec_width, ref max_rec_height, ref max_font_indent, ref max_axis_font_width, ref nskip);
+					s.join_relative_y_axes (si, true, ref max_rec_width, ref max_rec_height, ref max_font_indent, ref max_axis_font_width, ref nskip);
 
 				// for 4.2. Cursor values for joint X axis
 				if (si == zoom_first_show && cursors_crossings.length != 0) {
@@ -356,12 +356,12 @@ namespace CairoChart {
 
 		protected virtual void draw_horizontal_axes () {
 			for (var si = series.length - 1, nskip = 0; si >=0; --si)
-				series[si].draw_horizontal_axis (this, si, ref nskip);
+				series[si].draw_horizontal_axis (si, ref nskip);
 		}
 
 		protected virtual void draw_vertical_axes () {
 			for (var si = series.length - 1, nskip = 0; si >=0; --si)
-				series[si].draw_vertical_axis (this, si, ref nskip);
+				series[si].draw_vertical_axis (si, ref nskip);
 		}
 
 		protected virtual void draw_plot_area_border () {
@@ -425,7 +425,7 @@ namespace CairoChart {
 			for (var si = 0; si < series.length; ++si) {
 				var s = series[si];
 				if (s.zoom_show && s.points.length != 0)
-					s.draw(this);
+					s.draw();
 			}
 		}
 

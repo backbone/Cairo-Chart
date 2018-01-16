@@ -63,7 +63,7 @@ namespace CairoChart {
 			return series;
 		}
 
-		public virtual void draw (Chart chart) {
+		public virtual void draw () {
 			var points = chart.math.sort_points(this, sort);
 			line_style.set(chart);
 			// draw series line
@@ -113,8 +113,7 @@ namespace CairoChart {
 			return true;
 		}
 
-		public virtual void join_relative_x_axes (Chart chart,
-		                                          int si,
+		public virtual void join_relative_x_axes (int si,
 		                                          bool calc_max_values,
 		                                          ref double max_rec_width,
 		                                          ref double max_rec_height,
@@ -152,8 +151,7 @@ namespace CairoChart {
 			}
 		}
 
-		public virtual void join_relative_y_axes (Chart chart,
-		                                          int si,
+		public virtual void join_relative_y_axes (int si,
 		                                          bool calc_max_values,
 		                                          ref double max_rec_width,
 		                                          ref double max_rec_height,
@@ -189,7 +187,7 @@ namespace CairoChart {
 			}
 		}
 
-		protected virtual void draw_horizontal_records (Chart chart, Float128 step, double max_rec_height, Float128 x_min) {
+		protected virtual void draw_horizontal_records (Float128 step, double max_rec_height, Float128 x_min) {
 			// 5. Draw records, update cur_{x,y}_{min,max}.
 			var context = chart.context;
 			var joint_x = chart.joint_x;
@@ -270,7 +268,7 @@ namespace CairoChart {
 			}
 		}
 
-		public virtual void draw_horizontal_axis (Chart chart, int si, ref int nskip) {
+		public virtual void draw_horizontal_axis (int si, ref int nskip) {
 			var s = chart.series[si];
 			if (!s.zoom_show) return;
 			if (chart.joint_x && si != chart.zoom_first_show) return;
@@ -323,12 +321,12 @@ namespace CairoChart {
 				s.axis_x.title.show(chart.context);
 			}
 
-			s.draw_horizontal_records (chart, step, max_rec_height, x_min);
+			s.draw_horizontal_records (step, max_rec_height, x_min);
 
 			chart.context.stroke ();
 
 			double tmp1 = 0, tmp2 = 0, tmp3 = 0, tmp4 = 0;
-			s.join_relative_x_axes (chart, si, false, ref tmp1, ref tmp2, ref tmp3, ref tmp4, ref nskip);
+			s.join_relative_x_axes (si, false, ref tmp1, ref tmp2, ref tmp3, ref tmp4, ref nskip);
 
 			if (nskip != 0) {--nskip; return;}
 
@@ -344,7 +342,7 @@ namespace CairoChart {
 			}
 		}
 
-		protected virtual void draw_vertical_records (Chart chart, Float128 step, double max_rec_width, Float128 y_min) {
+		protected virtual void draw_vertical_records (Float128 step, double max_rec_width, Float128 y_min) {
 			// 5. Draw records, update cur_{x,y}_{min,max}.
 			var context = chart.context;
 			var joint_y = chart.joint_y;
@@ -395,7 +393,7 @@ namespace CairoChart {
 			}
 		}
 
-		public virtual void draw_vertical_axis (Chart chart, int si, ref int nskip) {
+		public virtual void draw_vertical_axis (int si, ref int nskip) {
 			var s = chart.series[si];
 			if (!s.zoom_show) return;
 			if (chart.joint_y && si != chart.zoom_first_show) return;
@@ -451,12 +449,12 @@ namespace CairoChart {
 				s.axis_y.title.show(chart.context);
 			}
 
-			s.draw_vertical_records (chart, step, max_rec_width, y_min);
+			s.draw_vertical_records (step, max_rec_width, y_min);
 
 			chart.context.stroke ();
 
 			double tmp1 = 0, tmp2 = 0, tmp3 = 0, tmp4 = 0;
-			s.join_relative_y_axes (chart, si, false, ref tmp1, ref tmp2, ref tmp3, ref tmp4, ref nskip);
+			s.join_relative_y_axes (si, false, ref tmp1, ref tmp2, ref tmp3, ref tmp4, ref nskip);
 
 			if (nskip != 0) {--nskip; return;}
 
