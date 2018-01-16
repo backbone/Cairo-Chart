@@ -113,6 +113,54 @@ namespace CairoChart {
 			return true;
 		}
 
+		public virtual void join_calc (bool is_x, int si, ref int nskip) {
+			var s = chart.series[si];
+			Axis axis = s.axis_x;
+			if (!is_x) axis = s.axis_y;
+			if (!s.zoom_show) return;
+			if (nskip != 0) {--nskip; return;}
+			double max_rec_width = 0; double max_rec_height = 0;
+			axis.calc_rec_sizes (chart, out max_rec_width, out max_rec_height, is_x);
+			var max_font_indent = axis.font_indent;
+			var max_axis_font_width = axis.title.text == "" ? 0 : axis.title.get_width(chart.context) + axis.font_indent;
+			var max_axis_font_height = axis.title.text == "" ? 0 : axis.title.get_height(chart.context) + axis.font_indent;
+
+			if (is_x)
+				s.join_relative_x_axes (si, true, ref max_rec_width, ref max_rec_height, ref max_font_indent, ref max_axis_font_height, ref nskip);
+			else
+				s.join_relative_y_axes (si, true, ref max_rec_width, ref max_rec_height, ref max_font_indent, ref max_axis_font_width, ref nskip);
+
+			// for 4.2. Cursor values for joint X axis
+			if (si == chart.zoom_first_show && chart.cursors.cursors_crossings.length != 0) {
+				switch (chart.cursors.cursor_style.orientation) {
+				case Cursors.Orientation.VERTICAL:
+					if (is_x && chart.joint_x)
+						switch (axis.position) {
+						case Axis.Position.LOW: chart.plot_y_max -= max_rec_height + axis.font_indent; break;
+						case Axis.Position.HIGH: chart.plot_y_min += max_rec_height + axis.font_indent; break;
+						}
+					break;
+				case Cursors.Orientation.HORIZONTAL:
+					if (!is_x && chart.joint_y)
+						switch (s.axis_y.position) {
+						case Axis.Position.LOW: chart.plot_x_min += max_rec_width + s.axis_y.font_indent; break;
+						case Axis.Position.HIGH: chart.plot_x_max -= max_rec_width + s.axis_y.font_indent; break;
+						}
+					break;
+				}
+			}
+			if (is_x && (!chart.joint_x || si == chart.zoom_first_show))
+				switch (axis.position) {
+				case Axis.Position.LOW: chart.plot_y_max -= max_rec_height + max_font_indent + max_axis_font_height; break;
+				case Axis.Position.HIGH: chart.plot_y_min += max_rec_height + max_font_indent + max_axis_font_height; break;
+				}
+			if (!is_x && (!chart.joint_y || si == chart.zoom_first_show))
+				switch (s.axis_y.position) {
+				case Axis.Position.LOW: chart.plot_x_min += max_rec_width + max_font_indent + max_axis_font_width; break;
+				case Axis.Position.HIGH: chart.plot_x_max -= max_rec_width + max_font_indent + max_axis_font_width; break;
+				}
+		}
+
 		public virtual void join_relative_x_axes (int si,
 		                                          bool calc_max_values,
 		                                          ref double max_rec_width,
