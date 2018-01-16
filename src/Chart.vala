@@ -164,10 +164,10 @@ namespace CairoChart {
 			for (var si = 0, max_i = series.length; si < max_i; ++si) {
 				var s = series[si];
 				if (!s.zoom_show) continue;
-				var real_x0 = get_real_x (s, rect.x);
-				var real_x1 = get_real_x (s, x1);
-				var real_y0 = get_real_y (s, rect.y);
-				var real_y1 = get_real_y (s, y1);
+				var real_x0 = s.get_real_x (rect.x);
+				var real_x1 = s.get_real_x (x1);
+				var real_y0 = s.get_real_y (rect.y);
+				var real_y1 = s.get_real_y (y1);
 				// if selected square does not intersect with the series's square
 				if (   real_x1 <= s.axis_x.zoom_min || real_x0 >= s.axis_x.zoom_max
 					|| real_y0 <= s.axis_y.zoom_min || real_y1 >= s.axis_y.zoom_max) {
@@ -375,34 +375,6 @@ namespace CairoChart {
 			context.stroke ();
 		}
 
-		public virtual double get_scr_x (Series s, Float128 x) {
-			return plot_x_min + (plot_x_max - plot_x_min) * (s.place.zoom_x_min + (x - s.axis_x.zoom_min)
-			                         / (s.axis_x.zoom_max - s.axis_x.zoom_min) * (s.place.zoom_x_max - s.place.zoom_x_min));
-		}
-
-		public virtual double get_scr_y (Series s, Float128 y) {
-			return plot_y_max - (plot_y_max - plot_y_min) * (s.place.zoom_y_min + (y - s.axis_y.zoom_min)
-			                         / (s.axis_y.zoom_max - s.axis_y.zoom_min) * (s.place.zoom_y_max - s.place.zoom_y_min));
-		}
-
-		public virtual Point128 get_scr_point (Series s, Point128 p) {
-			return Point128 (get_scr_x(s, p.x), get_scr_y(s, p.y));
-		}
-
-		public virtual Float128 get_real_x (Series s, double scr_x) {
-			return s.axis_x.zoom_min + ((scr_x - plot_x_min) / (plot_x_max - plot_x_min) - s.place.zoom_x_min)
-			       * (s.axis_x.zoom_max - s.axis_x.zoom_min) / (s.place.zoom_x_max - s.place.zoom_x_min);
-		}
-
-		public virtual Float128 get_real_y (Series s, double scr_y) {
-			return s.axis_y.zoom_min + ((plot_y_max - scr_y) / (plot_y_max - plot_y_min) - s.place.zoom_y_min)
-			       * (s.axis_y.zoom_max - s.axis_y.zoom_min) / (s.place.zoom_y_max - s.place.zoom_y_min);
-		}
-
-		public virtual Point128 get_real_point (Series s, Point128 p) {
-			return Point128 (get_real_x(s, p.x), get_real_y(s, p.y));
-		}
-
 		protected virtual bool x_in_plot_area (double x) {
 			if (math.x_in_range(x, plot_x_min, plot_x_max))
 				return true;
@@ -415,7 +387,7 @@ namespace CairoChart {
 			return false;
 		}
 
-		public virtual bool point_in_plot_area (Point128 p) {
+		public virtual bool point_in_plot_area (Point p) {
 			if (math.point_in_rect (p, plot_x_min, plot_x_max, plot_y_min, plot_y_max))
 				return true;
 			return false;

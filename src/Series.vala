@@ -68,12 +68,12 @@ namespace CairoChart {
 			line_style.set(chart);
 			// draw series line
 			for (int i = 1; i < points.length; ++i) {
-				Point128 c, d;
+				Point c, d;
 				if (chart.math.cut_line (
-				        Point128(chart.plot_x_min, chart.plot_y_min),
-				        Point128(chart.plot_x_max, chart.plot_y_max),
-				        Point128(chart.get_scr_x(this, points[i - 1].x), chart.get_scr_y(this, points[i - 1].y)),
-				        Point128(chart.get_scr_x(this, points[i].x), chart.get_scr_y(this, points[i].y)),
+				        Point(chart.plot_x_min, chart.plot_y_min),
+				        Point(chart.plot_x_max, chart.plot_y_max),
+				        Point(get_scr_x(points[i - 1].x), get_scr_y(points[i - 1].y)),
+				        Point(get_scr_x(points[i].x), get_scr_y(points[i].y)),
 				        out c, out d)
 				) {
 					chart.context.move_to (c.x, c.y);
@@ -82,9 +82,9 @@ namespace CairoChart {
 			}
 			chart.context.stroke();
 			for (int i = 0; i < points.length; ++i) {
-				var x = chart.get_scr_x(this, points[i].x);
-				var y = chart.get_scr_y(this, points[i].y);
-				if (chart.point_in_plot_area (Point128 (x, y)))
+				var x = get_scr_x(points[i].x);
+				var y = get_scr_y(points[i].y);
+				if (chart.point_in_plot_area (Point (x, y)))
 					marker.draw_at_pos(chart, x, y);
 			}
 		}
@@ -204,7 +204,7 @@ namespace CairoChart {
 					axis_x.format_date_time(x, out text, out time_text);
 					break;
 				}
-				var scr_x = chart.get_scr_x (this, x);
+				var scr_x = get_scr_x (x);
 				var text_t = new Text(text, axis_x.font_style, axis_x.color);
 				var sz = axis_x.title.get_size(context);
 
@@ -351,7 +351,7 @@ namespace CairoChart {
 				if (joint_y) chart.set_source_rgba(chart.joint_axis_color);
 				else chart.set_source_rgba(axis_y.color);
 				var text = axis_y.format.printf((LongDouble)y);
-				var scr_y = chart.get_scr_y (this, y);
+				var scr_y = get_scr_y (y);
 				var text_t = new Text(text, axis_y.font_style, axis_y.color);
 				var text_sz = text_t.get_size(context);
 				var sz = axis_y.title.get_size(context);
@@ -470,14 +470,42 @@ namespace CairoChart {
 
 		public virtual double compact_rec_x_pos (Float128 x, Text text) {
 			var sz = text.get_size(chart.context);
-			return chart.get_scr_x(this, x) - sz.width / 2.0
+			return get_scr_x(x) - sz.width / 2.0
 			       - sz.width * (x - (axis_x.zoom_min + axis_x.zoom_max) / 2.0) / (axis_x.zoom_max - axis_x.zoom_min);
 		}
 
 		public virtual double compact_rec_y_pos (Float128 y, Text text) {
 			var sz = text.get_size(chart.context);
-			return chart.get_scr_y(this, y) + sz.height / 2.0
+			return get_scr_y(y) + sz.height / 2.0
 			       + sz.height * (y - (axis_y.zoom_min + axis_y.zoom_max) / 2.0) / (axis_y.zoom_max - axis_y.zoom_min);
+		}
+
+		public virtual double get_scr_x (Float128 x) {
+			return chart.plot_x_min + (chart.plot_x_max - chart.plot_x_min) * (place.zoom_x_min + (x - axis_x.zoom_min)
+			                         / (axis_x.zoom_max - axis_x.zoom_min) * (place.zoom_x_max - place.zoom_x_min));
+		}
+
+		public virtual double get_scr_y (Float128 y) {
+			return chart.plot_y_max - (chart.plot_y_max - chart.plot_y_min) * (place.zoom_y_min + (y - axis_y.zoom_min)
+			                         / (axis_y.zoom_max - axis_y.zoom_min) * (place.zoom_y_max - place.zoom_y_min));
+		}
+
+		public virtual Point get_scr_point (Point128 p) {
+			return Point (get_scr_x(p.x), get_scr_y(p.y));
+		}
+
+		public virtual Float128 get_real_x (double scr_x) {
+			return axis_x.zoom_min + ((scr_x - chart.plot_x_min) / (chart.plot_x_max - chart.plot_x_min) - place.zoom_x_min)
+			       * (axis_x.zoom_max - axis_x.zoom_min) / (place.zoom_x_max - place.zoom_x_min);
+		}
+
+		public virtual Float128 get_real_y (double scr_y) {
+			return axis_y.zoom_min + ((chart.plot_y_max - scr_y) / (chart.plot_y_max - chart.plot_y_min) - place.zoom_y_min)
+			       * (axis_y.zoom_max - axis_y.zoom_min) / (place.zoom_y_max - place.zoom_y_min);
+		}
+
+		public virtual Point128 get_real_point (Point p) {
+			return Point128 (get_real_x(p.x), get_real_y(p.y));
 		}
 	}
 }
