@@ -48,19 +48,12 @@ namespace CairoChart {
 
 		public CairoChart.Math math { get; protected set; default = new Math(); }
 		public Cursors cursors2 { get; protected set; default = new Cursors (); }
-		public List<Point?> cursors = new List<Point?> ();
-		public Point active_cursor = Point(); // { get; protected set; default = Point128 (); }
-		public bool is_cursor_active { get; protected set; default = false; }
-		public Cursors.Style cursor_style = Cursors.Style();
-
-		public Cursors.CursorCrossings[] cursors_crossings = {};
 
 		public Chart () {
 		}
 
 		public Chart copy () {
 			var chart = new Chart ();
-			chart.active_cursor = this.active_cursor;
 			chart.bg_color = this.bg_color;
 			chart.border_color = this.border_color;
 			chart.joint_x = this.joint_x;
@@ -70,12 +63,8 @@ namespace CairoChart {
 			chart.cur_x_min = this.cur_x_min;
 			chart.cur_y_max = this.cur_y_max;
 			chart.cur_y_min = this.cur_y_min;
-			chart.cursor_style = this.cursor_style;
-			chart.cursors = this.cursors.copy();
 			chart.cursors2 = this.cursors2.copy();
-			chart.cursors_crossings = this.cursors_crossings;
 			chart.height = this.height;
-			chart.is_cursor_active = this.is_cursor_active;
 			chart.legend = this.legend.copy();
 			chart.plot_x_max = this.plot_x_max;
 			chart.plot_x_min = this.plot_x_min;
@@ -301,8 +290,8 @@ namespace CairoChart {
 					s.join_relative_y_axes (si, true, ref max_rec_width, ref max_rec_height, ref max_font_indent, ref max_axis_font_width, ref nskip);
 
 				// for 4.2. Cursor values for joint X axis
-				if (si == zoom_first_show && cursors_crossings.length != 0) {
-					switch (cursor_style.orientation) {
+				if (si == zoom_first_show && cursors2.cursors_crossings.length != 0) {
+					switch (cursors2.cursor_style.orientation) {
 					case Cursors.Orientation.VERTICAL:
 						if (is_x && joint_x)
 							switch (axis.position) {
@@ -402,28 +391,28 @@ namespace CairoChart {
 		}
 
 		public virtual void set_active_cursor (Point p, bool remove = false) {
-			active_cursor = scr2rel_point(p);
-			is_cursor_active = ! remove;
+			cursors2.active_cursor = scr2rel_point(p);
+			cursors2.is_cursor_active = ! remove;
 		}
 
 		public virtual void add_active_cursor () {
-			cursors.append (active_cursor);
-			is_cursor_active = false;
+			cursors2.cursors.append (cursors2.active_cursor);
+			cursors2.is_cursor_active = false;
 		}
 
 		public virtual void remove_active_cursor () {
-			if (cursors.length() == 0) return;
+			if (cursors2.cursors.length() == 0) return;
 			var distance = width * width;
 			uint rm_indx = 0;
 			uint i = 0;
-			foreach (var c in cursors) {
+			foreach (var c in cursors2.cursors) {
 				double d = distance;
-				switch (cursor_style.orientation) {
+				switch (cursors2.cursor_style.orientation) {
 				case Cursors.Orientation.VERTICAL:
-					d = (rel2scr_x(c.x) - rel2scr_x(active_cursor.x)).abs();
+					d = (rel2scr_x(c.x) - rel2scr_x(cursors2.active_cursor.x)).abs();
 					break;
 				case Cursors.Orientation.HORIZONTAL:
-					d = (rel2scr_y(c.y) - rel2scr_y(active_cursor.y)).abs();
+					d = (rel2scr_y(c.y) - rel2scr_y(cursors2.active_cursor.y)).abs();
 					break;
 				}
 				if (d < distance) {
@@ -432,9 +421,9 @@ namespace CairoChart {
 				}
 				++i;
 			}
-			if (distance < cursor_style.select_distance)
-				cursors.delete_link(cursors.nth(rm_indx));
-			is_cursor_active = false;
+			if (distance < cursors2.cursor_style.select_distance)
+				cursors2.cursors.delete_link(cursors2.cursors.nth(rm_indx));
+			cursors2.is_cursor_active = false;
 		}
 
 		protected virtual Float128 scr2rel_x (Float128 x) {

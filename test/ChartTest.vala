@@ -274,7 +274,7 @@ int main (string[] args) {
 			case Legend.Position.LEFT: radio_button3.set_active(true); break;
 			case Legend.Position.BOTTOM: radio_button4.set_active(true); break;
 			}
-			switch (chart.cursor_style.orientation) {
+			switch (chart.cursors2.cursor_style.orientation) {
 			case Cursors.Orientation.VERTICAL: radio_button7.set_active(true); break;
 			case Cursors.Orientation.HORIZONTAL: radio_button8.set_active(true); break;
 			}
@@ -287,7 +287,7 @@ int main (string[] args) {
 			case Legend.Position.LEFT: radio_button3.set_active(true); break;
 			case Legend.Position.BOTTOM: radio_button4.set_active(true); break;
 			}
-			switch (chart.cursor_style.orientation) {
+			switch (chart.cursors2.cursor_style.orientation) {
 			case Cursors.Orientation.VERTICAL: radio_button7.set_active(true); break;
 			case Cursors.Orientation.HORIZONTAL: radio_button8.set_active(true); break;
 			}
@@ -300,7 +300,7 @@ int main (string[] args) {
 			case Legend.Position.LEFT: radio_button3.set_active(true); break;
 			case Legend.Position.BOTTOM: radio_button4.set_active(true); break;
 			}
-			switch (chart.cursor_style.orientation) {
+			switch (chart.cursors2.cursor_style.orientation) {
 			case Cursors.Orientation.VERTICAL: radio_button7.set_active(true); break;
 			case Cursors.Orientation.HORIZONTAL: radio_button8.set_active(true); break;
 			}
@@ -313,7 +313,7 @@ int main (string[] args) {
 			case Legend.Position.LEFT: radio_button4.set_active(true); break;
 			case Legend.Position.BOTTOM: radio_button4.set_active(true); break;
 			}
-			switch (chart.cursor_style.orientation) {
+			switch (chart.cursors2.cursor_style.orientation) {
 			case Cursors.Orientation.VERTICAL: radio_button7.set_active(true); break;
 			case Cursors.Orientation.HORIZONTAL: radio_button8.set_active(true); break;
 			}
@@ -397,13 +397,13 @@ int main (string[] args) {
 
 	radio_button7.toggled.connect ((button) => {
 		if (button.get_active()) {
-			chart.cursor_style.orientation = Cursors.Orientation.VERTICAL;
+			chart.cursors2.cursor_style.orientation = Cursors.Orientation.VERTICAL;
 			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 		}
 	});
 	radio_button8.toggled.connect ((button) => {
 		if (button.get_active()) {
-			chart.cursor_style.orientation = Cursors.Orientation.HORIZONTAL;
+			chart.cursors2.cursor_style.orientation = Cursors.Orientation.HORIZONTAL;
 			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 		}
 	});

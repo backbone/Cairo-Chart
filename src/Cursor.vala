@@ -2,11 +2,22 @@ namespace CairoChart {
 
 	public class Cursors {
 
+		public List<Point?> cursors = new List<Point?> ();
+		public Point active_cursor = Point(); // { get; protected set; default = Point128 (); }
+		public bool is_cursor_active = false; // { get; protected set; default = false; }
+		public Cursors.Style cursor_style = Cursors.Style();
+		public Cursors.CursorCrossings[] cursors_crossings = {};
+
 		public Cursors () {
 		}
 
 		public Cursors copy () {
 			var c = new Cursors ();
+			c.cursors = cursors.copy();
+			c.active_cursor = active_cursor;
+			c.is_cursor_active = is_cursor_active;
+			c.cursor_style = cursor_style;
+			c.cursors_crossings = cursors_crossings;
 			return c;
 		}
 
@@ -45,9 +56,9 @@ namespace CairoChart {
 		}
 
 		protected List<Point?> get_all_cursors (Chart chart) {
-			var all_cursors = chart.cursors.copy_deep ((src) => { return src; });
-			if (chart.is_cursor_active)
-				all_cursors.append(chart.active_cursor);
+			var all_cursors = cursors.copy_deep ((src) => { return src; });
+			if (is_cursor_active)
+				all_cursors.append(active_cursor);
 			return all_cursors;
 		}
 
@@ -58,7 +69,7 @@ namespace CairoChart {
 
 			for (var ci = 0, max_ci = all_cursors.length(); ci < max_ci; ++ci) {
 				var c = all_cursors.nth_data(ci);
-				switch (chart.cursor_style.orientation) {
+				switch (cursor_style.orientation) {
 				case Orientation.VERTICAL:
 					if (c.x <= chart.rz_x_min || c.x >= chart.rz_x_max) continue; break;
 				case Orientation.HORIZONTAL:
@@ -71,7 +82,7 @@ namespace CairoChart {
 					if (!s.zoom_show) continue;
 
 					Point128[] points = {};
-					switch (chart.cursor_style.orientation) {
+					switch (cursor_style.orientation) {
 					case Orientation.VERTICAL:
 						points = chart.math.sort_points (s, s.sort);
 						break;
@@ -81,7 +92,7 @@ namespace CairoChart {
 					}
 
 					for (var i = 0; i + 1 < points.length; ++i) {
-						switch (chart.cursor_style.orientation) {
+						switch (cursor_style.orientation) {
 						case Orientation.VERTICAL:
 							Float128 y = 0.0;
 							if (chart.math.vcross(s.get_scr_point(points[i]), s.get_scr_point(points[i+1]), chart.rel2scr_x(c.x),
@@ -114,14 +125,14 @@ namespace CairoChart {
 					local_cursor_crossings += ccs;
 				}
 			}
-			chart.cursors_crossings = local_cursor_crossings;
+			cursors_crossings = local_cursor_crossings;
 		}
 
 		protected virtual void calc_cursors_value_positions (Chart chart) {
-			for (var ccsi = 0, max_ccsi = chart.cursors_crossings.length; ccsi < max_ccsi; ++ccsi) {
-				for (var cci = 0, max_cci = chart.cursors_crossings[ccsi].crossings.length; cci < max_cci; ++cci) {
+			for (var ccsi = 0, max_ccsi = cursors_crossings.length; ccsi < max_ccsi; ++ccsi) {
+				for (var cci = 0, max_cci = cursors_crossings[ccsi].crossings.length; cci < max_cci; ++cci) {
 					// TODO: Ticket #142: find smart algorithm of cursors values placements
-					unowned CursorCross[] cr = chart.cursors_crossings[ccsi].crossings;
+					unowned CursorCross[] cr = cursors_crossings[ccsi].crossings;
 					cr[cci].scr_point = chart.series[cr[cci].series_index].get_scr_point (cr[cci].point);
 					var d_max = double.max (cr[cci].size.x / 1.5, cr[cci].size.y / 1.5);
 					cr[cci].scr_value_point = Point (cr[cci].scr_point.x + d_max, cr[cci].scr_point.y - d_max);
@@ -132,7 +143,7 @@ namespace CairoChart {
 		protected virtual void cross_what_to_show (Chart chart, Series s, out bool show_x, out bool show_time,
 		                                                                  out bool show_date, out bool show_y) {
 			show_x = show_time = show_date = show_y = false;
-			switch (chart.cursor_style.orientation) {
+			switch (cursor_style.orientation) {
 			case Orientation.VERTICAL:
 				show_y = true;
 				if (!chart.joint_x)
@@ -185,11 +196,11 @@ namespace CairoChart {
 			var all_cursors = get_all_cursors(chart);
 			calc_cursors_value_positions(chart);
 
-			for (var cci = 0, max_cci = chart.cursors_crossings.length; cci < max_cci; ++cci) {
+			for (var cci = 0, max_cci = cursors_crossings.length; cci < max_cci; ++cci) {
 				var low = Point128(chart.plot_x_max, chart.plot_y_max);  // low and high
 				var high = Point128(chart.plot_x_min, chart.plot_y_min); //              points of the cursor
-				unowned CursorCross[] ccs = chart.cursors_crossings[cci].crossings;
-				chart.cursor_style.line_style.set(chart);
+				unowned CursorCross[] ccs = cursors_crossings[cci].crossings;
+				cursor_style.line_style.set(chart);
 				for (var ci = 0, max_ci = ccs.length; ci < max_ci; ++ci) {
 					var si = ccs[ci].series_index;
 					var s = chart.series[si];
@@ -226,9 +237,9 @@ namespace CairoChart {
 					chart.context.line_to (ccs[ci].scr_value_point.x, ccs[ci].scr_value_point.y);
 				}
 
-				var c = all_cursors.nth_data(chart.cursors_crossings[cci].cursor_index);
+				var c = all_cursors.nth_data(cursors_crossings[cci].cursor_index);
 
-				switch (chart.cursor_style.orientation) {
+				switch (cursor_style.orientation) {
 				case Orientation.VERTICAL:
 					if (low.y > high.y) continue;
 					chart.context.move_to (chart.rel2scr_x(c.x), low.y);
@@ -381,27 +392,27 @@ namespace CairoChart {
 		public bool get_cursors_delta (Chart chart, out Float128 delta) {
 			delta = 0.0;
 			if (chart.series.length == 0) return false;
-			if (chart.cursors.length() + (chart.is_cursor_active ? 1 : 0) != 2) return false;
-			if (chart.joint_x && chart.cursor_style.orientation == Orientation.VERTICAL) {
-				Float128 val1 = chart.series[chart.zoom_first_show].get_real_x(chart.rel2scr_x(chart.cursors.nth_data(0).x));
+			if (cursors.length() + (is_cursor_active ? 1 : 0) != 2) return false;
+			if (chart.joint_x && cursor_style.orientation == Orientation.VERTICAL) {
+				Float128 val1 = chart.series[chart.zoom_first_show].get_real_x(chart.rel2scr_x(cursors.nth_data(0).x));
 				Float128 val2 = 0;
-				if (chart.is_cursor_active)
-					val2 = chart.series[chart.zoom_first_show].get_real_x(chart.rel2scr_x(chart.active_cursor.x));
+				if (is_cursor_active)
+					val2 = chart.series[chart.zoom_first_show].get_real_x(chart.rel2scr_x(active_cursor.x));
 				else
-					val2 = chart.series[chart.zoom_first_show].get_real_x(chart.rel2scr_x(chart.cursors.nth_data(1).x));
+					val2 = chart.series[chart.zoom_first_show].get_real_x(chart.rel2scr_x(cursors.nth_data(1).x));
 				if (val2 > val1)
 					delta = val2 - val1;
 				else
 					delta = val1 - val2;
 				return true;
 			}
-			if (chart.joint_y && chart.cursor_style.orientation == Orientation.HORIZONTAL) {
-				Float128 val1 = chart.series[chart.zoom_first_show].get_real_y(chart.rel2scr_y(chart.cursors.nth_data(0).y));
+			if (chart.joint_y && cursor_style.orientation == Orientation.HORIZONTAL) {
+				Float128 val1 = chart.series[chart.zoom_first_show].get_real_y(chart.rel2scr_y(cursors.nth_data(0).y));
 				Float128 val2 = 0;
-				if (chart.is_cursor_active)
-					val2 = chart.series[chart.zoom_first_show].get_real_y(chart.rel2scr_y(chart.active_cursor.y));
+				if (is_cursor_active)
+					val2 = chart.series[chart.zoom_first_show].get_real_y(chart.rel2scr_y(active_cursor.y));
 				else
-					val2 = chart.series[chart.zoom_first_show].get_real_y(chart.rel2scr_y(chart.cursors.nth_data(1).y));
+					val2 = chart.series[chart.zoom_first_show].get_real_y(chart.rel2scr_y(cursors.nth_data(1).y));
 				if (val2 > val1)
 					delta = val2 - val1;
 				else
