@@ -48,8 +48,8 @@ namespace CairoChart {
 
 		public CairoChart.Math math { get; protected set; default = new Math(); }
 		public Cursors cursors2 { get; protected set; default = new Cursors (); }
-		public List<Point128?> cursors = new List<Point128?> ();
-		public Point128 active_cursor = Point128(); // { get; protected set; default = Point128 (); }
+		public List<Point?> cursors = new List<Point?> ();
+		public Point active_cursor = Point(); // { get; protected set; default = Point128 (); }
 		public bool is_cursor_active { get; protected set; default = false; }
 		public Cursors.Style cursor_style = Cursors.Style();
 
@@ -442,8 +442,8 @@ namespace CairoChart {
 			}
 		}
 
-		public virtual void set_active_cursor (double x, double y, bool remove = false) {
-			active_cursor = Point128 (scr2rel_x(x), scr2rel_y(y));
+		public virtual void set_active_cursor (Point p, bool remove = false) {
+			active_cursor = scr2rel_point(p);
 			is_cursor_active = ! remove;
 		}
 
@@ -484,8 +484,8 @@ namespace CairoChart {
 		protected virtual Float128 scr2rel_y (Float128 y) {
 			return rz_y_max - (plot_y_max - y) / (plot_y_max - plot_y_min) * (rz_y_max - rz_y_min);
 		}
-		protected virtual Point128 scr2rel_point (Point128 p) {
-			return Point128 (scr2rel_x(p.x), scr2rel_y(p.y));
+		protected virtual Point scr2rel_point (Point p) {
+			return Point (scr2rel_x(p.x), scr2rel_y(p.y));
 		}
 
 		public virtual Float128 rel2scr_x(Float128 x) {

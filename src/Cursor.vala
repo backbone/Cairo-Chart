@@ -44,7 +44,7 @@ namespace CairoChart {
 			CursorCross[] crossings;
 		}
 
-		protected List<Point128?> get_all_cursors (Chart chart) {
+		protected List<Point?> get_all_cursors (Chart chart) {
 			var all_cursors = chart.cursors.copy_deep ((src) => { return src; });
 			if (chart.is_cursor_active)
 				all_cursors.append(chart.active_cursor);
