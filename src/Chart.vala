@@ -48,8 +48,8 @@ namespace CairoChart {
 
 		public CairoChart.Math math { get; protected set; default = new Math(); }
 		public Cursors cursors2 { get; protected set; default = new Cursors (); }
-		public List<Point?> cursors = new List<Point?> ();
-		public Point active_cursor = Point(); // { get; protected set; default = Point (); }
+		public List<Point128?> cursors = new List<Point128?> ();
+		public Point128 active_cursor = Point128(); // { get; protected set; default = Point128 (); }
 		public bool is_cursor_active { get; protected set; default = false; }
 		public Cursors.Style cursor_style = Cursors.Style();
 
@@ -238,26 +238,27 @@ namespace CairoChart {
 			zoom_first_show = 0;
 		}
 
-		public virtual void move (double delta_x, double delta_y) {
-			delta_x /= plot_x_max - plot_x_min; delta_x *= - 1.0;
-			delta_y /= plot_y_max - plot_y_min; delta_y *= - 1.0;
+		public virtual void move (Point delta) {
+			var d = delta;
+			d.x /= plot_x_max - plot_x_min; d.x *= - 1.0;
+			d.y /= plot_y_max - plot_y_min; d.y *= - 1.0;
 			var rzxmin = rz_x_min, rzxmax = rz_x_max, rzymin = rz_y_min, rzymax = rz_y_max;
 			zoom_out();
-			delta_x *= plot_x_max - plot_x_min;
-			delta_y *= plot_y_max - plot_y_min;
+			d.x *= plot_x_max - plot_x_min;
+			d.y *= plot_y_max - plot_y_min;
 			var xmin = plot_x_min + (plot_x_max - plot_x_min) * rzxmin;
 			var xmax = plot_x_min + (plot_x_max - plot_x_min) * rzxmax;
 			var ymin = plot_y_min + (plot_y_max - plot_y_min) * rzymin;
 			var ymax = plot_y_min + (plot_y_max - plot_y_min) * rzymax;
 
-			delta_x *= rzxmax - rzxmin; delta_y *= rzymax - rzymin;
+			d.x *= rzxmax - rzxmin; d.y *= rzymax - rzymin;
 
-			if (xmin + delta_x < plot_x_min) delta_x = plot_x_min - xmin;
-			if (xmax + delta_x > plot_x_max) delta_x = plot_x_max - xmax;
-			if (ymin + delta_y < plot_y_min) delta_y = plot_y_min - ymin;
-			if (ymax + delta_y > plot_y_max) delta_y = plot_y_max - ymax;
+			if (xmin + d.x < plot_x_min) d.x = plot_x_min - xmin;
+			if (xmax + d.x > plot_x_max) d.x = plot_x_max - xmax;
+			if (ymin + d.y < plot_y_min) d.y = plot_y_min - ymin;
+			if (ymax + d.y > plot_y_max) d.y = plot_y_max - ymax;
 
-			zoom_in (Cairo.Rectangle(){x = xmin + delta_x, y = ymin + delta_y, width = xmax - xmin, height = ymax - ymin});
+			zoom_in (Cairo.Rectangle(){x = xmin + d.x, y = ymin + d.y, width = xmax - xmin, height = ymax - ymin});
 		}
 
 		protected virtual void draw_chart_title () {
@@ -269,9 +270,9 @@ namespace CairoChart {
 			title.show(context);
 		}
 
-		public virtual void draw_selection (double x0, double y0, double x1, double y1) {
+		public virtual void draw_selection (Cairo.Rectangle rect) {
 			selection_style.set(this);
-			context.rectangle (x0, y0, x1 - x0, y1 - y0);
+			context.rectangle (rect.x, rect.y, rect.width, rect.height);
 			context.stroke();
 		}
 
@@ -397,8 +398,8 @@ namespace CairoChart {
 			                         / (s.axis_y.zoom_max - s.axis_y.zoom_min) * (s.place.zoom_y_max - s.place.zoom_y_min));
 		}
 
-		public virtual Point get_scr_point (Series s, Point p) {
-			return Point (get_scr_x(s, p.x), get_scr_y(s, p.y));
+		public virtual Point128 get_scr_point (Series s, Point128 p) {
+			return Point128 (get_scr_x(s, p.x), get_scr_y(s, p.y));
 		}
 
 		public virtual Float128 get_real_x (Series s, double scr_x) {
@@ -411,8 +412,8 @@ namespace CairoChart {
 			       * (s.axis_y.zoom_max - s.axis_y.zoom_min) / (s.place.zoom_y_max - s.place.zoom_y_min);
 		}
 
-		public virtual Point get_real_point (Series s, Point p) {
-			return Point (get_real_x(s, p.x), get_real_y(s, p.y));
+		public virtual Point128 get_real_point (Series s, Point128 p) {
+			return Point128 (get_real_x(s, p.x), get_real_y(s, p.y));
 		}
 
 		protected virtual bool x_in_plot_area (double x) {
@@ -427,7 +428,7 @@ namespace CairoChart {
 			return false;
 		}
 
-		public virtual bool point_in_plot_area (Point p) {
+		public virtual bool point_in_plot_area (Point128 p) {
 			if (math.point_in_rect (p, plot_x_min, plot_x_max, plot_y_min, plot_y_max))
 				return true;
 			return false;
@@ -442,7 +443,7 @@ namespace CairoChart {
 		}
 
 		public virtual void set_active_cursor (double x, double y, bool remove = false) {
-			active_cursor = Point (scr2rel_x(x), scr2rel_y(y));
+			active_cursor = Point128 (scr2rel_x(x), scr2rel_y(y));
 			is_cursor_active = ! remove;
 		}
 
@@ -483,8 +484,8 @@ namespace CairoChart {
 		protected virtual Float128 scr2rel_y (Float128 y) {
 			return rz_y_max - (plot_y_max - y) / (plot_y_max - plot_y_min) * (rz_y_max - rz_y_min);
 		}
-		protected virtual Point scr2rel_point (Point p) {
-			return Point (scr2rel_x(p.x), scr2rel_y(p.y));
+		protected virtual Point128 scr2rel_point (Point128 p) {
+			return Point128 (scr2rel_x(p.x), scr2rel_y(p.y));
 		}
 
 		public virtual Float128 rel2scr_x(Float128 x) {
@@ -495,8 +496,8 @@ namespace CairoChart {
 			return plot_y_min + (plot_y_max - plot_y_min) * (y - rz_y_min) / (rz_y_max - rz_y_min);
 		}
 
-		public virtual Point rel2scr_point (Point p) {
-			return Point (rel2scr_x(p.x), rel2scr_y(p.y));
+		public virtual Point128 rel2scr_point (Point128 p) {
+			return Point128 (rel2scr_x(p.x), rel2scr_y(p.y));
 		}
 	}
 }

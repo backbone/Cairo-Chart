@@ -30,21 +30,21 @@ namespace CairoChart {
 
 		protected struct CursorCross {
 			uint series_index;
-			Point point;
-			Point size;
+			Point128 point;
+			Point128 size;
 			bool show_x;
 			bool show_date;
 			bool show_time;
 			bool show_y;
-			Point scr_point;
-			Point scr_value_point;
+			Point128 scr_point;
+			Point128 scr_value_point;
 		}
 		protected struct CursorCrossings {
 			uint cursor_index;
 			CursorCross[] crossings;
 		}
 
-		protected List<Point?> get_all_cursors (Chart chart) {
+		protected List<Point128?> get_all_cursors (Chart chart) {
 			var all_cursors = chart.cursors.copy_deep ((src) => { return src; });
 			if (chart.is_cursor_active)
 				all_cursors.append(chart.active_cursor);
@@ -70,7 +70,7 @@ namespace CairoChart {
 					var s = chart.series[si];
 					if (!s.zoom_show) continue;
 
-					Point[] points = {};
+					Point128[] points = {};
 					switch (chart.cursor_style.orientation) {
 					case Orientation.VERTICAL:
 						points = chart.math.sort_points (s, s.sort);
@@ -86,8 +86,8 @@ namespace CairoChart {
 							Float128 y = 0.0;
 							if (chart.math.vcross(chart.get_scr_point(s, points[i]), chart.get_scr_point(s, points[i+1]), chart.rel2scr_x(c.x),
 							                chart.plot_y_min, chart.plot_y_max, out y)) {
-								var point = Point(chart.get_real_x(s, chart.rel2scr_x(c.x)), chart.get_real_y(s, y));
-								Point size; bool show_x, show_date, show_time, show_y;
+								var point = Point128(chart.get_real_x(s, chart.rel2scr_x(c.x)), chart.get_real_y(s, y));
+								Point128 size; bool show_x, show_date, show_time, show_y;
 								cross_what_to_show(chart, s, out show_x, out show_time, out show_date, out show_y);
 								calc_cross_sizes (chart, s, point, out size, show_x, show_time, show_date, show_y);
 								CursorCross cc = {si, point, size, show_x, show_date, show_time, show_y};
@@ -98,8 +98,8 @@ namespace CairoChart {
 							Float128 x = 0.0;
 							if (chart.math.hcross(chart.get_scr_point(s, points[i]), chart.get_scr_point(s, points[i+1]),
 							                chart.plot_x_min, chart.plot_x_max, chart.rel2scr_y(c.y), out x)) {
-								var point = Point(chart.get_real_x(s, x), chart.get_real_y(s, chart.rel2scr_y(c.y)));
-								Point size; bool show_x, show_date, show_time, show_y;
+								var point = Point128(chart.get_real_x(s, x), chart.get_real_y(s, chart.rel2scr_y(c.y)));
+								Point128 size; bool show_x, show_date, show_time, show_y;
 								cross_what_to_show(chart, s, out show_x, out show_time, out show_date, out show_y);
 								calc_cross_sizes (chart, s, point, out size, show_x, show_time, show_date, show_y);
 								CursorCross cc = {si, point, size, show_x, show_date, show_time, show_y};
@@ -124,7 +124,7 @@ namespace CairoChart {
 					unowned CursorCross[] cr = chart.cursors_crossings[ccsi].crossings;
 					cr[cci].scr_point = chart.get_scr_point (chart.series[cr[cci].series_index], cr[cci].point);
 					var d_max = double.max (cr[cci].size.x / 1.5, cr[cci].size.y / 1.5);
-					cr[cci].scr_value_point = Point (cr[cci].scr_point.x + d_max, cr[cci].scr_point.y - d_max);
+					cr[cci].scr_value_point = Point128 (cr[cci].scr_point.x + d_max, cr[cci].scr_point.y - d_max);
 				}
 			}
 		}
@@ -157,12 +157,12 @@ namespace CairoChart {
 			}
 		}
 
-		protected virtual void calc_cross_sizes (Chart chart, Series s, Point p, out Point size,
+		protected virtual void calc_cross_sizes (Chart chart, Series s, Point128 p, out Point128 size,
 		                                         bool show_x = false, bool show_time = false,
 		                                         bool show_date = false, bool show_y = false) {
 			if (show_x == show_time == show_date == show_y == false)
 				cross_what_to_show(chart, s, out show_x, out show_time, out show_date, out show_y);
-			size = Point ();
+			size = Point128 ();
 			string date, time;
 			s.axis_x.format_date_time(p.x, out date, out time);
 			var date_t = new Text (date, s.axis_x.font_style, s.axis_x.color);
@@ -186,8 +186,8 @@ namespace CairoChart {
 			calc_cursors_value_positions(chart);
 
 			for (var cci = 0, max_cci = chart.cursors_crossings.length; cci < max_cci; ++cci) {
-				var low = Point(chart.plot_x_max, chart.plot_y_max);  // low and high
-				var high = Point(chart.plot_x_min, chart.plot_y_min); //              points of the cursor
+				var low = Point128(chart.plot_x_max, chart.plot_y_max);  // low and high
+				var high = Point128(chart.plot_x_min, chart.plot_y_min); //              points of the cursor
 				unowned CursorCross[] ccs = chart.cursors_crossings[cci].crossings;
 				chart.cursor_style.line_style.set(chart);
 				for (var ci = 0, max_ci = ccs.length; ci < max_ci; ++ci) {

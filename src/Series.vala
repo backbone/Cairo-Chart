@@ -4,7 +4,7 @@ namespace CairoChart {
 
 	public class Series {
 
-		public Point[] points = {};
+		public Point128[] points = {};
 		public enum Sort {
 			BY_X = 0,
 			BY_Y = 1,
@@ -65,12 +65,12 @@ namespace CairoChart {
 			line_style.set(chart);
 			// draw series line
 			for (int i = 1; i < points.length; ++i) {
-				Point c, d;
+				Point128 c, d;
 				if (chart.math.cut_line (
-				        Point(chart.plot_x_min, chart.plot_y_min),
-				        Point(chart.plot_x_max, chart.plot_y_max),
-				        Point(chart.get_scr_x(this, points[i - 1].x), chart.get_scr_y(this, points[i - 1].y)),
-				        Point(chart.get_scr_x(this, points[i].x), chart.get_scr_y(this, points[i].y)),
+				        Point128(chart.plot_x_min, chart.plot_y_min),
+				        Point128(chart.plot_x_max, chart.plot_y_max),
+				        Point128(chart.get_scr_x(this, points[i - 1].x), chart.get_scr_y(this, points[i - 1].y)),
+				        Point128(chart.get_scr_x(this, points[i].x), chart.get_scr_y(this, points[i].y)),
 				        out c, out d)
 				) {
 					chart.context.move_to (c.x, c.y);
@@ -81,7 +81,7 @@ namespace CairoChart {
 			for (int i = 0; i < points.length; ++i) {
 				var x = chart.get_scr_x(this, points[i].x);
 				var y = chart.get_scr_y(this, points[i].y);
-				if (chart.point_in_plot_area (Point (x, y)))
+				if (chart.point_in_plot_area (Point128 (x, y)))
 					marker.draw_at_pos(chart, x, y);
 			}
 		}

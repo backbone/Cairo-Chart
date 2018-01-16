@@ -6,13 +6,13 @@ void plot_chart1 (Chart chart) {
 	var s3 = new Series ();
 
 	s1.title = new Text("Series 1"); s1.color = Color (1, 0, 0);
-	s1.points = {Point(0, 0), Point(2, 1), Point(1, 3)};
+	s1.points = {Point128(0, 0), Point128(2, 1), Point128(1, 3)};
 	s1.axis_x.position = Axis.Position.HIGH;
 	s1.axis_x.format = "%.3Lf";
 	s2.title = new Text("Series 2"); s2.color = Color (0, 1, 0);
-	s2.points = {Point(5, -3), Point(25, -18), Point(-11, 173)};
+	s2.points = {Point128(5, -3), Point128(25, -18), Point128(-11, 173)};
 	s3.title = new Text("Series 3"); s3.color = Color (0, 0, 1);
-	s3.points = {Point(9, 17), Point(2, 10), Point(122, 31)};
+	s3.points = {Point128(9, 17), Point128(2, 10), Point128(122, 31)};
 	s3.axis_y.position = Axis.Position.HIGH;
 
 	s1.axis_x.min = 0; s1.axis_x.max = 2;
@@ -50,13 +50,13 @@ void plot_chart2 (Chart chart) {
 	var s3 = new Series ();
 
 	s1.title = new Text("Series 1"); s1.color = Color (1, 0, 0);
-	s1.points = {Point(-12, 0), Point(2, 1), Point(20, 3)};
+	s1.points = {Point128(-12, 0), Point128(2, 1), Point128(20, 3)};
 	s2.axis_y.position = Axis.Position.HIGH;
 	s1.axis_x.format = "%.3Lf";
 	s2.title = new Text("Series 2"); s2.color = Color (0, 1, 0);
-	s2.points = {Point(5, -3), Point(25, -18), Point(-11, 173)};
+	s2.points = {Point128(5, -3), Point128(25, -18), Point128(-11, 173)};
 	s3.title = new Text("Series 3"); s3.color = Color (0, 0, 1);
-	s3.points = {Point(9, 17), Point(2, 10), Point(-15, 31)};
+	s3.points = {Point128(9, 17), Point128(2, 10), Point128(-15, 31)};
 	s3.axis_y.position = Axis.Position.HIGH;
 
 	s1.axis_x.min = -15; s1.axis_x.max = 30;
@@ -98,15 +98,15 @@ void plot_chart3 (Chart chart) {
 	var s3 = new Series ();
 
 	s1.title = new Text("Series 1"); s1.color = Color (1, 0, 0);
-	s1.points = {Point(0, 70), Point(2, 155), Point(1, -3)};
+	s1.points = {Point128(0, 70), Point128(2, 155), Point128(1, -3)};
 	s1.axis_x.position = Axis.Position.HIGH;
 	s1.axis_y.position = Axis.Position.HIGH;
 	s1.axis_x.format = "%.3Lf";
 	s2.title = new Text("Series 2"); s2.color = Color (0, 1, 0);
-	s2.points = {Point(5, -3), Point(25, -18), Point(-11, 173)};
+	s2.points = {Point128(5, -3), Point128(25, -18), Point128(-11, 173)};
 	s2.axis_y.position = Axis.Position.HIGH;
 	s3.title = new Text("Series 3"); s3.color = Color (0, 0, 1);
-	s3.points = {Point(9, -17), Point(2, 10), Point(122, 31)};
+	s3.points = {Point128(9, -17), Point128(2, 10), Point128(122, 31)};
 	s3.axis_y.position = Axis.Position.HIGH;
 
 	s1.axis_x.min = 0; s1.axis_x.max = 2;
@@ -155,17 +155,17 @@ void plot_chart4 (Chart chart) {
 	var high = (uint64) (253000000000L);
 
 	s1.title = new Text("Series 1"); s1.color = Color (1, 0, 0);
-	s1.points = {Point(now, 70), Point(now - 100000, 155), Point(now + 100000, 30)};
+	s1.points = {Point128(now, 70), Point128(now - 100000, 155), Point128(now + 100000, 30)};
 	s1.axis_x.position = Axis.Position.HIGH;
 	s1.axis_y.position = Axis.Position.HIGH;
 	s2.title = new Text("Series 2"); s2.color = Color (0, 1, 0);
-	s2.points = {Point(5, -3), Point(25, -18), Point(-11, 173)};
+	s2.points = {Point128(5, -3), Point128(25, -18), Point128(-11, 173)};
 	s2.axis_y.position = Axis.Position.HIGH;
 	s3.title = new Text("Series 3"); s3.color = Color (0, 0, 1);
-	s3.points = {Point(high - 2 + 0.73, -17), Point(high - 1 + 0.234, 10), Point(high + 1 + 0.411, 31)};
+	s3.points = {Point128(high - 2 + 0.73, -17), Point128(high - 1 + 0.234, 10), Point128(high + 1 + 0.411, 31)};
 	s3.axis_y.position = Axis.Position.HIGH;
 	s4.title = new Text("Series 4"); s4.color = Color (0.5, 0.3, 0.9);
-	s4.points = {Point(high + 0.005, -19.05), Point(high + 0.0051, 28), Point(high + 0.0052, 55), Point(high + 0.0053, 44)};
+	s4.points = {Point128(high + 0.005, -19.05), Point128(high + 0.0051, 28), Point128(high + 0.0052, 55), Point128(high + 0.0053, 44)};
 	s4.axis_y.position = Axis.Position.HIGH;
 
 	s1.axis_x.min = now - 100000; s1.axis_x.max = now + 100000;
@@ -426,7 +426,7 @@ int main (string[] args) {
 
 	    // user's post draw operations here...
 		if (mouse_state == MouseState.DRAW_SELECTION)
-			chart.draw_selection (sel_x0, sel_y0, sel_x1, sel_y1);
+			chart.draw_selection (Cairo.Rectangle() {x = sel_x0, y = sel_y0, width = sel_x1 - sel_x0, height = sel_y1 - sel_y0});
 
 		// show delta
 		var str = chart.cursors2.get_cursors_delta_str(chart);
@@ -525,7 +525,7 @@ int main (string[] args) {
 
 		case MouseState.MOVING_CHART:
 			var delta_x = event.x - mov_x0, delta_y = event.y - mov_y0;
-			chart.move (delta_x, delta_y);
+			chart.move (Point(){x = delta_x, y = delta_y});
 			mov_x0 = event.x;
 			mov_y0 = event.y;
 			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());

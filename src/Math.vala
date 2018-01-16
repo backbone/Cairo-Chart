@@ -46,13 +46,13 @@ namespace CairoChart {
 			return false;
 		}
 
-		public virtual bool point_in_rect (Point p, double x0, double x1, double y0, double y1) {
+		public virtual bool point_in_rect (Point128 p, double x0, double x1, double y0, double y1) {
 			if (x_in_range(p.x, x0, x1) && y_in_range(p.y, y0, y1))
 				return true;
 			return false;
 		}
 
-		public virtual bool hcross (Point a1, Point a2, Float128 h_x1, Float128 h_x2, Float128 h_y, out Float128 x) {
+		public virtual bool hcross (Point128 a1, Point128 a2, Float128 h_x1, Float128 h_x2, Float128 h_y, out Float128 x) {
 			x = 0;
 			if (a1.y == a2.y) return false;
 			if (a1.y >= h_y && a2.y >= h_y || a1.y <= h_y && a2.y <= h_y) return false;
@@ -62,7 +62,7 @@ namespace CairoChart {
 			return false;
 		}
 
-		public virtual bool vcross (Point a1, Point a2, Float128 v_x, Float128 v_y1, Float128 v_y2, out Float128 y) {
+		public virtual bool vcross (Point128 a1, Point128 a2, Float128 v_x, Float128 v_y1, Float128 v_y2, out Float128 y) {
 			y = 0;
 			if (a1.x == a2.x) return false;
 			if (a1.x >= v_x && a2.x >= v_x || a1.x <= v_x && a2.x <= v_x) return false;
@@ -72,9 +72,9 @@ namespace CairoChart {
 			return false;
 		}
 
-		public delegate int PointComparator(Point a, Point b);
+		public delegate int PointComparator(Point128 a, Point128 b);
 
-		public virtual void sort_points_delegate(Point[] points, PointComparator compare) {
+		public virtual void sort_points_delegate(Point128[] points, PointComparator compare) {
 			for(var i = 0; i < points.length; ++i) {
 				for(var j = i + 1; j < points.length; ++j) {
 					if(compare(points[i], points[j]) > 0) {
@@ -86,18 +86,18 @@ namespace CairoChart {
 			}
 		}
 
-		public virtual bool cut_line (Point p_min, Point p_max, Point a, Point b, out Point c, out Point d) {
+		public virtual bool cut_line (Point128 p_min, Point128 p_max, Point128 a, Point128 b, out Point128 c, out Point128 d) {
 			int ncross = 0;
 			Float128 x = 0, y = 0;
-			Point pc[4];
+			Point128 pc[4];
 			if (hcross(a, b, p_min.x, p_max.x, p_min.y, out x))
-				pc[ncross++] = Point(x, p_min.y);
+				pc[ncross++] = Point128(x, p_min.y);
 			if (hcross(a, b, p_min.x, p_max.x, p_max.y, out x))
-				pc[ncross++] = Point(x, p_max.y);
+				pc[ncross++] = Point128(x, p_max.y);
 			if (vcross(a, b, p_min.x, p_min.y, p_max.y, out y))
-				pc[ncross++] = Point(p_min.x, y);
+				pc[ncross++] = Point128(p_min.x, y);
 			if (vcross(a, b, p_max.x, p_min.y, p_max.y, out y))
-				pc[ncross++] = Point(p_max.x, y);
+				pc[ncross++] = Point128(p_max.x, y);
 			c = a;
 			d = b;
 			if (ncross == 0) {
@@ -124,7 +124,7 @@ namespace CairoChart {
 			return false;
 		}
 
-		public virtual Point[] sort_points (Series s, Series.Sort sort) {
+		public virtual Point128[] sort_points (Series s, Series.Sort sort) {
 			var points = s.points;
 			switch(sort) {
 			case Series.Sort.BY_X:
