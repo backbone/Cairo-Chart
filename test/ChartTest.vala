@@ -275,8 +275,8 @@ int main (string[] args) {
 			case Legend.Position.BOTTOM: radio_button4.set_active(true); break;
 			}
 			switch (chart.cursor_style.orientation) {
-			case Cursor.Orientation.VERTICAL: radio_button7.set_active(true); break;
-			case Cursor.Orientation.HORIZONTAL: radio_button8.set_active(true); break;
+			case Cursors.Orientation.VERTICAL: radio_button7.set_active(true); break;
+			case Cursors.Orientation.HORIZONTAL: radio_button8.set_active(true); break;
 			}
 	});
 	button2.clicked.connect (() => {
@@ -288,8 +288,8 @@ int main (string[] args) {
 			case Legend.Position.BOTTOM: radio_button4.set_active(true); break;
 			}
 			switch (chart.cursor_style.orientation) {
-			case Cursor.Orientation.VERTICAL: radio_button7.set_active(true); break;
-			case Cursor.Orientation.HORIZONTAL: radio_button8.set_active(true); break;
+			case Cursors.Orientation.VERTICAL: radio_button7.set_active(true); break;
+			case Cursors.Orientation.HORIZONTAL: radio_button8.set_active(true); break;
 			}
 	});
 	button3.clicked.connect (() => {
@@ -301,8 +301,8 @@ int main (string[] args) {
 			case Legend.Position.BOTTOM: radio_button4.set_active(true); break;
 			}
 			switch (chart.cursor_style.orientation) {
-			case Cursor.Orientation.VERTICAL: radio_button7.set_active(true); break;
-			case Cursor.Orientation.HORIZONTAL: radio_button8.set_active(true); break;
+			case Cursors.Orientation.VERTICAL: radio_button7.set_active(true); break;
+			case Cursors.Orientation.HORIZONTAL: radio_button8.set_active(true); break;
 			}
 	});
 	button4.clicked.connect (() => {
@@ -314,8 +314,8 @@ int main (string[] args) {
 			case Legend.Position.BOTTOM: radio_button4.set_active(true); break;
 			}
 			switch (chart.cursor_style.orientation) {
-			case Cursor.Orientation.VERTICAL: radio_button7.set_active(true); break;
-			case Cursor.Orientation.HORIZONTAL: radio_button8.set_active(true); break;
+			case Cursors.Orientation.VERTICAL: radio_button7.set_active(true); break;
+			case Cursors.Orientation.HORIZONTAL: radio_button8.set_active(true); break;
 			}
 	});
 	button5.clicked.connect (() => {
@@ -397,13 +397,13 @@ int main (string[] args) {
 
 	radio_button7.toggled.connect ((button) => {
 		if (button.get_active()) {
-			chart.cursor_style.orientation = Cursor.Orientation.VERTICAL;
+			chart.cursor_style.orientation = Cursors.Orientation.VERTICAL;
 			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 		}
 	});
 	radio_button8.toggled.connect ((button) => {
 		if (button.get_active()) {
-			chart.cursor_style.orientation = Cursor.Orientation.HORIZONTAL;
+			chart.cursor_style.orientation = Cursors.Orientation.HORIZONTAL;
 			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 		}
 	});
@@ -429,7 +429,7 @@ int main (string[] args) {
 			chart.draw_selection (sel_x0, sel_y0, sel_x1, sel_y1);
 
 		// show delta
-		var str = chart.get_cursors_delta_str();
+		var str = chart.cursors2.get_cursors_delta_str(chart);
 		if (str != "") {
 			var text = "Δ = " + str;
 			var text_t = new Text(text);

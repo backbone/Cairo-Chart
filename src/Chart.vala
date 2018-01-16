@@ -53,7 +53,7 @@ namespace CairoChart {
 
 			set_vertical_axes_titles ();
 
-			get_cursors_crossings();
+			cursors2.get_cursors_crossings(this);
 
 			calc_plot_area ();
 
@@ -69,7 +69,7 @@ namespace CairoChart {
 			draw_series ();
 			check_cur_values ();
 
-			draw_cursors ();
+			cursors2.draw_cursors (this);
 			check_cur_values ();
 
 			return true;
@@ -88,10 +88,10 @@ namespace CairoChart {
 		}
 
 		// relative zoom limits
-		protected double rz_x_min = 0.0;
-		protected double rz_x_max = 1.0;
-		protected double rz_y_min = 0.0;
-		protected double rz_y_max = 1.0;
+		public double rz_x_min { get; protected set; default = 0.0; }
+		public double rz_x_max { get; protected set; default = 1.0; }
+		public double rz_y_min { get; protected set; default = 0.0; }
+		public double rz_y_max { get; protected set; default = 1.0; }
 
 		public int zoom_first_show { get; protected set; default = 0; }
 
@@ -253,14 +253,14 @@ namespace CairoChart {
 				// for 4.2. Cursor values for joint X axis
 				if (si == zoom_first_show && cursors_crossings.length != 0) {
 					switch (cursor_style.orientation) {
-					case Cursor.Orientation.VERTICAL:
+					case Cursors.Orientation.VERTICAL:
 						if (is_x && joint_x)
 							switch (axis.position) {
 							case Axis.Position.LOW: plot_y_max -= max_rec_height + axis.font_indent; break;
 							case Axis.Position.HIGH: plot_y_min += max_rec_height + axis.font_indent; break;
 							}
 						break;
-					case Cursor.Orientation.HORIZONTAL:
+					case Cursors.Orientation.HORIZONTAL:
 						if (!is_x && joint_y)
 							switch (s.axis_y.position) {
 							case Axis.Position.LOW: plot_x_min += max_rec_width + s.axis_y.font_indent; break;
@@ -316,7 +316,7 @@ namespace CairoChart {
 			       + sz.height * (y - (s.axis_y.zoom_min + s.axis_y.zoom_max) / 2.0) / (s.axis_y.zoom_max - s.axis_y.zoom_min);
 		}
 
-		public CairoChart.Math math = new Math();
+		public CairoChart.Math math { get; protected set; default = new Math(); }
 
 		protected virtual void draw_horizontal_axes () {
 			for (var si = series.length - 1, nskip = 0; si >=0; --si)
@@ -353,17 +353,17 @@ namespace CairoChart {
 			return Point (get_scr_x(s, p.x), get_scr_y(s, p.y));
 		}
 
-		protected virtual Float128 get_real_x (Series s, double scr_x) {
+		public virtual Float128 get_real_x (Series s, double scr_x) {
 			return s.axis_x.zoom_min + ((scr_x - plot_x_min) / (plot_x_max - plot_x_min) - s.place.zoom_x_min)
 			       * (s.axis_x.zoom_max - s.axis_x.zoom_min) / (s.place.zoom_x_max - s.place.zoom_x_min);
 		}
 
-		protected virtual Float128 get_real_y (Series s, double scr_y) {
+		public virtual Float128 get_real_y (Series s, double scr_y) {
 			return s.axis_y.zoom_min + ((plot_y_max - scr_y) / (plot_y_max - plot_y_min) - s.place.zoom_y_min)
 			       * (s.axis_y.zoom_max - s.axis_y.zoom_min) / (s.place.zoom_y_max - s.place.zoom_y_min);
 		}
 
-		protected virtual Point get_real_point (Series s, Point p) {
+		public virtual Point get_real_point (Series s, Point p) {
 			return Point (get_real_x(s, p.x), get_real_y(s, p.y));
 		}
 
@@ -393,9 +393,13 @@ namespace CairoChart {
 			}
 		}
 
-		protected List<Point?> cursors = new List<Point?> ();
-		protected Point active_cursor = Point ();
-		protected bool is_cursor_active = false;
+		public Cursors cursors2 { get; protected set; default = new Cursors (); }
+
+		public List<Point?> cursors = new List<Point?> ();
+		public Point active_cursor = Point(); // { get; protected set; default = Point (); }
+		public bool is_cursor_active { get; protected set; default = false; }
+		public Cursors.Style cursor_style = Cursors.Style();
+
 
 		public virtual void set_active_cursor (double x, double y, bool remove = false) {
 			active_cursor = Point (scr2rel_x(x), scr2rel_y(y));
@@ -407,8 +411,6 @@ namespace CairoChart {
 			is_cursor_active = false;
 		}
 
-		public Cursor.Style cursor_style = Cursor.Style();
-
 		public virtual void remove_active_cursor () {
 			if (cursors.length() == 0) return;
 			var distance = width * width;
@@ -417,10 +419,10 @@ namespace CairoChart {
 			foreach (var c in cursors) {
 				double d = distance;
 				switch (cursor_style.orientation) {
-				case Cursor.Orientation.VERTICAL:
+				case Cursors.Orientation.VERTICAL:
 					d = (rel2scr_x(c.x) - rel2scr_x(active_cursor.x)).abs();
 					break;
-				case Cursor.Orientation.HORIZONTAL:
+				case Cursors.Orientation.HORIZONTAL:
 					d = (rel2scr_y(c.y) - rel2scr_y(active_cursor.y)).abs();
 					break;
 				}
@@ -445,425 +447,19 @@ namespace CairoChart {
 			return Point (scr2rel_x(p.x), scr2rel_y(p.y));
 		}
 
-		protected virtual Float128 rel2scr_x(Float128 x) {
+		public virtual Float128 rel2scr_x(Float128 x) {
 			return plot_x_min + (plot_x_max - plot_x_min) * (x - rz_x_min) / (rz_x_max - rz_x_min);
 		}
 
-		protected virtual Float128 rel2scr_y(Float128 y) {
+		public virtual Float128 rel2scr_y(Float128 y) {
 			return plot_y_min + (plot_y_max - plot_y_min) * (y - rz_y_min) / (rz_y_max - rz_y_min);
 		}
 
-		protected virtual Point rel2scr_point (Point p) {
+		public virtual Point rel2scr_point (Point p) {
 			return Point (rel2scr_x(p.x), rel2scr_y(p.y));
 		}
 
-		protected struct CursorCross {
-			uint series_index;
-			Point point;
-			Point size;
-			bool show_x;
-			bool show_date;
-			bool show_time;
-			bool show_y;
-			Point scr_point;
-			Point scr_value_point;
-		}
-		protected struct CursorCrossings {
-			uint cursor_index;
-			CursorCross[] crossings;
-		}
-
-		public CursorCrossings[] cursors_crossings = {};
-
-		protected List<Point?> get_all_cursors () {
-			var all_cursors = cursors.copy_deep ((src) => { return src; });
-			if (is_cursor_active)
-				all_cursors.append(active_cursor);
-			return all_cursors;
-		}
-
-		protected void get_cursors_crossings () {
-			var all_cursors = get_all_cursors();
-
-			CursorCrossings[] local_cursor_crossings = {};
-
-			for (var ci = 0, max_ci = all_cursors.length(); ci < max_ci; ++ci) {
-				var c = all_cursors.nth_data(ci);
-				switch (cursor_style.orientation) {
-				case Cursor.Orientation.VERTICAL:
-					if (c.x <= rz_x_min || c.x >= rz_x_max) continue; break;
-				case Cursor.Orientation.HORIZONTAL:
-					if (c.y <= rz_y_min || c.y >= rz_y_max) continue; break;
-				}
-
-				CursorCross[] crossings = {};
-				for (var si = 0, max_si = series.length; si < max_si; ++si) {
-					var s = series[si];
-					if (!s.zoom_show) continue;
-
-					Point[] points = {};
-					switch (cursor_style.orientation) {
-					case Cursor.Orientation.VERTICAL:
-						points = math.sort_points (s, s.sort);
-						break;
-					case Cursor.Orientation.HORIZONTAL:
-						points = math.sort_points (s, s.sort);
-						break;
-					}
-
-					for (var i = 0; i + 1 < points.length; ++i) {
-						switch (cursor_style.orientation) {
-						case Cursor.Orientation.VERTICAL:
-							Float128 y = 0.0;
-							if (math.vcross(get_scr_point(s, points[i]), get_scr_point(s, points[i+1]), rel2scr_x(c.x),
-							                plot_y_min, plot_y_max, out y)) {
-								var point = Point(get_real_x(s, rel2scr_x(c.x)), get_real_y(s, y));
-								Point size; bool show_x, show_date, show_time, show_y;
-								cross_what_to_show(s, out show_x, out show_time, out show_date, out show_y);
-								calc_cross_sizes (s, point, out size, show_x, show_time, show_date, show_y);
-								CursorCross cc = {si, point, size, show_x, show_date, show_time, show_y};
-								crossings += cc;
-							}
-							break;
-						case Cursor.Orientation.HORIZONTAL:
-							Float128 x = 0.0;
-							if (math.hcross(get_scr_point(s, points[i]), get_scr_point(s, points[i+1]),
-							                plot_x_min, plot_x_max, rel2scr_y(c.y), out x)) {
-								var point = Point(get_real_x(s, x), get_real_y(s, rel2scr_y(c.y)));
-								Point size; bool show_x, show_date, show_time, show_y;
-								cross_what_to_show(s, out show_x, out show_time, out show_date, out show_y);
-								calc_cross_sizes (s, point, out size, show_x, show_time, show_date, show_y);
-								CursorCross cc = {si, point, size, show_x, show_date, show_time, show_y};
-								crossings += cc;
-							}
-							break;
-						}
-					}
-				}
-				if (crossings.length != 0) {
-					CursorCrossings ccs = {ci, crossings};
-					local_cursor_crossings += ccs;
-				}
-			}
-			cursors_crossings = local_cursor_crossings;
-		}
-
-		protected virtual void calc_cursors_value_positions () {
-			for (var ccsi = 0, max_ccsi = cursors_crossings.length; ccsi < max_ccsi; ++ccsi) {
-				for (var cci = 0, max_cci = cursors_crossings[ccsi].crossings.length; cci < max_cci; ++cci) {
-					// TODO: Ticket #142: find smart algorithm of cursors values placements
-					unowned CursorCross[] cr = cursors_crossings[ccsi].crossings;
-					cr[cci].scr_point = get_scr_point (series[cr[cci].series_index], cr[cci].point);
-					var d_max = double.max (cr[cci].size.x / 1.5, cr[cci].size.y / 1.5);
-					cr[cci].scr_value_point = Point (cr[cci].scr_point.x + d_max, cr[cci].scr_point.y - d_max);
-				}
-			}
-		}
-
-		protected virtual void cross_what_to_show (Series s, out bool show_x, out bool show_time,
-		                                                     out bool show_date, out bool show_y) {
-			show_x = show_time = show_date = show_y = false;
-			switch (cursor_style.orientation) {
-			case Cursor.Orientation.VERTICAL:
-				show_y = true;
-				if (!joint_x)
-					switch (s.axis_x.type) {
-					case Axis.Type.NUMBERS: show_x = true; break;
-					case Axis.Type.DATE_TIME:
-						if (s.axis_x.date_format != "") show_date = true;
-						if (s.axis_x.time_format != "") show_time = true;
-						break;
-					}
-				break;
-			case Cursor.Orientation.HORIZONTAL:
-				if (!joint_y) show_y = true;
-				switch (s.axis_x.type) {
-				case Axis.Type.NUMBERS: show_x = true; break;
-				case Axis.Type.DATE_TIME:
-					if (s.axis_x.date_format != "") show_date = true;
-					if (s.axis_x.time_format != "") show_time = true;
-					break;
-				}
-				break;
-			}
-		}
-
-		protected virtual void calc_cross_sizes (Series s, Point p, out Point size,
-		                                         bool show_x = false, bool show_time = false,
-		                                         bool show_date = false, bool show_y = false) {
-			if (show_x == show_time == show_date == show_y == false)
-				cross_what_to_show(s, out show_x, out show_time, out show_date, out show_y);
-			size = Point ();
-			string date, time;
-			s.axis_x.format_date_time(p.x, out date, out time);
-			var date_t = new Text (date, s.axis_x.font_style, s.axis_x.color);
-			var time_t = new Text (time, s.axis_x.font_style, s.axis_x.color);
-			var x_t = new Text (s.axis_x.format.printf((LongDouble)p.x), s.axis_x.font_style, s.axis_x.color);
-			var y_t = new Text (s.axis_y.format.printf((LongDouble)p.y), s.axis_y.font_style, s.axis_y.color);
-			double h_x = 0.0, h_y = 0.0;
-			if (show_x) { var sz = x_t.get_size(context); size.x = sz.width; h_x = sz.height; }
-			if (show_date) { var sz = date_t.get_size(context); size.x = sz.width; h_x = sz.height; }
-			if (show_time) { var sz = time_t.get_size(context); size.x = double.max(size.x, sz.width); h_x += sz.height; }
-			if (show_y) { var sz = y_t.get_size(context); size.x += sz.width; h_y = sz.height; }
-			if ((show_x || show_date || show_time) && show_y) size.x += double.max(s.axis_x.font_indent, s.axis_y.font_indent);
-			if (show_date && show_time) h_x += s.axis_x.font_indent;
-			size.y = double.max (h_x, h_y);
-		}
-
-		protected virtual void draw_cursors () {
-			if (series.length == 0) return;
-
-			var all_cursors = get_all_cursors();
-			calc_cursors_value_positions();
-
-			for (var cci = 0, max_cci = cursors_crossings.length; cci < max_cci; ++cci) {
-				var low = Point(plot_x_max, plot_y_max);  // low and high
-				var high = Point(plot_x_min, plot_y_min); //              points of the cursor
-				unowned CursorCross[] ccs = cursors_crossings[cci].crossings;
-				cursor_style.line_style.set(this);
-				for (var ci = 0, max_ci = ccs.length; ci < max_ci; ++ci) {
-					var si = ccs[ci].series_index;
-					var s = series[si];
-					var p = ccs[ci].point;
-					var scrx = get_scr_x(s, p.x);
-					var scry = get_scr_y(s, p.y);
-					if (scrx < low.x) low.x = scrx;
-					if (scry < low.y) low.y = scry;
-					if (scrx > high.x) high.x = scrx;
-					if (scry > high.y) high.y = scry;
-
-					if (joint_x) {
-						switch (s.axis_x.position) {
-						case Axis.Position.LOW: high.y = plot_y_max + s.axis_x.font_indent; break;
-						case Axis.Position.HIGH: low.y = plot_y_min - s.axis_x.font_indent; break;
-						case Axis.Position.BOTH:
-							high.y = plot_y_max + s.axis_x.font_indent;
-							low.y = plot_y_min - s.axis_x.font_indent;
-							break;
-						}
-					}
-					if (joint_y) {
-						switch (s.axis_y.position) {
-						case Axis.Position.LOW: low.x = plot_x_min - s.axis_y.font_indent; break;
-						case Axis.Position.HIGH: high.x = plot_x_max + s.axis_y.font_indent; break;
-						case Axis.Position.BOTH:
-							low.x = plot_x_min - s.axis_y.font_indent;
-							high.x = plot_x_max + s.axis_y.font_indent;
-							break;
-						}
-					}
-
-					context.move_to (ccs[ci].scr_point.x, ccs[ci].scr_point.y);
-					context.line_to (ccs[ci].scr_value_point.x, ccs[ci].scr_value_point.y);
-				}
-
-				var c = all_cursors.nth_data(cursors_crossings[cci].cursor_index);
-
-				switch (cursor_style.orientation) {
-				case Cursor.Orientation.VERTICAL:
-					if (low.y > high.y) continue;
-					context.move_to (rel2scr_x(c.x), low.y);
-					context.line_to (rel2scr_x(c.x), high.y);
-
-					// show joint X value
-					if (joint_x) {
-						var s = series[zoom_first_show];
-						var x = get_real_x(s, rel2scr_x(c.x));
-						string text = "", time_text = "";
-						switch (s.axis_x.type) {
-						case Axis.Type.NUMBERS:
-							text = s.axis_x.format.printf((LongDouble)x);
-							break;
-						case Axis.Type.DATE_TIME:
-							s.axis_x.format_date_time(x, out text, out time_text);
-							break;
-						default:
-							break;
-						}
-						var text_t = new Text(text, s.axis_x.font_style, s.axis_x.color);
-						var sz = text_t.get_size(context);
-						var time_text_t = new Text(time_text, s.axis_x.font_style, s.axis_x.color);
-						var print_y = 0.0;
-						switch (s.axis_x.position) {
-							case Axis.Position.LOW: print_y = y_min + height - s.axis_x.font_indent
-								                    - (legend.position == Legend.Position.BOTTOM ? legend.height : 0);
-								break;
-							case Axis.Position.HIGH: print_y = y_min + title_height + s.axis_x.font_indent
-								                     + (legend.position == Legend.Position.TOP ? legend.height : 0);
-								switch (s.axis_x.type) {
-								case Axis.Type.NUMBERS:
-									print_y += sz.height;
-									break;
-								case Axis.Type.DATE_TIME:
-									print_y += (s.axis_x.date_format == "" ? 0 : sz.height)
-									           + (s.axis_x.time_format == "" ? 0 : time_text_t.get_height(context))
-									           + (s.axis_x.date_format == "" || s.axis_x.time_format == "" ? 0 : s.axis_x.font_indent);
-									break;
-								}
-								break;
-						}
-						var print_x = compact_rec_x_pos (s, x, text_t);
-						context.move_to (print_x, print_y);
-
-						switch (s.axis_x.type) {
-						case Axis.Type.NUMBERS:
-							text_t.show(context);
-							break;
-						case Axis.Type.DATE_TIME:
-							if (s.axis_x.date_format != "") text_t.show(context);
-							print_x = compact_rec_x_pos (s, x, time_text_t);
-							context.move_to (print_x, print_y - (s.axis_x.date_format == "" ? 0 : sz.height + s.axis_x.font_indent));
-							if (s.axis_x.time_format != "") time_text_t.show(context);
-							break;
-						}
-					}
-					break;
-				case Cursor.Orientation.HORIZONTAL:
-					if (low.x > high.x) continue;
-					context.move_to (low.x, rel2scr_y(c.y));
-					context.line_to (high.x, rel2scr_y(c.y));
-
-					// show joint Y value
-					if (joint_y) {
-						var s = series[zoom_first_show];
-						var y = get_real_y(s, rel2scr_y(c.y));
-						var text_t = new Text(s.axis_y.format.printf((LongDouble)y, s.axis_y.font_style));
-						var print_y = compact_rec_y_pos (s, y, text_t);
-						var print_x = 0.0;
-						switch (s.axis_y.position) {
-						case Axis.Position.LOW:
-							print_x = x_min + s.axis_y.font_indent
-							          + (legend.position == Legend.Position.LEFT ? legend.width : 0);
-							break;
-						case Axis.Position.HIGH:
-							print_x = x_min + width - text_t.get_width(context) - s.axis_y.font_indent
-							          - (legend.position == Legend.Position.RIGHT ? legend.width : 0);
-							break;
-						}
-						context.move_to (print_x, print_y);
-						text_t.show(context);
-					}
-					break;
-				}
-				context.stroke ();
-
-				// show value (X, Y or [X;Y])
-				for (var ci = 0, max_ci = ccs.length; ci < max_ci; ++ci) {
-					var si = ccs[ci].series_index;
-					var s = series[si];
-					var point = ccs[ci].point;
-					var size = ccs[ci].size;
-					var svp = ccs[ci].scr_value_point;
-					var show_x = ccs[ci].show_x;
-					var show_date = ccs[ci].show_date;
-					var show_time = ccs[ci].show_time;
-					var show_y = ccs[ci].show_y;
-
-					set_source_rgba(bg_color);
-					context.rectangle (svp.x - size.x / 2, svp.y - size.y / 2, size.x, size.y);
-					context.fill();
-
-					if (show_x) {
-						set_source_rgba(s.axis_x.color);
-						var text_t = new Text(s.axis_x.format.printf((LongDouble)point.x), s.axis_x.font_style);
-						context.move_to (svp.x - size.x / 2, svp.y + text_t.get_height(context) / 2);
-						if (joint_x) set_source_rgba (joint_axis_color);
-						text_t.show(context);
-					}
-
-					if (show_time) {
-						set_source_rgba(s.axis_x.color);
-						string date = "", time = "";
-						s.axis_x.format_date_time(point.x, out date, out time);
-						var text_t = new Text(time, s.axis_x.font_style);
-						var sz = text_t.get_size(context);
-						var y = svp.y + sz.height / 2;
-						if (show_date) y -= sz.height / 2 + s.axis_x.font_indent / 2;
-						context.move_to (svp.x - size.x / 2, y);
-						if (joint_x) set_source_rgba (joint_axis_color);
-						text_t.show(context);
-					}
-
-					if (show_date) {
-						set_source_rgba(s.axis_x.color);
-						string date = "", time = "";
-						s.axis_x.format_date_time(point.x, out date, out time);
-						var text_t = new Text(date, s.axis_x.font_style);
-						var sz = text_t.get_size(context);
-						var y = svp.y + sz.height / 2;
-						if (show_time) y += sz.height / 2 + s.axis_x.font_indent / 2;
-						context.move_to (svp.x - size.x / 2, y);
-						if (joint_x) set_source_rgba (joint_axis_color);
-						text_t.show(context);
-					}
-
-					if (show_y) {
-						set_source_rgba(s.axis_y.color);
-						var text_t = new Text(s.axis_y.format.printf((LongDouble)point.y), s.axis_y.font_style);
-						var sz = text_t.get_size(context);
-						context.move_to (svp.x + size.x / 2 - sz.width, svp.y + sz.height / 2);
-						if (joint_y) set_source_rgba (joint_axis_color);
-						text_t.show(context);
-					}
-				}
-			}
-		}
-
-		public bool get_cursors_delta (out Float128 delta) {
-			delta = 0.0;
-			if (series.length == 0) return false;
-			if (cursors.length() + (is_cursor_active ? 1 : 0) != 2) return false;
-			if (joint_x && cursor_style.orientation == Cursor.Orientation.VERTICAL) {
-				Float128 val1 = get_real_x (series[zoom_first_show], rel2scr_x(cursors.nth_data(0).x));
-				Float128 val2 = 0;
-				if (is_cursor_active)
-					val2 = get_real_x (series[zoom_first_show], rel2scr_x(active_cursor.x));
-				else
-					val2 = get_real_x (series[zoom_first_show], rel2scr_x(cursors.nth_data(1).x));
-				if (val2 > val1)
-					delta = val2 - val1;
-				else
-					delta = val1 - val2;
-				return true;
-			}
-			if (joint_y && cursor_style.orientation == Cursor.Orientation.HORIZONTAL) {
-				Float128 val1 = get_real_y (series[zoom_first_show], rel2scr_y(cursors.nth_data(0).y));
-				Float128 val2 = 0;
-				if (is_cursor_active)
-					val2 = get_real_y (series[zoom_first_show], rel2scr_y(active_cursor.y));
-				else
-					val2 = get_real_y (series[zoom_first_show], rel2scr_y(cursors.nth_data(1).y));
-				if (val2 > val1)
-					delta = val2 - val1;
-				else
-					delta = val1 - val2;
-				return true;
-			}
-			return false;
-		}
-
-		public string get_cursors_delta_str () {
-			Float128 delta = 0.0;
-			if (!get_cursors_delta(out delta)) return "";
-			var str = "";
-			var s = series[zoom_first_show];
-			if (joint_x)
-				switch (s.axis_x.type) {
-				case Axis.Type.NUMBERS:
-					str = s.axis_x.format.printf((LongDouble)delta);
-					break;
-				case Axis.Type.DATE_TIME:
-					var date = "", time = "";
-					int64 days = (int64)(delta / 24 / 3600);
-					s.axis_x.format_date_time(delta, out date, out time);
-					str = days.to_string() + " + " + time;
-					break;
-				}
-			if (joint_y) {
-				str = s.axis_y.format.printf((LongDouble)delta);
-			}
-			return str;
-		}
+		public Cursors.CursorCrossings[] cursors_crossings = {};
 
 		public Chart copy () {
 			var chart = new Chart ();
