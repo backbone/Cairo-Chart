@@ -49,8 +49,13 @@ namespace CairoChart {
 		public CairoChart.Math math { get; protected set; default = new Math(); }
 		public Cursors cursors { get; protected set; default = new Cursors (); }
 
-		public Chart () {
+		public Color color {
+			private get { return Color(); }
+			set { context.set_source_rgba (value.red, value.green, value.blue, value.alpha); }
+			default = Color();
 		}
+
+		public Chart () { }
 
 		public Chart copy () {
 			var chart = new Chart ();
@@ -96,9 +101,9 @@ namespace CairoChart {
 
 		public virtual void clear () {
 			if (context != null) {
-				set_source_rgba (bg_color);
+				color = bg_color;
 				context.paint();
-				set_source_rgba (Color (0, 0, 0, 1));
+				color = Color (0, 0, 0, 1);
 			}
 		}
 
@@ -138,9 +143,43 @@ namespace CairoChart {
 
 			return true;
 		}
-
-		public virtual void set_source_rgba (Color color) {
-				context.set_source_rgba (color.red, color.green, color.blue, color.alpha);
+		protected virtual void draw_chart_title () {
+			var sz = title.get_size(context);
+			title_height = sz.height + (legend.position == Legend.Position.TOP ? title_indent * 2 : title_indent);
+			cur_y_min += title_height;
+			color = title.color;
+			context.move_to (width/2 - sz.width/2, sz.height + title_indent);
+			title.show(context);
+		}
+		public virtual void draw_selection (Cairo.Rectangle rect) {
+			selection_style.set(this);
+			context.rectangle (rect.x, rect.y, rect.width, rect.height);
+			context.stroke();
+		}
+		protected virtual void draw_horizontal_axes () {
+			for (var si = series.length - 1, nskip = 0; si >=0; --si)
+				series[si].draw_horizontal_axis (si, ref nskip);
+		}
+		protected virtual void draw_vertical_axes () {
+			for (var si = series.length - 1, nskip = 0; si >=0; --si)
+				series[si].draw_vertical_axis (si, ref nskip);
+		}
+		protected virtual void draw_plot_area_border () {
+			color = border_color;
+			context.set_dash(null, 0);
+			context.move_to (plot_x_min, plot_y_min);
+			context.line_to (plot_x_min, plot_y_max);
+			context.line_to (plot_x_max, plot_y_max);
+			context.line_to (plot_x_max, plot_y_min);
+			context.line_to (plot_x_min, plot_y_min);
+			context.stroke ();
+		}
+		protected virtual void draw_series () {
+			for (var si = 0; si < series.length; ++si) {
+				var s = series[si];
+				if (s.zoom_show && s.points.length != 0)
+					s.draw();
+			}
 		}
 
 		public virtual void zoom_in (Cairo.Rectangle rect) {
@@ -201,7 +240,6 @@ namespace CairoChart {
 			rz_y_min = new_rz_y_min;
 			rz_y_max = new_rz_y_max;
 		}
-
 		public virtual void zoom_out () {
 			foreach (var s in series) {
 				s.zoom_show = true;
@@ -221,7 +259,6 @@ namespace CairoChart {
 
 			zoom_first_show = 0;
 		}
-
 		public virtual void move (Point delta) {
 			var d = delta;
 			d.x /= plot_x_max - plot_x_min; d.x *= - 1.0;
@@ -243,21 +280,6 @@ namespace CairoChart {
 			if (ymax + d.y > plot_y_max) d.y = plot_y_max - ymax;
 
 			zoom_in (Cairo.Rectangle(){x = xmin + d.x, y = ymin + d.y, width = xmax - xmin, height = ymax - ymin});
-		}
-
-		protected virtual void draw_chart_title () {
-			var sz = title.get_size(context);
-			title_height = sz.height + (legend.position == Legend.Position.TOP ? title_indent * 2 : title_indent);
-			cur_y_min += title_height;
-			set_source_rgba(title.color);
-			context.move_to (width/2 - sz.width/2, sz.height + title_indent);
-			title.show(context);
-		}
-
-		public virtual void draw_selection (Cairo.Rectangle rect) {
-			selection_style.set(this);
-			context.rectangle (rect.x, rect.y, rect.width, rect.height);
-			context.stroke();
 		}
 
 		protected virtual void set_vertical_axes_titles () {
@@ -337,35 +359,6 @@ namespace CairoChart {
 
 			join_calc (true);
 			join_calc (false);
-		}
-
-		protected virtual void draw_horizontal_axes () {
-			for (var si = series.length - 1, nskip = 0; si >=0; --si)
-				series[si].draw_horizontal_axis (si, ref nskip);
-		}
-
-		protected virtual void draw_vertical_axes () {
-			for (var si = series.length - 1, nskip = 0; si >=0; --si)
-				series[si].draw_vertical_axis (si, ref nskip);
-		}
-
-		protected virtual void draw_plot_area_border () {
-			set_source_rgba (border_color);
-			context.set_dash(null, 0);
-			context.move_to (plot_x_min, plot_y_min);
-			context.line_to (plot_x_min, plot_y_max);
-			context.line_to (plot_x_max, plot_y_max);
-			context.line_to (plot_x_max, plot_y_min);
-			context.line_to (plot_x_min, plot_y_min);
-			context.stroke ();
-		}
-
-		protected virtual void draw_series () {
-			for (var si = 0; si < series.length; ++si) {
-				var s = series[si];
-				if (s.zoom_show && s.points.length != 0)
-					s.draw();
-			}
 		}
 
 		protected virtual bool x_in_plot_area (double x) {

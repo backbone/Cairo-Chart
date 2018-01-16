@@ -26,7 +26,7 @@ namespace CairoChart {
 			}
 
 			public void set (Chart chart) {
-				chart.set_source_rgba(color);
+				chart.color = color;
 				chart.context.set_line_join(join);
 				chart.context.set_line_cap(cap);
 				chart.context.set_line_width(width);

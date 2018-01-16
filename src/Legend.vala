@@ -70,7 +70,7 @@ namespace CairoChart {
 					y0 = (chart.height - height) / 2;
 				break;
 				}
-				chart.set_source_rgba(bg_color);
+				chart.color = bg_color;
 				chart.context.rectangle (x0, y0, width, height);
 				chart.context.fill();
 				border_style.set(chart);
@@ -144,7 +144,7 @@ namespace CairoChart {
 
 					// series title
 					chart.context.move_to (x + line_length, y);
-					chart.set_source_rgba (s.title.color);
+					chart.color = s.title.color;
 					s.title.show(chart.context);
 
 					// series line style

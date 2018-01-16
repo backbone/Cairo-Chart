@@ -437,11 +437,11 @@ int main (string[] args) {
 			var h = text_t.get_height(context);
 			var x0 = chart.plot_x_max - w - 5;
 			var y0 = chart.plot_y_min + h + 5;
-			chart.set_source_rgba(chart.legend.bg_color);
+			chart.color = chart.legend.bg_color;
 			context.rectangle (x0, y0 - h, w, h);
 			context.fill();
 			context.move_to (x0, y0);
-			chart.set_source_rgba(chart.joint_axis_color);
+			chart.color = chart.joint_axis_color;
 			context.show_text(text);
 		}
 

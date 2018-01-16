@@ -375,20 +375,20 @@ namespace CairoChart {
 					var show_time = ccs[ci].show_time;
 					var show_y = ccs[ci].show_y;
 
-					chart.set_source_rgba(chart.bg_color);
+					chart.color = chart.bg_color;
 					chart.context.rectangle (svp.x - size.x / 2, svp.y - size.y / 2, size.x, size.y);
 					chart.context.fill();
 
 					if (show_x) {
-						chart.set_source_rgba(s.axis_x.color);
+						chart.color = s.axis_x.color;
 						var text_t = new Text(s.axis_x.format.printf((LongDouble)point.x), s.axis_x.font_style);
 						chart.context.move_to (svp.x - size.x / 2, svp.y + text_t.get_height(chart.context) / 2);
-						if (chart.joint_x) chart.set_source_rgba (chart.joint_axis_color);
+						if (chart.joint_x) chart.color = chart.joint_axis_color;
 						text_t.show(chart.context);
 					}
 
 					if (show_time) {
-						chart.set_source_rgba(s.axis_x.color);
+						chart.color = s.axis_x.color;
 						string date = "", time = "";
 						s.axis_x.format_date_time(point.x, out date, out time);
 						var text_t = new Text(time, s.axis_x.font_style);
@@ -396,12 +396,12 @@ namespace CairoChart {
 						var y = svp.y + sz.height / 2;
 						if (show_date) y -= sz.height / 2 + s.axis_x.font_indent / 2;
 						chart.context.move_to (svp.x - size.x / 2, y);
-						if (chart.joint_x) chart.set_source_rgba (chart.joint_axis_color);
+						if (chart.joint_x) chart.color = chart.joint_axis_color;
 						text_t.show(chart.context);
 					}
 
 					if (show_date) {
-						chart.set_source_rgba(s.axis_x.color);
+						chart.color = s.axis_x.color;
 						string date = "", time = "";
 						s.axis_x.format_date_time(point.x, out date, out time);
 						var text_t = new Text(date, s.axis_x.font_style);
@@ -409,16 +409,16 @@ namespace CairoChart {
 						var y = svp.y + sz.height / 2;
 						if (show_time) y += sz.height / 2 + s.axis_x.font_indent / 2;
 						chart.context.move_to (svp.x - size.x / 2, y);
-						if (chart.joint_x) chart.set_source_rgba (chart.joint_axis_color);
+						if (chart.joint_x) chart.color = chart.joint_axis_color;
 						text_t.show(chart.context);
 					}
 
 					if (show_y) {
-						chart.set_source_rgba(s.axis_y.color);
+						chart.color = s.axis_y.color;
 						var text_t = new Text(s.axis_y.format.printf((LongDouble)point.y), s.axis_y.font_style);
 						var sz = text_t.get_size(chart.context);
 						chart.context.move_to (svp.x + size.x / 2 - sz.width, svp.y + sz.height / 2);
-						if (chart.joint_y) chart.set_source_rgba (chart.joint_axis_color);
+						if (chart.joint_y) chart.color = chart.joint_axis_color;
 						text_t.show(chart.context);
 					}
 				}

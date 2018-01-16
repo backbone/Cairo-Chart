@@ -193,8 +193,8 @@ namespace CairoChart {
 			var joint_x = chart.joint_x;
 
 			for (Float128 x = x_min, x_max = axis_x.zoom_max; chart.math.point_belong (x, x_min, x_max); x += step) {
-				if (joint_x) chart.set_source_rgba(chart.joint_axis_color);
-				else chart.set_source_rgba(axis_x.color);
+				if (joint_x) chart.color = chart.joint_axis_color;
+				else chart.color = axis_x.color;
 				string text = "", time_text = "";
 				switch (axis_x.type) {
 				case Axis.Type.NUMBERS:
@@ -316,8 +316,8 @@ namespace CairoChart {
 				case Axis.Position.HIGH: scr_y = chart.cur_y_min + s.axis_x.font_indent + sz.height; break;
 				}
 				chart.context.move_to(scr_x - sz.width / 2.0, scr_y);
-				chart.set_source_rgba(s.axis_x.color);
-				if (chart.joint_x) chart.set_source_rgba(chart.joint_axis_color);
+				chart.color = s.axis_x.color;
+				if (chart.joint_x) chart.color = chart.joint_axis_color;
 				s.axis_x.title.show(chart.context);
 			}
 
@@ -348,8 +348,8 @@ namespace CairoChart {
 			var joint_y = chart.joint_y;
 
 			for (Float128 y = y_min, y_max = axis_y.zoom_max; chart.math.point_belong (y, y_min, y_max); y += step) {
-				if (joint_y) chart.set_source_rgba(chart.joint_axis_color);
-				else chart.set_source_rgba(axis_y.color);
+				if (joint_y) chart.color = chart.joint_axis_color;
+				else chart.color = axis_y.color;
 				var text = axis_y.format.printf((LongDouble)y);
 				var scr_y = get_scr_y (y);
 				var text_t = new Text(text, axis_y.font_style, axis_y.color);
@@ -444,8 +444,8 @@ namespace CairoChart {
 					chart.context.move_to(scr_x, scr_y + sz.height / 2.0);
 					break;
 				}
-				chart.set_source_rgba(s.axis_y.color);
-				if (chart.joint_y) chart.set_source_rgba(chart.joint_axis_color);
+				chart.color = s.axis_y.color;
+				if (chart.joint_y) chart.color = chart.joint_axis_color;
 				s.axis_y.title.show(chart.context);
 			}
 
