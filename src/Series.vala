@@ -298,7 +298,7 @@ namespace CairoChart {
 			if (x_min < s.axis_x.zoom_min) x_min += step;
 
 			// 4.2. Cursor values for joint X axis
-			if (chart.joint_x && chart.cursors2.cursor_style.orientation == Cursors.Orientation.VERTICAL && chart.cursors2.cursors_crossings.length != 0) {
+			if (chart.joint_x && chart.cursors.cursor_style.orientation == Cursors.Orientation.VERTICAL && chart.cursors.cursors_crossings.length != 0) {
 				switch (s.axis_x.position) {
 				case Axis.Position.LOW: chart.cur_y_max -= max_rec_height + s.axis_x.font_indent; break;
 				case Axis.Position.HIGH: chart.cur_y_min += max_rec_height + s.axis_x.font_indent; break;
@@ -422,7 +422,7 @@ namespace CairoChart {
 			if (y_min < s.axis_y.zoom_min) y_min += step;
 
 			// 4.2. Cursor values for joint Y axis
-			if (chart.joint_y && chart.cursors2.cursor_style.orientation == Cursors.Orientation.HORIZONTAL && chart.cursors2.cursors_crossings.length != 0) {
+			if (chart.joint_y && chart.cursors.cursor_style.orientation == Cursors.Orientation.HORIZONTAL && chart.cursors.cursors_crossings.length != 0) {
 				switch (s.axis_y.position) {
 				case Axis.Position.LOW: chart.cur_x_min += max_rec_width + s.axis_y.font_indent; break;
 				case Axis.Position.HIGH: chart.cur_x_max -= max_rec_width + s.axis_y.font_indent; break;

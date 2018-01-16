@@ -274,7 +274,7 @@ int main (string[] args) {
 			case Legend.Position.LEFT: radio_button3.set_active(true); break;
 			case Legend.Position.BOTTOM: radio_button4.set_active(true); break;
 			}
-			switch (chart.cursors2.cursor_style.orientation) {
+			switch (chart.cursors.cursor_style.orientation) {
 			case Cursors.Orientation.VERTICAL: radio_button7.set_active(true); break;
 			case Cursors.Orientation.HORIZONTAL: radio_button8.set_active(true); break;
 			}
@@ -287,7 +287,7 @@ int main (string[] args) {
 			case Legend.Position.LEFT: radio_button3.set_active(true); break;
 			case Legend.Position.BOTTOM: radio_button4.set_active(true); break;
 			}
-			switch (chart.cursors2.cursor_style.orientation) {
+			switch (chart.cursors.cursor_style.orientation) {
 			case Cursors.Orientation.VERTICAL: radio_button7.set_active(true); break;
 			case Cursors.Orientation.HORIZONTAL: radio_button8.set_active(true); break;
 			}
@@ -300,7 +300,7 @@ int main (string[] args) {
 			case Legend.Position.LEFT: radio_button3.set_active(true); break;
 			case Legend.Position.BOTTOM: radio_button4.set_active(true); break;
 			}
-			switch (chart.cursors2.cursor_style.orientation) {
+			switch (chart.cursors.cursor_style.orientation) {
 			case Cursors.Orientation.VERTICAL: radio_button7.set_active(true); break;
 			case Cursors.Orientation.HORIZONTAL: radio_button8.set_active(true); break;
 			}
@@ -313,7 +313,7 @@ int main (string[] args) {
 			case Legend.Position.LEFT: radio_button4.set_active(true); break;
 			case Legend.Position.BOTTOM: radio_button4.set_active(true); break;
 			}
-			switch (chart.cursors2.cursor_style.orientation) {
+			switch (chart.cursors.cursor_style.orientation) {
 			case Cursors.Orientation.VERTICAL: radio_button7.set_active(true); break;
 			case Cursors.Orientation.HORIZONTAL: radio_button8.set_active(true); break;
 			}
@@ -397,13 +397,13 @@ int main (string[] args) {
 
 	radio_button7.toggled.connect ((button) => {
 		if (button.get_active()) {
-			chart.cursors2.cursor_style.orientation = Cursors.Orientation.VERTICAL;
+			chart.cursors.cursor_style.orientation = Cursors.Orientation.VERTICAL;
 			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 		}
 	});
 	radio_button8.toggled.connect ((button) => {
 		if (button.get_active()) {
-			chart.cursors2.cursor_style.orientation = Cursors.Orientation.HORIZONTAL;
+			chart.cursors.cursor_style.orientation = Cursors.Orientation.HORIZONTAL;
 			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 		}
 	});
@@ -429,7 +429,7 @@ int main (string[] args) {
 			chart.draw_selection (Cairo.Rectangle() {x = sel_x0, y = sel_y0, width = sel_x1 - sel_x0, height = sel_y1 - sel_y0});
 
 		// show delta
-		var str = chart.cursors2.get_cursors_delta_str(chart);
+		var str = chart.cursors.get_cursors_delta_str(chart);
 		if (str != "") {
 			var text = "Δ = " + str;
 			var text_t = new Text(text);

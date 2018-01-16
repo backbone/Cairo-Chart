@@ -2,7 +2,7 @@ namespace CairoChart {
 
 	public class Cursors {
 
-		public List<Point?> cursors = new List<Point?> ();
+		public List<Point?> list = new List<Point?> ();
 		public Point active_cursor = Point(); // { get; protected set; default = Point128 (); }
 		public bool is_cursor_active = false; // { get; protected set; default = false; }
 		public Cursors.Style cursor_style = Cursors.Style();
@@ -13,7 +13,7 @@ namespace CairoChart {
 
 		public Cursors copy () {
 			var c = new Cursors ();
-			c.cursors = cursors.copy();
+			c.list = list.copy();
 			c.active_cursor = active_cursor;
 			c.is_cursor_active = is_cursor_active;
 			c.cursor_style = cursor_style;
@@ -56,7 +56,7 @@ namespace CairoChart {
 		}
 
 		protected List<Point?> get_all_cursors (Chart chart) {
-			var all_cursors = cursors.copy_deep ((src) => { return src; });
+			var all_cursors = list.copy_deep ((src) => { return src; });
 			if (is_cursor_active)
 				all_cursors.append(active_cursor);
 			return all_cursors;
@@ -392,14 +392,14 @@ namespace CairoChart {
 		public bool get_cursors_delta (Chart chart, out Float128 delta) {
 			delta = 0.0;
 			if (chart.series.length == 0) return false;
-			if (cursors.length() + (is_cursor_active ? 1 : 0) != 2) return false;
+			if (list.length() + (is_cursor_active ? 1 : 0) != 2) return false;
 			if (chart.joint_x && cursor_style.orientation == Orientation.VERTICAL) {
-				Float128 val1 = chart.series[chart.zoom_first_show].get_real_x(chart.rel2scr_x(cursors.nth_data(0).x));
+				Float128 val1 = chart.series[chart.zoom_first_show].get_real_x(chart.rel2scr_x(list.nth_data(0).x));
 				Float128 val2 = 0;
 				if (is_cursor_active)
 					val2 = chart.series[chart.zoom_first_show].get_real_x(chart.rel2scr_x(active_cursor.x));
 				else
-					val2 = chart.series[chart.zoom_first_show].get_real_x(chart.rel2scr_x(cursors.nth_data(1).x));
+					val2 = chart.series[chart.zoom_first_show].get_real_x(chart.rel2scr_x(list.nth_data(1).x));
 				if (val2 > val1)
 					delta = val2 - val1;
 				else
@@ -407,12 +407,12 @@ namespace CairoChart {
 				return true;
 			}
 			if (chart.joint_y && cursor_style.orientation == Orientation.HORIZONTAL) {
-				Float128 val1 = chart.series[chart.zoom_first_show].get_real_y(chart.rel2scr_y(cursors.nth_data(0).y));
+				Float128 val1 = chart.series[chart.zoom_first_show].get_real_y(chart.rel2scr_y(list.nth_data(0).y));
 				Float128 val2 = 0;
 				if (is_cursor_active)
 					val2 = chart.series[chart.zoom_first_show].get_real_y(chart.rel2scr_y(active_cursor.y));
 				else
-					val2 = chart.series[chart.zoom_first_show].get_real_y(chart.rel2scr_y(cursors.nth_data(1).y));
+					val2 = chart.series[chart.zoom_first_show].get_real_y(chart.rel2scr_y(list.nth_data(1).y));
 				if (val2 > val1)
 					delta = val2 - val1;
 				else
