@@ -499,7 +499,7 @@ int main (string[] args) {
 			sel_x1 = event.x;
 			sel_y1 = event.y;
 			if (sel_x1 > sel_x0 && sel_y1 > sel_y0)
-				chart.zoom_in (sel_x0, sel_y0, sel_x1, sel_y1);
+				chart.zoom_in (Cairo.Rectangle(){x = sel_x0, y = sel_y0, width = sel_x1 - sel_x0, height = sel_y1 - sel_y0});
 			else
 				chart.zoom_out ();
 			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());

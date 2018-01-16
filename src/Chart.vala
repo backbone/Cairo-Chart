@@ -13,7 +13,6 @@ namespace CairoChart {
 		public Text title = new Text ("Cairo Chart");
 		public Color border_color = Color(0, 0, 0, 0.3);
 
-
 		public Legend legend = new Legend ();
 
 		public Series[] series = {};
@@ -160,13 +159,15 @@ namespace CairoChart {
 			}
 		}
 
-		public virtual void zoom_in (double x0, double y0, double x1, double y1) {
+		public virtual void zoom_in (Cairo.Rectangle rect) {//double x0, double y0, double x1, double y1) {
+			var x1 = rect.x + rect.width;
+			var y1 = rect.y + rect.height;
 			for (var si = 0, max_i = series.length; si < max_i; ++si) {
 				var s = series[si];
 				if (!s.zoom_show) continue;
-				var real_x0 = get_real_x (s, x0);
+				var real_x0 = get_real_x (s, rect.x);
 				var real_x1 = get_real_x (s, x1);
-				var real_y0 = get_real_y (s, y0);
+				var real_y0 = get_real_y (s, rect.y);
 				var real_y1 = get_real_y (s, y1);
 				// if selected square does not intersect with the series's square
 				if (   real_x1 <= s.axis_x.zoom_min || real_x0 >= s.axis_x.zoom_max
@@ -207,9 +208,9 @@ namespace CairoChart {
 					break;
 				}
 
-			var new_rz_x_min = rz_x_min + (x0 - plot_x_min) / (plot_x_max - plot_x_min) * (rz_x_max - rz_x_min);
+			var new_rz_x_min = rz_x_min + (rect.x - plot_x_min) / (plot_x_max - plot_x_min) * (rz_x_max - rz_x_min);
 			var new_rz_x_max = rz_x_min + (x1 - plot_x_min) / (plot_x_max - plot_x_min) * (rz_x_max - rz_x_min);
-			var new_rz_y_min = rz_y_min + (y0 - plot_y_min) / (plot_y_max - plot_y_min) * (rz_y_max - rz_y_min);
+			var new_rz_y_min = rz_y_min + (rect.y - plot_y_min) / (plot_y_max - plot_y_min) * (rz_y_max - rz_y_min);
 			var new_rz_y_max = rz_y_min + (y1 - plot_y_min) / (plot_y_max - plot_y_min) * (rz_y_max - rz_y_min);
 			rz_x_min = new_rz_x_min;
 			rz_x_max = new_rz_x_max;
@@ -256,7 +257,7 @@ namespace CairoChart {
 			if (ymin + delta_y < plot_y_min) delta_y = plot_y_min - ymin;
 			if (ymax + delta_y > plot_y_max) delta_y = plot_y_max - ymax;
 
-			zoom_in (xmin + delta_x, ymin + delta_y, xmax + delta_x, ymax + delta_y);
+			zoom_in (Cairo.Rectangle(){x = xmin + delta_x, y = ymin + delta_y, width = xmax - xmin, height = ymax - ymin});
 		}
 
 		protected virtual void draw_chart_title () {
