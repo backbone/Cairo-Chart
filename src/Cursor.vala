@@ -271,7 +271,7 @@ namespace CairoChart {
 								}
 								break;
 						}
-						var print_x = chart.compact_rec_x_pos (s, x, text_t);
+						var print_x = s.compact_rec_x_pos (x, text_t);
 						chart.context.move_to (print_x, print_y);
 
 						switch (s.axis_x.type) {
@@ -280,7 +280,7 @@ namespace CairoChart {
 							break;
 						case Axis.Type.DATE_TIME:
 							if (s.axis_x.date_format != "") text_t.show(chart.context);
-							print_x = chart.compact_rec_x_pos (s, x, time_text_t);
+							print_x = s.compact_rec_x_pos (x, time_text_t);
 							chart.context.move_to (print_x, print_y - (s.axis_x.date_format == "" ? 0 : sz.height + s.axis_x.font_indent));
 							if (s.axis_x.time_format != "") time_text_t.show(chart.context);
 							break;
@@ -297,7 +297,7 @@ namespace CairoChart {
 						var s = chart.series[chart.zoom_first_show];
 						var y = chart.get_real_y(s, chart.rel2scr_y(c.y));
 						var text_t = new Text(s.axis_y.format.printf((LongDouble)y, s.axis_y.font_style));
-						var print_y = chart.compact_rec_y_pos (s, y, text_t);
+						var print_y = s.compact_rec_y_pos (y, text_t);
 						var print_x = 0.0;
 						switch (s.axis_y.position) {
 						case Axis.Position.LOW:

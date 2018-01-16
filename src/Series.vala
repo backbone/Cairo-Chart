@@ -213,7 +213,7 @@ namespace CairoChart {
 				switch (s.axis_x.position) {
 				case Axis.Position.LOW:
 					var print_y = chart.cur_y_max - s.axis_x.font_indent - (s.axis_x.title.text == "" ? 0 : sz.height + s.axis_x.font_indent);
-					var print_x = chart.compact_rec_x_pos (s, x, text_t);
+					var print_x = s.compact_rec_x_pos (x, text_t);
 					context.move_to (print_x, print_y);
 					switch (s.axis_x.type) {
 					case Axis.Type.NUMBERS:
@@ -222,7 +222,7 @@ namespace CairoChart {
 					case Axis.Type.DATE_TIME:
 						if (s.axis_x.date_format != "") text_t.show(context);
 						var time_text_t = new Text(time_text, s.axis_x.font_style, s.axis_x.color);
-						print_x = chart.compact_rec_x_pos (s, x, time_text_t);
+						print_x = s.compact_rec_x_pos (x, time_text_t);
 						context.move_to (print_x, print_y - (s.axis_x.date_format == "" ? 0 : text_t.get_height(context) + s.axis_x.font_indent));
 						if (s.axis_x.time_format != "") time_text_t.show(context);
 						break;
@@ -240,7 +240,7 @@ namespace CairoChart {
 					break;
 				case Axis.Position.HIGH:
 					var print_y = chart.cur_y_min + max_rec_height + s.axis_x.font_indent + (s.axis_x.title.text == "" ? 0 : sz.height + s.axis_x.font_indent);
-					var print_x = chart.compact_rec_x_pos (s, x, text_t);
+					var print_x = s.compact_rec_x_pos (x, text_t);
 					context.move_to (print_x, print_y);
 
 					switch (s.axis_x.type) {
@@ -250,7 +250,7 @@ namespace CairoChart {
 					case Axis.Type.DATE_TIME:
 						if (s.axis_x.date_format != "") text_t.show(context);
 						var time_text_t = new Text(time_text, s.axis_x.font_style, s.axis_x.color);
-						print_x = chart.compact_rec_x_pos (s, x, time_text_t);
+						print_x = s.compact_rec_x_pos (x, time_text_t);
 						context.move_to (print_x, print_y - (s.axis_x.date_format == "" ? 0 : text_t.get_height(context) + s.axis_x.font_indent));
 						if (s.axis_x.time_format != "") time_text_t.show(context);
 						break;
@@ -362,7 +362,7 @@ namespace CairoChart {
 				case Axis.Position.LOW:
 					context.move_to (chart.cur_x_min + max_rec_width - text_sz.width + s.axis_y.font_indent
 					                 + (s.axis_y.title.text == "" ? 0 : sz.width + s.axis_y.font_indent),
-					                 chart.compact_rec_y_pos (s, y, text_t));
+					                 s.compact_rec_y_pos (y, text_t));
 					text_t.show(context);
 					// 6. Draw grid lines to the s.place.zoom_x_min.
 					var line_style = s.grid.line_style;
@@ -378,7 +378,7 @@ namespace CairoChart {
 				case Axis.Position.HIGH:
 					context.move_to (chart.cur_x_max - text_sz.width - s.axis_y.font_indent
 					                 - (s.axis_y.title.text == "" ? 0 : sz.width + s.axis_y.font_indent),
-					                 chart.compact_rec_y_pos (s, y, text_t));
+					                 s.compact_rec_y_pos (y, text_t));
 					text_t.show(context);
 					// 6. Draw grid lines to the s.place.zoom_x_max.
 					var line_style = s.grid.line_style;
@@ -470,16 +470,16 @@ namespace CairoChart {
 			}
 		}
 
-		public virtual double compact_rec_x_pos (Series s, Float128 x, Text text) {
+		public virtual double compact_rec_x_pos (Float128 x, Text text) {
 			var sz = text.get_size(chart.context);
-			return chart.get_scr_x(s, x) - sz.width / 2.0
-			       - sz.width * (x - (s.axis_x.zoom_min + s.axis_x.zoom_max) / 2.0) / (s.axis_x.zoom_max - s.axis_x.zoom_min);
+			return chart.get_scr_x(this, x) - sz.width / 2.0
+			       - sz.width * (x - (axis_x.zoom_min + axis_x.zoom_max) / 2.0) / (axis_x.zoom_max - axis_x.zoom_min);
 		}
 
-		public virtual double compact_rec_y_pos (Series s, Float128 y, Text text) {
+		public virtual double compact_rec_y_pos (Float128 y, Text text) {
 			var sz = text.get_size(chart.context);
-			return chart.get_scr_y(s, y) + sz.height / 2.0
-			       + sz.height * (y - (s.axis_y.zoom_min + s.axis_y.zoom_max) / 2.0) / (s.axis_y.zoom_max - s.axis_y.zoom_min);
+			return chart.get_scr_y(this, y) + sz.height / 2.0
+			       + sz.height * (y - (axis_y.zoom_min + axis_y.zoom_max) / 2.0) / (axis_y.zoom_max - axis_y.zoom_min);
 		}
 	}
 }

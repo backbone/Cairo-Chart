@@ -355,18 +355,6 @@ namespace CairoChart {
 			join_calc (false);
 		}
 
-		public virtual double compact_rec_x_pos (Series s, Float128 x, Text text) {
-			var sz = text.get_size(context);
-			return get_scr_x(s, x) - sz.width / 2.0
-			       - sz.width * (x - (s.axis_x.zoom_min + s.axis_x.zoom_max) / 2.0) / (s.axis_x.zoom_max - s.axis_x.zoom_min);
-		}
-
-		public virtual double compact_rec_y_pos (Series s, Float128 y, Text text) {
-			var sz = text.get_size(context);
-			return get_scr_y(s, y) + sz.height / 2.0
-			       + sz.height * (y - (s.axis_y.zoom_min + s.axis_y.zoom_max) / 2.0) / (s.axis_y.zoom_max - s.axis_y.zoom_min);
-		}
-
 		protected virtual void draw_horizontal_axes () {
 			for (var si = series.length - 1, nskip = 0; si >=0; --si)
 				series[si].draw_horizontal_axis (this, si, ref nskip);
