@@ -98,6 +98,12 @@ namespace CairoChart {
 			if (cur_y_min > cur_y_max)
 				cur_y_max = cur_y_min;
 		}
+		protected virtual void set_vertical_axes_titles () {
+			for (var si = 0; si < series.length; ++si) {
+				var s = series[si];
+				s.axis_y.title.style.orientation = Font.Orientation.VERTICAL;
+			}
+		}
 
 		public virtual void clear () {
 			if (context != null) {
@@ -282,13 +288,6 @@ namespace CairoChart {
 			zoom_in (Cairo.Rectangle(){x = xmin + d.x, y = ymin + d.y, width = xmax - xmin, height = ymax - ymin});
 		}
 
-		protected virtual void set_vertical_axes_titles () {
-			for (var si = 0; si < series.length; ++si) {
-				var s = series[si];
-				s.axis_y.title.style.orientation = Font.Orientation.VERTICAL;
-			}
-		}
-
 		protected virtual void join_calc (bool is_x) {
 			for (var si = series.length - 1, nskip = 0; si >= 0; --si) {
 				var s = series[si];
@@ -338,7 +337,6 @@ namespace CairoChart {
 					}
 			}
 		}
-
 		protected virtual void calc_plot_area () {
 			plot_x_min = cur_x_min + legend.indent;
 			plot_x_max = cur_x_max - legend.indent;
