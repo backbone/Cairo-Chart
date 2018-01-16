@@ -55,6 +55,42 @@ namespace CairoChart {
 			CursorCross[] crossings;
 		}
 
+		public virtual void set_active_cursor (Chart chart, Point p, bool remove = false) {
+			active_cursor = chart.scr2rel_point(p);
+			is_cursor_active = ! remove;
+		}
+
+		public virtual void add_active_cursor () {
+			list.append (active_cursor);
+			is_cursor_active = false;
+		}
+
+		public virtual void remove_active_cursor (Chart chart) {
+			if (list.length() == 0) return;
+			var distance = 1024.0 * 1024.0;//width * width;
+			uint rm_indx = 0;
+			uint i = 0;
+			foreach (var c in list) {
+				double d = distance;
+				switch (cursor_style.orientation) {
+				case Cursors.Orientation.VERTICAL:
+					d = (chart.rel2scr_x(c.x) - chart.rel2scr_x(active_cursor.x)).abs();
+					break;
+				case Cursors.Orientation.HORIZONTAL:
+					d = (chart.rel2scr_y(c.y) - chart.rel2scr_y(active_cursor.y)).abs();
+					break;
+				}
+				if (d < distance) {
+					distance = d;
+					rm_indx = i;
+				}
+				++i;
+			}
+			if (distance < cursor_style.select_distance)
+				list.delete_link(list.nth(rm_indx));
+			is_cursor_active = false;
+		}
+
 		protected List<Point?> get_all_cursors (Chart chart) {
 			var all_cursors = list.copy_deep ((src) => { return src; });
 			if (is_cursor_active)

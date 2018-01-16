@@ -368,40 +368,6 @@ namespace CairoChart {
 			}
 		}
 
-		public virtual void set_active_cursor (Point p, bool remove = false) {
-			cursors.active_cursor = scr2rel_point(p);
-			cursors.is_cursor_active = ! remove;
-		}
-		public virtual void add_active_cursor () {
-			cursors.list.append (cursors.active_cursor);
-			cursors.is_cursor_active = false;
-		}
-		public virtual void remove_active_cursor () {
-			if (cursors.list.length() == 0) return;
-			var distance = width * width;
-			uint rm_indx = 0;
-			uint i = 0;
-			foreach (var c in cursors.list) {
-				double d = distance;
-				switch (cursors.cursor_style.orientation) {
-				case Cursors.Orientation.VERTICAL:
-					d = (rel2scr_x(c.x) - rel2scr_x(cursors.active_cursor.x)).abs();
-					break;
-				case Cursors.Orientation.HORIZONTAL:
-					d = (rel2scr_y(c.y) - rel2scr_y(cursors.active_cursor.y)).abs();
-					break;
-				}
-				if (d < distance) {
-					distance = d;
-					rm_indx = i;
-				}
-				++i;
-			}
-			if (distance < cursors.cursor_style.select_distance)
-				cursors.list.delete_link(cursors.list.nth(rm_indx));
-			cursors.is_cursor_active = false;
-		}
-
 		protected virtual bool x_in_plot_area (double x) {
 			if (math.x_in_range(x, plot_x_min, plot_x_max))
 				return true;
@@ -418,13 +384,13 @@ namespace CairoChart {
 			return false;
 		}
 
-		protected virtual Float128 scr2rel_x (Float128 x) {
+		public virtual Float128 scr2rel_x (Float128 x) {
 			return rz_x_min + (x - plot_x_min) / (plot_x_max - plot_x_min) * (rz_x_max - rz_x_min);
 		}
-		protected virtual Float128 scr2rel_y (Float128 y) {
+		public virtual Float128 scr2rel_y (Float128 y) {
 			return rz_y_max - (plot_y_max - y) / (plot_y_max - plot_y_min) * (rz_y_max - rz_y_min);
 		}
-		protected virtual Point scr2rel_point (Point p) {
+		public virtual Point scr2rel_point (Point p) {
 			return Point (scr2rel_x(p.x), scr2rel_y(p.y));
 		}
 		public virtual Float128 rel2scr_x(Float128 x) {
