@@ -9,7 +9,7 @@ namespace CairoChart {
 
 		public Cairo.Context context = null;
 
-		public Color bg_color;
+		public Color bg_color = Color(1, 1, 1);
 		public Text title = new Text ("Cairo Chart");
 		public Color border_color = Color(0, 0, 0, 0.3);
 
@@ -56,7 +56,6 @@ namespace CairoChart {
 		public Cursors.CursorCrossings[] cursors_crossings = {};
 
 		public Chart () {
-			bg_color = Color (1, 1, 1);
 		}
 
 		public Chart copy () {
