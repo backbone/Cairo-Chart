@@ -5,6 +5,11 @@ namespace CairoChart {
 		public Cursors () {
 		}
 
+		public Cursors copy () {
+			var c = new Cursors ();
+			return c;
+		}
+
 		public enum Orientation {
 			VERTICAL = 0,  // default
 			HORIZONTAL

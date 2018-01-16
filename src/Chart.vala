@@ -18,14 +18,87 @@ namespace CairoChart {
 
 		public Series[] series = {};
 
-		public Chart () {
-			bg_color = Color (1, 1, 1);
-		}
-
 		public double cur_x_min = 0.0;
 		public double cur_x_max = 1.0;
 		public double cur_y_min = 0.0;
 		public double cur_y_max = 1.0;
+
+		// relative zoom limits
+		public double rz_x_min { get; protected set; default = 0.0; }
+		public double rz_x_max { get; protected set; default = 1.0; }
+		public double rz_y_min { get; protected set; default = 0.0; }
+		public double rz_y_max { get; protected set; default = 1.0; }
+
+		public int zoom_first_show { get; protected set; default = 0; }
+
+		public double title_width { get; protected set; default = 0.0; }
+		public double title_height { get; protected set; default = 0.0; }
+
+		public double title_indent = 4;
+
+		public Line.Style selection_style = Line.Style ();
+
+		public double plot_x_min = 0;
+		public double plot_x_max = 0;
+		public double plot_y_min = 0;
+		public double plot_y_max = 0;
+
+		public bool joint_x { get; protected set; default = false; }
+		public bool joint_y { get; protected set; default = false; }
+		public Color joint_axis_color = Color (0, 0, 0, 1);
+
+		public CairoChart.Math math { get; protected set; default = new Math(); }
+		public Cursors cursors2 { get; protected set; default = new Cursors (); }
+		public List<Point?> cursors = new List<Point?> ();
+		public Point active_cursor = Point(); // { get; protected set; default = Point (); }
+		public bool is_cursor_active { get; protected set; default = false; }
+		public Cursors.Style cursor_style = Cursors.Style();
+
+		public Cursors.CursorCrossings[] cursors_crossings = {};
+
+		public Chart () {
+			bg_color = Color (1, 1, 1);
+		}
+
+		public Chart copy () {
+			var chart = new Chart ();
+			chart.active_cursor = this.active_cursor;
+			chart.bg_color = this.bg_color;
+			chart.border_color = this.border_color;
+			chart.joint_x = this.joint_x;
+			chart.joint_y = this.joint_y;
+			chart.context = this.context;
+			chart.cur_x_max = this.cur_x_max;
+			chart.cur_x_min = this.cur_x_min;
+			chart.cur_y_max = this.cur_y_max;
+			chart.cur_y_min = this.cur_y_min;
+			chart.cursor_style = this.cursor_style;
+			chart.cursors = this.cursors.copy();
+			chart.cursors2 = this.cursors2.copy();
+			chart.cursors_crossings = this.cursors_crossings;
+			chart.height = this.height;
+			chart.is_cursor_active = this.is_cursor_active;
+			chart.legend = this.legend.copy();
+			chart.plot_x_max = this.plot_x_max;
+			chart.plot_x_min = this.plot_x_min;
+			chart.plot_y_max = this.plot_y_max;
+			chart.plot_y_min = this.plot_y_min;
+			chart.rz_x_min = this.rz_x_min;
+			chart.rz_x_max = this.rz_x_max;
+			chart.rz_y_min = this.rz_y_min;
+			chart.rz_y_max = this.rz_y_max;
+			chart.selection_style = this.selection_style;
+			chart.series = this.series;
+			chart.title = this.title.copy();
+			chart.title_height = this.title_height;
+			chart.title_indent = this.title_indent;
+			chart.title_width = this.title_width;
+			chart.width = this.width;
+			chart.x_min = this.x_min;
+			chart.y_min = this.y_min;
+			chart.zoom_first_show = this.zoom_first_show;
+			return chart;
+		}
 
 		protected virtual void check_cur_values () {
 			if (cur_x_min > cur_x_max)
@@ -86,14 +159,6 @@ namespace CairoChart {
 				set_source_rgba (Color (0, 0, 0, 1));
 			}
 		}
-
-		// relative zoom limits
-		public double rz_x_min { get; protected set; default = 0.0; }
-		public double rz_x_max { get; protected set; default = 1.0; }
-		public double rz_y_min { get; protected set; default = 0.0; }
-		public double rz_y_max { get; protected set; default = 1.0; }
-
-		public int zoom_first_show { get; protected set; default = 0; }
 
 		public virtual void zoom_in (double x0, double y0, double x1, double y1) {
 			for (var si = 0, max_i = series.length; si < max_i; ++si) {
@@ -194,11 +259,6 @@ namespace CairoChart {
 			zoom_in (xmin + delta_x, ymin + delta_y, xmax + delta_x, ymax + delta_y);
 		}
 
-		public double title_width { get; protected set; default = 0.0; }
-		public double title_height { get; protected set; default = 0.0; }
-
-		public double title_indent = 4;
-
 		protected virtual void draw_chart_title () {
 			var sz = title.get_size(context);
 			title_height = sz.height + (legend.position == Legend.Position.TOP ? title_indent * 2 : title_indent);
@@ -208,22 +268,11 @@ namespace CairoChart {
 			title.show(context);
 		}
 
-		public Line.Style selection_style = Line.Style ();
-
 		public virtual void draw_selection (double x0, double y0, double x1, double y1) {
 			selection_style.set(this);
 			context.rectangle (x0, y0, x1 - x0, y1 - y0);
 			context.stroke();
 		}
-
-		public double plot_x_min = 0;
-		public double plot_x_max = 0;
-		public double plot_y_min = 0;
-		public double plot_y_max = 0;
-
-		public bool joint_x { get; protected set; default = false; }
-		public bool joint_y { get; protected set; default = false; }
-		public Color joint_axis_color = Color (0, 0, 0, 1);
 
 		protected virtual void set_vertical_axes_titles () {
 			for (var si = 0; si < series.length; ++si) {
@@ -316,8 +365,6 @@ namespace CairoChart {
 			       + sz.height * (y - (s.axis_y.zoom_min + s.axis_y.zoom_max) / 2.0) / (s.axis_y.zoom_max - s.axis_y.zoom_min);
 		}
 
-		public CairoChart.Math math { get; protected set; default = new Math(); }
-
 		protected virtual void draw_horizontal_axes () {
 			for (var si = series.length - 1, nskip = 0; si >=0; --si)
 				series[si].draw_horizontal_axis (this, si, ref nskip);
@@ -393,14 +440,6 @@ namespace CairoChart {
 			}
 		}
 
-		public Cursors cursors2 { get; protected set; default = new Cursors (); }
-
-		public List<Point?> cursors = new List<Point?> ();
-		public Point active_cursor = Point(); // { get; protected set; default = Point (); }
-		public bool is_cursor_active { get; protected set; default = false; }
-		public Cursors.Style cursor_style = Cursors.Style();
-
-
 		public virtual void set_active_cursor (double x, double y, bool remove = false) {
 			active_cursor = Point (scr2rel_x(x), scr2rel_y(y));
 			is_cursor_active = ! remove;
@@ -457,47 +496,6 @@ namespace CairoChart {
 
 		public virtual Point rel2scr_point (Point p) {
 			return Point (rel2scr_x(p.x), rel2scr_y(p.y));
-		}
-
-		public Cursors.CursorCrossings[] cursors_crossings = {};
-
-		public Chart copy () {
-			var chart = new Chart ();
-			chart.active_cursor = this.active_cursor;
-			chart.bg_color = this.bg_color;
-			chart.border_color = this.border_color;
-			chart.joint_x = this.joint_x;
-			chart.joint_y = this.joint_y;
-			chart.context = this.context;
-			chart.cur_x_max = this.cur_x_max;
-			chart.cur_x_min = this.cur_x_min;
-			chart.cur_y_max = this.cur_y_max;
-			chart.cur_y_min = this.cur_y_min;
-			chart.cursor_style = this.cursor_style;
-			chart.cursors = this.cursors.copy();
-			chart.cursors_crossings = this.cursors_crossings;
-			chart.height = this.height;
-			chart.is_cursor_active = this.is_cursor_active;
-			chart.legend = this.legend.copy();
-			chart.plot_x_max = this.plot_x_max;
-			chart.plot_x_min = this.plot_x_min;
-			chart.plot_y_max = this.plot_y_max;
-			chart.plot_y_min = this.plot_y_min;
-			chart.rz_x_min = this.rz_x_min;
-			chart.rz_x_max = this.rz_x_max;
-			chart.rz_y_min = this.rz_y_min;
-			chart.rz_y_max = this.rz_y_max;
-			chart.selection_style = this.selection_style;
-			chart.series = this.series;
-			chart.title = this.title.copy();
-			chart.title_height = this.title_height;
-			chart.title_indent = this.title_indent;
-			chart.title_width = this.title_width;
-			chart.width = this.width;
-			chart.x_min = this.x_min;
-			chart.y_min = this.y_min;
-			chart.zoom_first_show = this.zoom_first_show;
-			return chart;
 		}
 	}
 }
