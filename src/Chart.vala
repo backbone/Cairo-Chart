@@ -95,7 +95,11 @@ namespace CairoChart {
 		}
 
 		public virtual void clear () {
-			draw_background ();
+			if (context != null) {
+				set_source_rgba (bg_color);
+				context.paint();
+				set_source_rgba (Color (0, 0, 0, 1));
+			}
 		}
 
 		public virtual bool draw () {
@@ -137,14 +141,6 @@ namespace CairoChart {
 
 		public virtual void set_source_rgba (Color color) {
 				context.set_source_rgba (color.red, color.green, color.blue, color.alpha);
-		}
-
-		protected virtual void draw_background () {
-			if (context != null) {
-				set_source_rgba (bg_color);
-				context.paint();
-				set_source_rgba (Color (0, 0, 0, 1));
-			}
 		}
 
 		public virtual void zoom_in (Cairo.Rectangle rect) {
@@ -364,24 +360,6 @@ namespace CairoChart {
 			context.stroke ();
 		}
 
-		protected virtual bool x_in_plot_area (double x) {
-			if (math.x_in_range(x, plot_x_min, plot_x_max))
-				return true;
-			return false;
-		}
-
-		protected virtual bool y_in_plot_area (double y) {
-			if (math.y_in_range(y, plot_y_min, plot_y_max))
-				return true;
-			return false;
-		}
-
-		public virtual bool point_in_plot_area (Point p) {
-			if (math.point_in_rect (p, plot_x_min, plot_x_max, plot_y_min, plot_y_max))
-				return true;
-			return false;
-		}
-
 		protected virtual void draw_series () {
 			for (var si = 0; si < series.length; ++si) {
 				var s = series[si];
@@ -394,12 +372,10 @@ namespace CairoChart {
 			cursors.active_cursor = scr2rel_point(p);
 			cursors.is_cursor_active = ! remove;
 		}
-
 		public virtual void add_active_cursor () {
 			cursors.list.append (cursors.active_cursor);
 			cursors.is_cursor_active = false;
 		}
-
 		public virtual void remove_active_cursor () {
 			if (cursors.list.length() == 0) return;
 			var distance = width * width;
@@ -426,6 +402,22 @@ namespace CairoChart {
 			cursors.is_cursor_active = false;
 		}
 
+		protected virtual bool x_in_plot_area (double x) {
+			if (math.x_in_range(x, plot_x_min, plot_x_max))
+				return true;
+			return false;
+		}
+		protected virtual bool y_in_plot_area (double y) {
+			if (math.y_in_range(y, plot_y_min, plot_y_max))
+				return true;
+			return false;
+		}
+		public virtual bool point_in_plot_area (Point p) {
+			if (math.point_in_rect (p, plot_x_min, plot_x_max, plot_y_min, plot_y_max))
+				return true;
+			return false;
+		}
+
 		protected virtual Float128 scr2rel_x (Float128 x) {
 			return rz_x_min + (x - plot_x_min) / (plot_x_max - plot_x_min) * (rz_x_max - rz_x_min);
 		}
@@ -435,15 +427,12 @@ namespace CairoChart {
 		protected virtual Point scr2rel_point (Point p) {
 			return Point (scr2rel_x(p.x), scr2rel_y(p.y));
 		}
-
 		public virtual Float128 rel2scr_x(Float128 x) {
 			return plot_x_min + (plot_x_max - plot_x_min) * (x - rz_x_min) / (rz_x_max - rz_x_min);
 		}
-
 		public virtual Float128 rel2scr_y(Float128 y) {
 			return plot_y_min + (plot_y_max - plot_y_min) * (y - rz_y_min) / (rz_y_max - rz_y_min);
 		}
-
 		public virtual Point128 rel2scr_point (Point128 p) {
 			return Point128 (rel2scr_x(p.x), rel2scr_y(p.y));
 		}
