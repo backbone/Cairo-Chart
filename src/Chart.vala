@@ -159,7 +159,7 @@ namespace CairoChart {
 			}
 		}
 
-		public virtual void zoom_in (Cairo.Rectangle rect) {//double x0, double y0, double x1, double y1) {
+		public virtual void zoom_in (Cairo.Rectangle rect) {
 			var x1 = rect.x + rect.width;
 			var y1 = rect.y + rect.height;
 			for (var si = 0, max_i = series.length; si < max_i; ++si) {
