@@ -1,9 +1,9 @@
 using Gtk, CairoChart;
 
 void plot_chart1 (Chart chart) {
-	var s1 = new Series ();
-	var s2 = new Series ();
-	var s3 = new Series ();
+	var s1 = new Series (chart);
+	var s2 = new Series (chart);
+	var s3 = new Series (chart);
 
 	s1.title = new Text("Series 1"); s1.color = Color (1, 0, 0);
 	s1.points = {Point128(0, 0), Point128(2, 1), Point128(1, 3)};
@@ -45,9 +45,9 @@ void plot_chart1 (Chart chart) {
 }
 
 void plot_chart2 (Chart chart) {
-	var s1 = new Series ();
-	var s2 = new Series ();
-	var s3 = new Series ();
+	var s1 = new Series (chart);
+	var s2 = new Series (chart);
+	var s3 = new Series (chart);
 
 	s1.title = new Text("Series 1"); s1.color = Color (1, 0, 0);
 	s1.points = {Point128(-12, 0), Point128(2, 1), Point128(20, 3)};
@@ -93,9 +93,9 @@ void plot_chart2 (Chart chart) {
 }
 
 void plot_chart3 (Chart chart) {
-	var s1 = new Series ();
-	var s2 = new Series ();
-	var s3 = new Series ();
+	var s1 = new Series (chart);
+	var s2 = new Series (chart);
+	var s3 = new Series (chart);
 
 	s1.title = new Text("Series 1"); s1.color = Color (1, 0, 0);
 	s1.points = {Point128(0, 70), Point128(2, 155), Point128(1, -3)};
@@ -141,10 +141,10 @@ void plot_chart3 (Chart chart) {
 }
 
 void plot_chart4 (Chart chart) {
-	var s1 = new Series ();
-	var s2 = new Series ();
-	var s3 = new Series ();
-	var s4 = new Series ();
+	var s1 = new Series (chart);
+	var s2 = new Series (chart);
+	var s3 = new Series (chart);
+	var s4 = new Series (chart);
 
 	s1.axis_x.type = Axis.Type.DATE_TIME;
 	s3.axis_x.type = Axis.Type.DATE_TIME;

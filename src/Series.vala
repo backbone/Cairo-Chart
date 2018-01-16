@@ -41,8 +41,14 @@ namespace CairoChart {
 
 		public bool zoom_show = true;
 
+		protected Chart chart { get; protected set; default = null; }
+
+		public Series (Chart chart) {
+			this.chart = chart;
+		}
+
 		public virtual Series copy () {
-			var series = new Series ();
+			var series = new Series (chart);
 			series._color = this._color;
 			series.axis_x = this.axis_x.copy ();
 			series.axis_y = this.axis_y.copy ();
@@ -55,9 +61,6 @@ namespace CairoChart {
 			series.title = this.title.copy();
 			series.zoom_show = this.zoom_show;
 			return series;
-		}
-
-		public Series () {
 		}
 
 		public virtual void draw (Chart chart) {
@@ -465,6 +468,18 @@ namespace CairoChart {
 				chart.cur_x_max -= max_rec_width + s.axis_y.font_indent
 				             + (s.axis_y.title.text == "" ? 0 : sz.width + s.axis_y.font_indent); break;
 			}
+		}
+
+		public virtual double compact_rec_x_pos (Series s, Float128 x, Text text) {
+			var sz = text.get_size(chart.context);
+			return chart.get_scr_x(s, x) - sz.width / 2.0
+			       - sz.width * (x - (s.axis_x.zoom_min + s.axis_x.zoom_max) / 2.0) / (s.axis_x.zoom_max - s.axis_x.zoom_min);
+		}
+
+		public virtual double compact_rec_y_pos (Series s, Float128 y, Text text) {
+			var sz = text.get_size(chart.context);
+			return chart.get_scr_y(s, y) + sz.height / 2.0
+			       + sz.height * (y - (s.axis_y.zoom_min + s.axis_y.zoom_max) / 2.0) / (s.axis_y.zoom_max - s.axis_y.zoom_min);
 		}
 	}
 }
