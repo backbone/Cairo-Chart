@@ -1,5 +1,8 @@
 namespace CairoChart {
 
+	/**
+	 * Cairo/GTK+ Chart.
+	 */
 	public class Chart {
 
 		/**
@@ -12,12 +15,29 @@ namespace CairoChart {
 		 */
 		public Cairo.Context ctx = null;
 
+		/**
+		 * Background Color.
+		 */
 		public Color bg_color = Color(1, 1, 1);
+
+		/**
+		 * Chart Title.
+		 */
 		public Text title = new Text ("Cairo Chart");
+
+		/**
+		 * Border Color.
+		 */
 		public Color border_color = Color(0, 0, 0, 0.3);
 
+		/**
+		 * Legend.
+		 */
 		public Legend legend = new Legend ();
 
+		/**
+		 * Chart Series.
+		 */
 		public Series[] series = {};
 
 		public double cur_x_min = 0.0;
