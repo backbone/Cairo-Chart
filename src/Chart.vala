@@ -2,10 +2,10 @@ namespace CairoChart {
 
 	public class Chart {
 
-		public double x_min = 0.0;
-		public double y_min = 0.0;
-		public double width = 0.0;
-		public double height = 0.0;
+		/**
+		 * Chart Position.
+		 */
+		public Cairo.Rectangle pos = Cairo.Rectangle();
 
 		public Cairo.Context context = null;
 
@@ -69,7 +69,6 @@ namespace CairoChart {
 			chart.cur_y_max = this.cur_y_max;
 			chart.cur_y_min = this.cur_y_min;
 			chart.cursors = this.cursors.copy();
-			chart.height = this.height;
 			chart.legend = this.legend.copy();
 			chart.plot_x_max = this.plot_x_max;
 			chart.plot_x_min = this.plot_x_min;
@@ -85,9 +84,7 @@ namespace CairoChart {
 			chart.title_height = this.title_height;
 			chart.title_indent = this.title_indent;
 			chart.title_width = this.title_width;
-			chart.width = this.width;
-			chart.x_min = this.x_min;
-			chart.y_min = this.y_min;
+			chart.pos = this.pos;
 			chart.zoom_first_show = this.zoom_first_show;
 			return chart;
 		}
@@ -115,10 +112,10 @@ namespace CairoChart {
 
 		public virtual bool draw () {
 
-			cur_x_min = x_min;
-			cur_y_min = y_min;
-			cur_x_max = x_min + width;
-			cur_y_max = y_min + height;
+			cur_x_min = pos.x;
+			cur_y_min = pos.y;
+			cur_x_max = pos.x + pos.width;
+			cur_y_max = pos.y + pos.height;
 
 			draw_chart_title ();
 			check_cur_values ();
@@ -154,7 +151,7 @@ namespace CairoChart {
 			title_height = sz.height + (legend.position == Legend.Position.TOP ? title_indent * 2 : title_indent);
 			cur_y_min += title_height;
 			color = title.color;
-			context.move_to (width/2 - sz.width/2, sz.height + title_indent);
+			context.move_to (pos.width/2 - sz.width/2, sz.height + title_indent);
 			title.show(context);
 		}
 		public virtual void draw_selection (Cairo.Rectangle rect) {

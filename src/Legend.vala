@@ -51,23 +51,23 @@ namespace CairoChart {
 			if (chart.context != null) {
 				switch (position) {
 				case Position.TOP:
-					x0 = (chart.width - width) / 2;
+					x0 = (chart.pos.width - width) / 2;
 					y0 = chart.title_height;
 				break;
 
 				case Position.BOTTOM:
-					x0 = (chart.width - width) / 2;
-					y0 = chart.height - height;
+					x0 = (chart.pos.width - width) / 2;
+					y0 = chart.pos.height - height;
 				break;
 
 				case Position.LEFT:
 					x0 = 0;
-					y0 = (chart.height - height) / 2;
+					y0 = (chart.pos.height - height) / 2;
 				break;
 
 				case Position.RIGHT:
-					x0 = chart.width - width;
-					y0 = (chart.height - height) / 2;
+					x0 = chart.pos.width - width;
+					y0 = (chart.pos.height - height) / 2;
 				break;
 				}
 				chart.color = bg_color;
@@ -120,7 +120,7 @@ namespace CairoChart {
 				case Position.TOP:
 				case Position.BOTTOM:
 					var ser_title_width = title_sz.width + line_length;
-					if (leg_width_sum + (leg_width_sum == 0 ? 0 : text_hspace) + ser_title_width > chart.width) { // carry
+					if (leg_width_sum + (leg_width_sum == 0 ? 0 : text_hspace) + ser_title_width > chart.pos.width) { // carry
 						leg_height_sum += max_font_h;
 						switch (process_type) {
 						case ProcessType.CALC:
