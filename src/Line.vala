@@ -27,10 +27,10 @@ namespace CairoChart {
 
 			public void set (Chart chart) {
 				chart.color = color;
-				chart.context.set_line_join(join);
-				chart.context.set_line_cap(cap);
-				chart.context.set_line_width(width);
-				chart.context.set_dash(dashes, dash_offset);
+				chart.ctx.set_line_join(join);
+				chart.ctx.set_line_cap(cap);
+				chart.ctx.set_line_width(width);
+				chart.ctx.set_dash(dashes, dash_offset);
 			}
 		}
 	}

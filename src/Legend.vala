@@ -48,7 +48,7 @@ namespace CairoChart {
 
 		public virtual void draw_rect (Chart chart, out double x0, out double y0) {
 			x0 = y0 = 0.0;
-			if (chart.context != null) {
+			if (chart.ctx != null) {
 				switch (position) {
 				case Position.TOP:
 					x0 = (chart.pos.width - width) / 2;
@@ -71,15 +71,15 @@ namespace CairoChart {
 				break;
 				}
 				chart.color = bg_color;
-				chart.context.rectangle (x0, y0, width, height);
-				chart.context.fill();
+				chart.ctx.rectangle (x0, y0, width, height);
+				chart.ctx.fill();
 				border_style.set(chart);
-				chart.context.move_to (x0, y0);
-				chart.context.rel_line_to (width, 0);
-				chart.context.rel_line_to (0, height);
-				chart.context.rel_line_to (-width, 0);
-				chart.context.rel_line_to (0, -height);
-				chart.context.stroke ();
+				chart.ctx.move_to (x0, y0);
+				chart.ctx.rel_line_to (width, 0);
+				chart.ctx.rel_line_to (0, height);
+				chart.ctx.rel_line_to (-width, 0);
+				chart.ctx.rel_line_to (0, -height);
+				chart.ctx.stroke ();
 			}
 		}
 
@@ -113,7 +113,7 @@ namespace CairoChart {
 
 				if (!s.zoom_show) continue;
 
-				var title_sz = s.title.get_size(chart.context);
+				var title_sz = s.title.get_size(chart.ctx);
 
 				// carry
 				switch (position) {
@@ -143,15 +143,15 @@ namespace CairoChart {
 					var y = legend_y0 + leg_height_sum + max_font_heights[heights_idx];
 
 					// series title
-					chart.context.move_to (x + line_length, y);
+					chart.ctx.move_to (x + line_length, y);
 					chart.color = s.title.color;
-					s.title.show(chart.context);
+					s.title.show(chart.ctx);
 
 					// series line style
-					chart.context.move_to (x, y - title_sz.height / 2);
+					chart.ctx.move_to (x, y - title_sz.height / 2);
 					s.line_style.set(chart);
-					chart.context.rel_line_to (line_length, 0);
-					chart.context.stroke();
+					chart.ctx.rel_line_to (line_length, 0);
+					chart.ctx.stroke();
 					s.marker.draw_at_pos (chart, x + line_length / 2, y - title_sz.height / 2);
 					break;
 				}

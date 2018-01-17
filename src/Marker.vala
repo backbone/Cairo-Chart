@@ -25,43 +25,43 @@ namespace CairoChart {
 		}
 
 		public virtual void draw_at_pos (Chart chart, double x, double y) {
-			chart.context.move_to (x, y);
+			chart.ctx.move_to (x, y);
 			switch (type) {
 			case Type.SQUARE:
-				chart.context.rectangle (x - size / 2, y - size / 2, size, size);
-				chart.context.fill();
+				chart.ctx.rectangle (x - size / 2, y - size / 2, size, size);
+				chart.ctx.fill();
 				break;
 
 			case Type.CIRCLE:
-				chart.context.arc (x, y, size / 2, 0, 2 * GLib.Math.PI);
-				chart.context.fill();
+				chart.ctx.arc (x, y, size / 2, 0, 2 * GLib.Math.PI);
+				chart.ctx.fill();
 				break;
 
 			case Type.TRIANGLE:
-				chart.context.move_to (x - size / 2, y - size / 2);
-				chart.context.line_to (x + size / 2, y - size / 2);
-				chart.context.line_to (x, y + size / 2);
-				chart.context.line_to (x - size / 2, y - size / 2);
-				chart.context.fill();
+				chart.ctx.move_to (x - size / 2, y - size / 2);
+				chart.ctx.line_to (x + size / 2, y - size / 2);
+				chart.ctx.line_to (x, y + size / 2);
+				chart.ctx.line_to (x - size / 2, y - size / 2);
+				chart.ctx.fill();
 				break;
 
 			case Type.PRICLE_SQUARE:
-				chart.context.rectangle (x - size / 2, y - size / 2,
+				chart.ctx.rectangle (x - size / 2, y - size / 2,
 				                   size, size);
-				chart.context.stroke();
+				chart.ctx.stroke();
 				break;
 
 			case Type.PRICLE_CIRCLE:
-				chart.context.arc (x, y, size / 2, 0, 2 * GLib.Math.PI);
-				chart.context.stroke();
+				chart.ctx.arc (x, y, size / 2, 0, 2 * GLib.Math.PI);
+				chart.ctx.stroke();
 				break;
 
 			case Type.PRICLE_TRIANGLE:
-				chart.context.move_to (x - size / 2, y - size / 2);
-				chart.context.line_to (x + size / 2, y - size / 2);
-				chart.context.line_to (x, y + size / 2);
-				chart.context.line_to (x - size / 2, y - size / 2);
-				chart.context.stroke();
+				chart.ctx.move_to (x - size / 2, y - size / 2);
+				chart.ctx.line_to (x + size / 2, y - size / 2);
+				chart.ctx.line_to (x, y + size / 2);
+				chart.ctx.line_to (x - size / 2, y - size / 2);
+				chart.ctx.stroke();
 				break;
 			}
 		}

@@ -7,7 +7,10 @@ namespace CairoChart {
 		 */
 		public Cairo.Rectangle pos = Cairo.Rectangle();
 
-		public Cairo.Context context = null;
+		/**
+		 * Cairo Context of the Drawing Area.
+		 */
+		public Cairo.Context ctx = null;
 
 		public Color bg_color = Color(1, 1, 1);
 		public Text title = new Text ("Cairo Chart");
@@ -51,7 +54,7 @@ namespace CairoChart {
 
 		public Color color {
 			private get { return Color(); }
-			set { context.set_source_rgba (value.red, value.green, value.blue, value.alpha); }
+			set { ctx.set_source_rgba (value.red, value.green, value.blue, value.alpha); }
 			default = Color();
 		}
 
@@ -63,7 +66,7 @@ namespace CairoChart {
 			chart.border_color = this.border_color;
 			chart.joint_x = this.joint_x;
 			chart.joint_y = this.joint_y;
-			chart.context = this.context;
+			chart.ctx = this.ctx;
 			chart.cur_x_max = this.cur_x_max;
 			chart.cur_x_min = this.cur_x_min;
 			chart.cur_y_max = this.cur_y_max;
@@ -103,9 +106,9 @@ namespace CairoChart {
 		}
 
 		public virtual void clear () {
-			if (context != null) {
+			if (ctx != null) {
 				color = bg_color;
-				context.paint();
+				ctx.paint();
 				color = Color (0, 0, 0, 1);
 			}
 		}
@@ -147,17 +150,17 @@ namespace CairoChart {
 			return true;
 		}
 		protected virtual void draw_chart_title () {
-			var sz = title.get_size(context);
+			var sz = title.get_size(ctx);
 			title_height = sz.height + (legend.position == Legend.Position.TOP ? title_indent * 2 : title_indent);
 			cur_y_min += title_height;
 			color = title.color;
-			context.move_to (pos.width/2 - sz.width/2, sz.height + title_indent);
-			title.show(context);
+			ctx.move_to (pos.width/2 - sz.width/2, sz.height + title_indent);
+			title.show(ctx);
 		}
 		public virtual void draw_selection (Cairo.Rectangle rect) {
 			selection_style.set(this);
-			context.rectangle (rect.x, rect.y, rect.width, rect.height);
-			context.stroke();
+			ctx.rectangle (rect.x, rect.y, rect.width, rect.height);
+			ctx.stroke();
 		}
 		protected virtual void draw_horizontal_axes () {
 			for (var si = series.length - 1, nskip = 0; si >=0; --si)
@@ -169,13 +172,13 @@ namespace CairoChart {
 		}
 		protected virtual void draw_plot_area_border () {
 			color = border_color;
-			context.set_dash(null, 0);
-			context.move_to (plot_x_min, plot_y_min);
-			context.line_to (plot_x_min, plot_y_max);
-			context.line_to (plot_x_max, plot_y_max);
-			context.line_to (plot_x_max, plot_y_min);
-			context.line_to (plot_x_min, plot_y_min);
-			context.stroke ();
+			ctx.set_dash(null, 0);
+			ctx.move_to (plot_x_min, plot_y_min);
+			ctx.line_to (plot_x_min, plot_y_max);
+			ctx.line_to (plot_x_max, plot_y_max);
+			ctx.line_to (plot_x_max, plot_y_min);
+			ctx.line_to (plot_x_min, plot_y_min);
+			ctx.stroke ();
 		}
 		protected virtual void draw_series () {
 			for (var si = 0; si < series.length; ++si) {

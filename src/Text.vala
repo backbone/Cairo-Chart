@@ -4,16 +4,16 @@ namespace CairoChart {
 		public Font.Style style = Font.Style ();
 		public Color color = Color();
 
-		public virtual Cairo.TextExtents get_extents (Cairo.Context context) {
-			context.select_font_face (style.family, style.slant, style.weight);
-			context.set_font_size (style.size);
+		public virtual Cairo.TextExtents get_extents (Cairo.Context ctx) {
+			ctx.select_font_face (style.family, style.slant, style.weight);
+			ctx.set_font_size (style.size);
 			Cairo.TextExtents extents;
-			context.text_extents (text, out extents);
+			ctx.text_extents (text, out extents);
 			return extents;
 		}
 
-		public virtual double get_width (Cairo.Context context) {
-			var extents = get_extents (context);
+		public virtual double get_width (Cairo.Context ctx) {
+			var extents = get_extents (ctx);
 			switch (style.orientation) {
 			case Font.Orientation.HORIZONTAL: return extents.width;
 			case Font.Orientation.VERTICAL: return extents.height;
@@ -21,8 +21,8 @@ namespace CairoChart {
 			}
 		}
 
-		public virtual double get_height (Cairo.Context context) {
-			var extents = get_extents (context);
+		public virtual double get_height (Cairo.Context ctx) {
+			var extents = get_extents (ctx);
 			switch (style.orientation) {
 			case Font.Orientation.HORIZONTAL: return extents.height;
 			case Font.Orientation.VERTICAL: return extents.width;
@@ -35,9 +35,9 @@ namespace CairoChart {
 			double height;
 		}
 
-		public virtual Size get_size (Cairo.Context context) {
+		public virtual Size get_size (Cairo.Context ctx) {
 			var sz = Size();
-			var extents = get_extents (context);
+			var extents = get_extents (ctx);
 			switch (style.orientation) {
 			case Font.Orientation.HORIZONTAL:
 				sz.width = extents.width + extents.x_bearing;
@@ -51,17 +51,17 @@ namespace CairoChart {
 			return sz;
 		}
 
-		public virtual void show (Cairo.Context context) {
-			context.select_font_face(style.family,
+		public virtual void show (Cairo.Context ctx) {
+			ctx.select_font_face(style.family,
 			                         style.slant,
 			                         style.weight);
-			context.set_font_size(style.size);
+			ctx.set_font_size(style.size);
 			if (style.orientation == Font.Orientation.VERTICAL) {
-				context.rotate(- GLib.Math.PI / 2.0);
-				context.show_text(text);
-				context.rotate(GLib.Math.PI / 2.0);
+				ctx.rotate(- GLib.Math.PI / 2.0);
+				ctx.show_text(text);
+				ctx.rotate(GLib.Math.PI / 2.0);
 			} else {
-				context.show_text(text);
+				ctx.show_text(text);
 			}
 		}
 

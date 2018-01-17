@@ -217,10 +217,10 @@ namespace CairoChart {
 			var x_t = new Text (s.axis_x.format.printf((LongDouble)p.x), s.axis_x.font_style, s.axis_x.color);
 			var y_t = new Text (s.axis_y.format.printf((LongDouble)p.y), s.axis_y.font_style, s.axis_y.color);
 			double h_x = 0.0, h_y = 0.0;
-			if (show_x) { var sz = x_t.get_size(chart.context); size.x = sz.width; h_x = sz.height; }
-			if (show_date) { var sz = date_t.get_size(chart.context); size.x = sz.width; h_x = sz.height; }
-			if (show_time) { var sz = time_t.get_size(chart.context); size.x = double.max(size.x, sz.width); h_x += sz.height; }
-			if (show_y) { var sz = y_t.get_size(chart.context); size.x += sz.width; h_y = sz.height; }
+			if (show_x) { var sz = x_t.get_size(chart.ctx); size.x = sz.width; h_x = sz.height; }
+			if (show_date) { var sz = date_t.get_size(chart.ctx); size.x = sz.width; h_x = sz.height; }
+			if (show_time) { var sz = time_t.get_size(chart.ctx); size.x = double.max(size.x, sz.width); h_x += sz.height; }
+			if (show_y) { var sz = y_t.get_size(chart.ctx); size.x += sz.width; h_y = sz.height; }
 			if ((show_x || show_date || show_time) && show_y) size.x += double.max(s.axis_x.font_indent, s.axis_y.font_indent);
 			if (show_date && show_time) h_x += s.axis_x.font_indent;
 			size.y = double.max (h_x, h_y);
@@ -269,8 +269,8 @@ namespace CairoChart {
 						}
 					}
 
-					chart.context.move_to (ccs[ci].scr_point.x, ccs[ci].scr_point.y);
-					chart.context.line_to (ccs[ci].scr_value_point.x, ccs[ci].scr_value_point.y);
+					chart.ctx.move_to (ccs[ci].scr_point.x, ccs[ci].scr_point.y);
+					chart.ctx.line_to (ccs[ci].scr_value_point.x, ccs[ci].scr_value_point.y);
 				}
 
 				var c = all_cursors.nth_data(cursors_crossings[cci].cursor_index);
@@ -278,8 +278,8 @@ namespace CairoChart {
 				switch (cursor_style.orientation) {
 				case Orientation.VERTICAL:
 					if (low.y > high.y) continue;
-					chart.context.move_to (chart.rel2scr_x(c.x), low.y);
-					chart.context.line_to (chart.rel2scr_x(c.x), high.y);
+					chart.ctx.move_to (chart.rel2scr_x(c.x), low.y);
+					chart.ctx.line_to (chart.rel2scr_x(c.x), high.y);
 
 					// show joint X value
 					if (chart.joint_x) {
@@ -297,7 +297,7 @@ namespace CairoChart {
 							break;
 						}
 						var text_t = new Text(text, s.axis_x.font_style, s.axis_x.color);
-						var sz = text_t.get_size(chart.context);
+						var sz = text_t.get_size(chart.ctx);
 						var time_text_t = new Text(time_text, s.axis_x.font_style, s.axis_x.color);
 						var print_y = 0.0;
 						switch (s.axis_x.position) {
@@ -312,32 +312,32 @@ namespace CairoChart {
 									break;
 								case Axis.Type.DATE_TIME:
 									print_y += (s.axis_x.date_format == "" ? 0 : sz.height)
-									           + (s.axis_x.time_format == "" ? 0 : time_text_t.get_height(chart.context))
+									           + (s.axis_x.time_format == "" ? 0 : time_text_t.get_height(chart.ctx))
 									           + (s.axis_x.date_format == "" || s.axis_x.time_format == "" ? 0 : s.axis_x.font_indent);
 									break;
 								}
 								break;
 						}
 						var print_x = s.compact_rec_x_pos (x, text_t);
-						chart.context.move_to (print_x, print_y);
+						chart.ctx.move_to (print_x, print_y);
 
 						switch (s.axis_x.type) {
 						case Axis.Type.NUMBERS:
-							text_t.show(chart.context);
+							text_t.show(chart.ctx);
 							break;
 						case Axis.Type.DATE_TIME:
-							if (s.axis_x.date_format != "") text_t.show(chart.context);
+							if (s.axis_x.date_format != "") text_t.show(chart.ctx);
 							print_x = s.compact_rec_x_pos (x, time_text_t);
-							chart.context.move_to (print_x, print_y - (s.axis_x.date_format == "" ? 0 : sz.height + s.axis_x.font_indent));
-							if (s.axis_x.time_format != "") time_text_t.show(chart.context);
+							chart.ctx.move_to (print_x, print_y - (s.axis_x.date_format == "" ? 0 : sz.height + s.axis_x.font_indent));
+							if (s.axis_x.time_format != "") time_text_t.show(chart.ctx);
 							break;
 						}
 					}
 					break;
 				case Orientation.HORIZONTAL:
 					if (low.x > high.x) continue;
-					chart.context.move_to (low.x, chart.rel2scr_y(c.y));
-					chart.context.line_to (high.x, chart.rel2scr_y(c.y));
+					chart.ctx.move_to (low.x, chart.rel2scr_y(c.y));
+					chart.ctx.line_to (high.x, chart.rel2scr_y(c.y));
 
 					// show joint Y value
 					if (chart.joint_y) {
@@ -352,16 +352,16 @@ namespace CairoChart {
 							          + (chart.legend.position == Legend.Position.LEFT ? chart.legend.width : 0);
 							break;
 						case Axis.Position.HIGH:
-							print_x = chart.pos.x + chart.pos.width - text_t.get_width(chart.context) - s.axis_y.font_indent
+							print_x = chart.pos.x + chart.pos.width - text_t.get_width(chart.ctx) - s.axis_y.font_indent
 							          - (chart.legend.position == Legend.Position.RIGHT ? chart.legend.width : 0);
 							break;
 						}
-						chart.context.move_to (print_x, print_y);
-						text_t.show(chart.context);
+						chart.ctx.move_to (print_x, print_y);
+						text_t.show(chart.ctx);
 					}
 					break;
 				}
-				chart.context.stroke ();
+				chart.ctx.stroke ();
 
 				// show value (X, Y or [X;Y])
 				for (var ci = 0, max_ci = ccs.length; ci < max_ci; ++ci) {
@@ -376,15 +376,15 @@ namespace CairoChart {
 					var show_y = ccs[ci].show_y;
 
 					chart.color = chart.bg_color;
-					chart.context.rectangle (svp.x - size.x / 2, svp.y - size.y / 2, size.x, size.y);
-					chart.context.fill();
+					chart.ctx.rectangle (svp.x - size.x / 2, svp.y - size.y / 2, size.x, size.y);
+					chart.ctx.fill();
 
 					if (show_x) {
 						chart.color = s.axis_x.color;
 						var text_t = new Text(s.axis_x.format.printf((LongDouble)point.x), s.axis_x.font_style);
-						chart.context.move_to (svp.x - size.x / 2, svp.y + text_t.get_height(chart.context) / 2);
+						chart.ctx.move_to (svp.x - size.x / 2, svp.y + text_t.get_height(chart.ctx) / 2);
 						if (chart.joint_x) chart.color = chart.joint_axis_color;
-						text_t.show(chart.context);
+						text_t.show(chart.ctx);
 					}
 
 					if (show_time) {
@@ -392,12 +392,12 @@ namespace CairoChart {
 						string date = "", time = "";
 						s.axis_x.format_date_time(point.x, out date, out time);
 						var text_t = new Text(time, s.axis_x.font_style);
-						var sz = text_t.get_size(chart.context);
+						var sz = text_t.get_size(chart.ctx);
 						var y = svp.y + sz.height / 2;
 						if (show_date) y -= sz.height / 2 + s.axis_x.font_indent / 2;
-						chart.context.move_to (svp.x - size.x / 2, y);
+						chart.ctx.move_to (svp.x - size.x / 2, y);
 						if (chart.joint_x) chart.color = chart.joint_axis_color;
-						text_t.show(chart.context);
+						text_t.show(chart.ctx);
 					}
 
 					if (show_date) {
@@ -405,21 +405,21 @@ namespace CairoChart {
 						string date = "", time = "";
 						s.axis_x.format_date_time(point.x, out date, out time);
 						var text_t = new Text(date, s.axis_x.font_style);
-						var sz = text_t.get_size(chart.context);
+						var sz = text_t.get_size(chart.ctx);
 						var y = svp.y + sz.height / 2;
 						if (show_time) y += sz.height / 2 + s.axis_x.font_indent / 2;
-						chart.context.move_to (svp.x - size.x / 2, y);
+						chart.ctx.move_to (svp.x - size.x / 2, y);
 						if (chart.joint_x) chart.color = chart.joint_axis_color;
-						text_t.show(chart.context);
+						text_t.show(chart.ctx);
 					}
 
 					if (show_y) {
 						chart.color = s.axis_y.color;
 						var text_t = new Text(s.axis_y.format.printf((LongDouble)point.y), s.axis_y.font_style);
-						var sz = text_t.get_size(chart.context);
-						chart.context.move_to (svp.x + size.x / 2 - sz.width, svp.y + sz.height / 2);
+						var sz = text_t.get_size(chart.ctx);
+						chart.ctx.move_to (svp.x + size.x / 2 - sz.width, svp.y + sz.height / 2);
 						if (chart.joint_y) chart.color = chart.joint_axis_color;
-						text_t.show(chart.context);
+						text_t.show(chart.ctx);
 					}
 				}
 			}

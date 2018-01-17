@@ -76,11 +76,11 @@ namespace CairoChart {
 				        Point(get_scr_x(points[i].x), get_scr_y(points[i].y)),
 				        out c, out d)
 				) {
-					chart.context.move_to (c.x, c.y);
-					chart.context.line_to (d.x, d.y);
+					chart.ctx.move_to (c.x, c.y);
+					chart.ctx.line_to (d.x, d.y);
 				}
 			}
-			chart.context.stroke();
+			chart.ctx.stroke();
 			for (int i = 0; i < points.length; ++i) {
 				var x = get_scr_x(points[i].x);
 				var y = get_scr_y(points[i].y);
@@ -122,8 +122,8 @@ namespace CairoChart {
 			double max_rec_width = 0; double max_rec_height = 0;
 			axis.calc_rec_sizes (chart, out max_rec_width, out max_rec_height, is_x);
 			var max_font_indent = axis.font_indent;
-			var max_axis_font_width = axis.title.text == "" ? 0 : axis.title.get_width(chart.context) + axis.font_indent;
-			var max_axis_font_height = axis.title.text == "" ? 0 : axis.title.get_height(chart.context) + axis.font_indent;
+			var max_axis_font_width = axis.title.text == "" ? 0 : axis.title.get_width(chart.ctx) + axis.font_indent;
+			var max_axis_font_height = axis.title.text == "" ? 0 : axis.title.get_height(chart.ctx) + axis.font_indent;
 
 			if (is_x)
 				s.join_relative_x_axes (si, true, ref max_rec_width, ref max_rec_height, ref max_font_indent, ref max_axis_font_height, ref nskip);
@@ -190,7 +190,7 @@ namespace CairoChart {
 						max_rec_height = double.max (max_rec_height, tmp_max_rec_height);
 						max_font_indent = double.max (max_font_indent, s2.axis_x.font_indent);
 						max_axis_font_height = double.max (max_axis_font_height, s2.axis_x.title.text == "" ? 0 :
-						                                   s2.axis_x.title.get_height(chart.context) + this.axis_x.font_indent);
+						                                   s2.axis_x.title.get_height(chart.ctx) + this.axis_x.font_indent);
 					}
 					++nskip;
 				} else {
@@ -227,7 +227,7 @@ namespace CairoChart {
 					max_rec_height = double.max (max_rec_height, tmp_max_rec_height);
 					max_font_indent = double.max (max_font_indent, s2.axis_y.font_indent);
 					max_axis_font_width = double.max (max_axis_font_width, s2.axis_y.title.text == "" ? 0
-					                                   : s2.axis_y.title.get_width(chart.context) + this.axis_y.font_indent);
+					                                   : s2.axis_y.title.get_width(chart.ctx) + this.axis_y.font_indent);
 					++nskip;
 				} else {
 					break;
@@ -237,7 +237,7 @@ namespace CairoChart {
 
 		protected virtual void draw_horizontal_records (Float128 step, double max_rec_height, Float128 x_min) {
 			// 5. Draw records, update cur_{x,y}_{min,max}.
-			var context = chart.context;
+			var ctx = chart.ctx;
 			var joint_x = chart.joint_x;
 
 			for (Float128 x = x_min, x_max = axis_x.zoom_max; chart.math.point_belong (x, x_min, x_max); x += step) {
@@ -254,23 +254,23 @@ namespace CairoChart {
 				}
 				var scr_x = get_scr_x (x);
 				var text_t = new Text(text, axis_x.font_style, axis_x.color);
-				var sz = axis_x.title.get_size(context);
+				var sz = axis_x.title.get_size(ctx);
 
 				switch (axis_x.position) {
 				case Axis.Position.LOW:
 					var print_y = chart.cur_y_max - axis_x.font_indent - (axis_x.title.text == "" ? 0 : sz.height + axis_x.font_indent);
 					var print_x = compact_rec_x_pos (x, text_t);
-					context.move_to (print_x, print_y);
+					ctx.move_to (print_x, print_y);
 					switch (axis_x.type) {
 					case Axis.Type.NUMBERS:
-						text_t.show(context);
+						text_t.show(ctx);
 						break;
 					case Axis.Type.DATE_TIME:
-						if (axis_x.date_format != "") text_t.show(context);
+						if (axis_x.date_format != "") text_t.show(ctx);
 						var time_text_t = new Text(time_text, axis_x.font_style, axis_x.color);
 						print_x = compact_rec_x_pos (x, time_text_t);
-						context.move_to (print_x, print_y - (axis_x.date_format == "" ? 0 : text_t.get_height(context) + axis_x.font_indent));
-						if (axis_x.time_format != "") time_text_t.show(context);
+						ctx.move_to (print_x, print_y - (axis_x.date_format == "" ? 0 : text_t.get_height(ctx) + axis_x.font_indent));
+						if (axis_x.time_format != "") time_text_t.show(ctx);
 						break;
 					}
 					// 6. Draw grid lines to the place.zoom_y_min.
@@ -278,27 +278,27 @@ namespace CairoChart {
 					if (joint_x) line_style.color = Color(0, 0, 0, 0.5);
 					line_style.set(chart);
 					double y = chart.cur_y_max - max_rec_height - axis_x.font_indent - (axis_x.title.text == "" ? 0 : sz.height + axis_x.font_indent);
-					context.move_to (scr_x, y);
+					ctx.move_to (scr_x, y);
 					if (joint_x)
-						context.line_to (scr_x, chart.plot_y_min);
+						ctx.line_to (scr_x, chart.plot_y_min);
 					else
-						context.line_to (scr_x, double.min (y, chart.plot_y_max - (chart.plot_y_max - chart.plot_y_min) * place.zoom_y_max));
+						ctx.line_to (scr_x, double.min (y, chart.plot_y_max - (chart.plot_y_max - chart.plot_y_min) * place.zoom_y_max));
 					break;
 				case Axis.Position.HIGH:
 					var print_y = chart.cur_y_min + max_rec_height + axis_x.font_indent + (axis_x.title.text == "" ? 0 : sz.height + axis_x.font_indent);
 					var print_x = compact_rec_x_pos (x, text_t);
-					context.move_to (print_x, print_y);
+					ctx.move_to (print_x, print_y);
 
 					switch (axis_x.type) {
 					case Axis.Type.NUMBERS:
-						text_t.show(context);
+						text_t.show(ctx);
 						break;
 					case Axis.Type.DATE_TIME:
-						if (axis_x.date_format != "") text_t.show(context);
+						if (axis_x.date_format != "") text_t.show(ctx);
 						var time_text_t = new Text(time_text, axis_x.font_style, axis_x.color);
 						print_x = compact_rec_x_pos (x, time_text_t);
-						context.move_to (print_x, print_y - (axis_x.date_format == "" ? 0 : text_t.get_height(context) + axis_x.font_indent));
-						if (axis_x.time_format != "") time_text_t.show(context);
+						ctx.move_to (print_x, print_y - (axis_x.date_format == "" ? 0 : text_t.get_height(ctx) + axis_x.font_indent));
+						if (axis_x.time_format != "") time_text_t.show(ctx);
 						break;
 					}
 					// 6. Draw grid lines to the place.zoom_y_max.
@@ -306,11 +306,11 @@ namespace CairoChart {
 					if (joint_x) line_style.color = Color(0, 0, 0, 0.5);
 					line_style.set(chart);
 					double y = chart.cur_y_min + max_rec_height + axis_x.font_indent + (axis_x.title.text == "" ? 0 : sz.height + axis_x.font_indent);
-					context.move_to (scr_x, y);
+					ctx.move_to (scr_x, y);
 					if (joint_x)
-						context.line_to (scr_x, chart.plot_y_max);
+						ctx.line_to (scr_x, chart.plot_y_max);
 					else
-						context.line_to (scr_x, double.max (y, chart.plot_y_max - (chart.plot_y_max - chart.plot_y_min) * place.zoom_y_min));
+						ctx.line_to (scr_x, double.max (y, chart.plot_y_max - (chart.plot_y_max - chart.plot_y_min) * place.zoom_y_min));
 					break;
 				}
 			}
@@ -353,7 +353,7 @@ namespace CairoChart {
 				}
 			}
 
-			var sz = s.axis_x.title.get_size(chart.context);
+			var sz = s.axis_x.title.get_size(chart.ctx);
 
 			// 4.5. Draw Axis title
 			if (s.axis_x.title.text != "") {
@@ -363,15 +363,15 @@ namespace CairoChart {
 				case Axis.Position.LOW: scr_y = chart.cur_y_max - s.axis_x.font_indent; break;
 				case Axis.Position.HIGH: scr_y = chart.cur_y_min + s.axis_x.font_indent + sz.height; break;
 				}
-				chart.context.move_to(scr_x - sz.width / 2.0, scr_y);
+				chart.ctx.move_to(scr_x - sz.width / 2.0, scr_y);
 				chart.color = s.axis_x.color;
 				if (chart.joint_x) chart.color = chart.joint_axis_color;
-				s.axis_x.title.show(chart.context);
+				s.axis_x.title.show(chart.ctx);
 			}
 
 			s.draw_horizontal_records (step, max_rec_height, x_min);
 
-			chart.context.stroke ();
+			chart.ctx.stroke ();
 
 			double tmp1 = 0, tmp2 = 0, tmp3 = 0, tmp4 = 0;
 			s.join_relative_x_axes (si, false, ref tmp1, ref tmp2, ref tmp3, ref tmp4, ref nskip);
@@ -392,7 +392,7 @@ namespace CairoChart {
 
 		protected virtual void draw_vertical_records (Float128 step, double max_rec_width, Float128 y_min) {
 			// 5. Draw records, update cur_{x,y}_{min,max}.
-			var context = chart.context;
+			var ctx = chart.ctx;
 			var joint_y = chart.joint_y;
 
 			for (Float128 y = y_min, y_max = axis_y.zoom_max; chart.math.point_belong (y, y_min, y_max); y += step) {
@@ -401,41 +401,41 @@ namespace CairoChart {
 				var text = axis_y.format.printf((LongDouble)y);
 				var scr_y = get_scr_y (y);
 				var text_t = new Text(text, axis_y.font_style, axis_y.color);
-				var text_sz = text_t.get_size(context);
-				var sz = axis_y.title.get_size(context);
+				var text_sz = text_t.get_size(ctx);
+				var sz = axis_y.title.get_size(ctx);
 
 				switch (axis_y.position) {
 				case Axis.Position.LOW:
-					context.move_to (chart.cur_x_min + max_rec_width - text_sz.width + axis_y.font_indent
+					ctx.move_to (chart.cur_x_min + max_rec_width - text_sz.width + axis_y.font_indent
 					                 + (axis_y.title.text == "" ? 0 : sz.width + axis_y.font_indent),
 					                 compact_rec_y_pos (y, text_t));
-					text_t.show(context);
+					text_t.show(ctx);
 					// 6. Draw grid lines to the place.zoom_x_min.
 					var line_style = grid.line_style;
 					if (joint_y) line_style.color = Color(0, 0, 0, 0.5);
 					line_style.set(chart);
 					double x = chart.cur_x_min + max_rec_width + axis_y.font_indent + (axis_y.title.text == "" ? 0 : sz.width + axis_y.font_indent);
-					context.move_to (x, scr_y);
+					ctx.move_to (x, scr_y);
 					if (joint_y)
-						context.line_to (chart.plot_x_max, scr_y);
+						ctx.line_to (chart.plot_x_max, scr_y);
 					else
-						context.line_to (double.max (x, chart.plot_x_min + (chart.plot_x_max - chart.plot_x_min) * place.zoom_x_max), scr_y);
+						ctx.line_to (double.max (x, chart.plot_x_min + (chart.plot_x_max - chart.plot_x_min) * place.zoom_x_max), scr_y);
 					break;
 				case Axis.Position.HIGH:
-					context.move_to (chart.cur_x_max - text_sz.width - axis_y.font_indent
+					ctx.move_to (chart.cur_x_max - text_sz.width - axis_y.font_indent
 					                 - (axis_y.title.text == "" ? 0 : sz.width + axis_y.font_indent),
 					                 compact_rec_y_pos (y, text_t));
-					text_t.show(context);
+					text_t.show(ctx);
 					// 6. Draw grid lines to the place.zoom_x_max.
 					var line_style = grid.line_style;
 					if (joint_y) line_style.color = Color(0, 0, 0, 0.5);
 					line_style.set(chart);
 					double x = chart.cur_x_max - max_rec_width - axis_y.font_indent - (axis_y.title.text == "" ? 0 : sz.width + axis_y.font_indent);
-					context.move_to (x, scr_y);
+					ctx.move_to (x, scr_y);
 					if (joint_y)
-						context.line_to (chart.plot_x_min, scr_y);
+						ctx.line_to (chart.plot_x_min, scr_y);
 					else
-						context.line_to (double.min (x, chart.plot_x_min + (chart.plot_x_max - chart.plot_x_min) * place.zoom_x_min), scr_y);
+						ctx.line_to (double.min (x, chart.plot_x_min + (chart.plot_x_max - chart.plot_x_min) * place.zoom_x_min), scr_y);
 					break;
 				}
 			}
@@ -477,7 +477,7 @@ namespace CairoChart {
 				}
 			}
 
-			var sz = s.axis_y.title.get_size(chart.context);
+			var sz = s.axis_y.title.get_size(chart.ctx);
 
 			// 4.5. Draw Axis title
 			if (s.axis_y.title.text != "") {
@@ -485,21 +485,21 @@ namespace CairoChart {
 				switch (s.axis_y.position) {
 				case Axis.Position.LOW:
 					var scr_x = chart.cur_x_min + s.axis_y.font_indent + sz.width;
-					chart.context.move_to(scr_x, scr_y + sz.height / 2.0);
+					chart.ctx.move_to(scr_x, scr_y + sz.height / 2.0);
 					break;
 				case Axis.Position.HIGH:
 					var scr_x = chart.cur_x_max - s.axis_y.font_indent;
-					chart.context.move_to(scr_x, scr_y + sz.height / 2.0);
+					chart.ctx.move_to(scr_x, scr_y + sz.height / 2.0);
 					break;
 				}
 				chart.color = s.axis_y.color;
 				if (chart.joint_y) chart.color = chart.joint_axis_color;
-				s.axis_y.title.show(chart.context);
+				s.axis_y.title.show(chart.ctx);
 			}
 
 			s.draw_vertical_records (step, max_rec_width, y_min);
 
-			chart.context.stroke ();
+			chart.ctx.stroke ();
 
 			double tmp1 = 0, tmp2 = 0, tmp3 = 0, tmp4 = 0;
 			s.join_relative_y_axes (si, false, ref tmp1, ref tmp2, ref tmp3, ref tmp4, ref nskip);
@@ -517,13 +517,13 @@ namespace CairoChart {
 		}
 
 		public virtual double compact_rec_x_pos (Float128 x, Text text) {
-			var sz = text.get_size(chart.context);
+			var sz = text.get_size(chart.ctx);
 			return get_scr_x(x) - sz.width / 2.0
 			       - sz.width * (x - (axis_x.zoom_min + axis_x.zoom_max) / 2.0) / (axis_x.zoom_max - axis_x.zoom_min);
 		}
 
 		public virtual double compact_rec_y_pos (Float128 y, Text text) {
-			var sz = text.get_size(chart.context);
+			var sz = text.get_size(chart.ctx);
 			return get_scr_y(y) + sz.height / 2.0
 			       + sz.height * (y - (axis_y.zoom_min + axis_y.zoom_max) / 2.0) / (axis_y.zoom_max - axis_y.zoom_min);
 		}

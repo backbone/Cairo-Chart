@@ -413,8 +413,8 @@ int main (string[] args) {
 	double sel_x0 = 0, sel_x1 = 0, sel_y0 = 0, sel_y1 = 0;
 	double mov_x0 = 0, mov_y0 = 0;
 
-	da.draw.connect((context) => {
-		chart.context = context;
+	da.draw.connect((ctx) => {
+		chart.ctx = ctx;
 		chart.pos.width = da.get_allocated_width();
 		chart.pos.height = da.get_allocated_height();
 		chart.clear();
@@ -433,16 +433,16 @@ int main (string[] args) {
 		if (str != "") {
 			var text = "Δ = " + str;
 			var text_t = new Text(text);
-			var w = text_t.get_width(context);
-			var h = text_t.get_height(context);
+			var w = text_t.get_width(ctx);
+			var h = text_t.get_height(ctx);
 			var x0 = chart.plot_x_max - w - 5;
 			var y0 = chart.plot_y_min + h + 5;
 			chart.color = chart.legend.bg_color;
-			context.rectangle (x0, y0 - h, w, h);
-			context.fill();
-			context.move_to (x0, y0);
+			ctx.rectangle (x0, y0 - h, w, h);
+			ctx.fill();
+			ctx.move_to (x0, y0);
 			chart.color = chart.joint_axis_color;
-			context.show_text(text);
+			ctx.show_text(text);
 		}
 
 		return true;//ret;

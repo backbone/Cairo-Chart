@@ -117,7 +117,7 @@ namespace CairoChart {
 				switch (type) {
 				case Axis.Type.NUMBERS:
 					var text = new Text (format.printf((LongDouble)x) + (horizontal ? "_" : ""), font_style);
-					var sz = text.get_size(chart.context);
+					var sz = text.get_size(chart.ctx);
 					max_rec_width = double.max (max_rec_width, sz.width);
 					max_rec_height = double.max (max_rec_height, sz.height);
 					break;
@@ -128,13 +128,13 @@ namespace CairoChart {
 					var h = 0.0;
 					if (date_format != "") {
 						var text = new Text (date + (horizontal ? "_" : ""), font_style);
-						var sz = text.get_size(chart.context);
+						var sz = text.get_size(chart.ctx);
 						max_rec_width = double.max (max_rec_width, sz.width);
 						h = sz.height;
 					}
 					if (time_format != "") {
 						var text = new Text (time + (horizontal ? "_" : ""), font_style);
-						var sz = text.get_size(chart.context);
+						var sz = text.get_size(chart.ctx);
 						max_rec_width = double.max (max_rec_width, sz.width);
 						h += sz.height;
 					}
