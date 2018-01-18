@@ -103,7 +103,7 @@ namespace CairoChart {
 		}
 
 		/**
-		 * TODO: remove it.
+		 * TODO: remove all indent fields / evaluate automatically.
 		 */
 		public double title_indent = 4;
 
@@ -136,17 +136,6 @@ namespace CairoChart {
 			return chart;
 		}
 
-		protected virtual void fix_evarea () {
-			if (evarea.width < 0) evarea.width = 0;
-			if (evarea.height < 0) evarea.height = 0;
-		}
-		protected virtual void set_vertical_axes_titles () {
-			for (var si = 0; si < series.length; ++si) {
-				var s = series[si];
-				s.axis_y.title.style.orientation = Font.Orientation.VERTICAL;
-			}
-		}
-
 		public virtual void clear () {
 			if (ctx != null) {
 				color = bg_color;
@@ -154,7 +143,6 @@ namespace CairoChart {
 				color = Color (0, 0, 0, 1);
 			}
 		}
-
 		public virtual bool draw () {
 
 			evarea = area;
@@ -188,44 +176,10 @@ namespace CairoChart {
 
 			return true;
 		}
-		protected virtual void draw_chart_title () {
-			var sz = title.get_size(ctx);
-			var title_height = sz.height + (legend.position == Legend.Position.TOP ? title_indent * 2 : title_indent);
-			evarea.y += title_height;
-			evarea.height -= title_height;
-			color = title.color;
-			ctx.move_to (area.width/2 - sz.width/2, sz.height + title_indent);
-			title.show(ctx);
-		}
 		public virtual void draw_selection (Cairo.Rectangle rect) {
 			selection_style.set(this);
 			ctx.rectangle (rect.x, rect.y, rect.width, rect.height);
 			ctx.stroke();
-		}
-		protected virtual void draw_horizontal_axes () {
-			for (var si = series.length - 1, nskip = 0; si >=0; --si)
-				series[si].draw_horizontal_axis (si, ref nskip);
-		}
-		protected virtual void draw_vertical_axes () {
-			for (var si = series.length - 1, nskip = 0; si >=0; --si)
-				series[si].draw_vertical_axis (si, ref nskip);
-		}
-		protected virtual void draw_plot_area_border () {
-			color = border_color;
-			ctx.set_dash(null, 0);
-			ctx.move_to (plarea.x, plarea.y);
-			ctx.line_to (plarea.x, plarea.y + plarea.height);
-			ctx.line_to (plarea.x + plarea.width, plarea.y + plarea.height);
-			ctx.line_to (plarea.x + plarea.width, plarea.y);
-			ctx.line_to (plarea.x, plarea.y);
-			ctx.stroke ();
-		}
-		protected virtual void draw_series () {
-			for (var si = 0; si < series.length; ++si) {
-				var s = series[si];
-				if (s.zoom_show && s.points.length != 0)
-					s.draw();
-			}
 		}
 
 		public virtual void zoom_in (Cairo.Rectangle rect) {
@@ -324,6 +278,17 @@ namespace CairoChart {
 			zoom_in (Cairo.Rectangle(){x = xmin + d.x, y = ymin + d.y, width = xmax - xmin, height = ymax - ymin});
 		}
 
+		protected virtual void fix_evarea () {
+			if (evarea.width < 0) evarea.width = 0;
+			if (evarea.height < 0) evarea.height = 0;
+		}
+		protected virtual void set_vertical_axes_titles () {
+			for (var si = 0; si < series.length; ++si) {
+				var s = series[si];
+				s.axis_y.title.style.orientation = Font.Orientation.VERTICAL;
+			}
+		}
+
 		protected virtual void join_calc (bool is_x) {
 			for (var si = series.length - 1, nskip = 0; si >= 0; --si)
 				series[si].join_calc(is_x, si, ref nskip);
@@ -348,6 +313,41 @@ namespace CairoChart {
 
 			join_calc (true);
 			join_calc (false);
+		}
+
+		protected virtual void draw_plot_area_border () {
+			color = border_color;
+			ctx.set_dash(null, 0);
+			ctx.move_to (plarea.x, plarea.y);
+			ctx.line_to (plarea.x, plarea.y + plarea.height);
+			ctx.line_to (plarea.x + plarea.width, plarea.y + plarea.height);
+			ctx.line_to (plarea.x + plarea.width, plarea.y);
+			ctx.line_to (plarea.x, plarea.y);
+			ctx.stroke ();
+		}
+		protected virtual void draw_chart_title () {
+			var sz = title.get_size(ctx);
+			var title_height = sz.height + (legend.position == Legend.Position.TOP ? title_indent * 2 : title_indent);
+			evarea.y += title_height;
+			evarea.height -= title_height;
+			color = title.color;
+			ctx.move_to (area.width/2 - sz.width/2, sz.height + title_indent);
+			title.show(ctx);
+		}
+		protected virtual void draw_horizontal_axes () {
+			for (var si = series.length - 1, nskip = 0; si >=0; --si)
+				series[si].draw_horizontal_axis (si, ref nskip);
+		}
+		protected virtual void draw_vertical_axes () {
+			for (var si = series.length - 1, nskip = 0; si >=0; --si)
+				series[si].draw_vertical_axis (si, ref nskip);
+		}
+		protected virtual void draw_series () {
+			for (var si = 0; si < series.length; ++si) {
+				var s = series[si];
+				if (s.zoom_show && s.points.length != 0)
+					s.draw();
+			}
 		}
 
 		protected virtual bool x_in_plot_area (double x) {
