@@ -7,12 +7,14 @@ namespace CairoChart {
 		public bool is_cursor_active = false; // { get; protected set; default = false; }
 		public Cursors.Style cursor_style = Cursors.Style();
 		public Cursors.CursorCrossings[] cursors_crossings = {};
+		protected Chart chart = null;
 
-		public Cursors () {
+		public Cursors (Chart chart) {
+			this.chart = chart;
 		}
 
 		public Cursors copy () {
-			var c = new Cursors ();
+			var c = new Cursors (chart);
 			c.list = list.copy();
 			c.active_cursor = active_cursor;
 			c.is_cursor_active = is_cursor_active;
@@ -55,7 +57,7 @@ namespace CairoChart {
 			CursorCross[] crossings;
 		}
 
-		public virtual void set_active_cursor (Chart chart, Point p, bool remove = false) {
+		public virtual void set_active_cursor (Point p, bool remove = false) {
 			active_cursor.x = chart.zoom.x + (p.x - chart.plarea.x) / chart.plarea.width * chart.zoom.width;
 			active_cursor.y = chart.zoom.y + chart.zoom.height - (chart.plarea.y + chart.plarea.height - p.y) / chart.plarea.height * chart.zoom.height;
 			is_cursor_active = ! remove;
@@ -66,7 +68,15 @@ namespace CairoChart {
 			is_cursor_active = false;
 		}
 
-		public virtual void remove_active_cursor (Chart chart) {
+		public virtual Float128 rel2scr_x(Float128 x) {
+			return chart.plarea.x + chart.plarea.width * (x - chart.zoom.x) / chart.zoom.width;
+		}
+
+		public virtual Float128 rel2scr_y(Float128 y) {
+			return chart.plarea.y + chart.plarea.height * (y - chart.zoom.y) / chart.zoom.height;
+		}
+
+		public virtual void remove_active_cursor () {
 			if (list.length() == 0) return;
 			var distance = 1024.0 * 1024.0;//width * width;
 			uint rm_indx = 0;
@@ -75,10 +85,10 @@ namespace CairoChart {
 				double d = distance;
 				switch (cursor_style.orientation) {
 				case Cursors.Orientation.VERTICAL:
-					d = (chart.rel2scr_x(c.x) - chart.rel2scr_x(active_cursor.x)).abs();
+					d = (rel2scr_x(c.x) - rel2scr_x(active_cursor.x)).abs();
 					break;
 				case Cursors.Orientation.HORIZONTAL:
-					d = (chart.rel2scr_y(c.y) - chart.rel2scr_y(active_cursor.y)).abs();
+					d = (rel2scr_y(c.y) - rel2scr_y(active_cursor.y)).abs();
 					break;
 				}
 				if (d < distance) {
@@ -92,15 +102,15 @@ namespace CairoChart {
 			is_cursor_active = false;
 		}
 
-		protected List<Point?> get_all_cursors (Chart chart) {
+		protected List<Point?> get_all_cursors () {
 			var all_cursors = list.copy_deep ((src) => { return src; });
 			if (is_cursor_active)
 				all_cursors.append(active_cursor);
 			return all_cursors;
 		}
 
-		public void get_cursors_crossings (Chart chart) {
-			var all_cursors = get_all_cursors(chart);
+		public void get_cursors_crossings () {
+			var all_cursors = get_all_cursors();
 
 			CursorCrossings[] local_cursor_crossings = {};
 
@@ -132,12 +142,12 @@ namespace CairoChart {
 						switch (cursor_style.orientation) {
 						case Orientation.VERTICAL:
 							Float128 y = 0.0;
-							if (chart.math.vcross(s.get_scr_point(points[i]), s.get_scr_point(points[i+1]), chart.rel2scr_x(c.x),
+							if (chart.math.vcross(s.get_scr_point(points[i]), s.get_scr_point(points[i+1]), rel2scr_x(c.x),
 							                chart.plarea.y, chart.plarea.y + chart.plarea.height, out y)) {
-								var point = Point128(s.get_real_x(chart.rel2scr_x(c.x)), s.get_real_y(y));
+								var point = Point128(s.get_real_x(rel2scr_x(c.x)), s.get_real_y(y));
 								Point128 size; bool show_x, show_date, show_time, show_y;
-								cross_what_to_show(chart, s, out show_x, out show_time, out show_date, out show_y);
-								calc_cross_sizes (chart, s, point, out size, show_x, show_time, show_date, show_y);
+								cross_what_to_show(s, out show_x, out show_time, out show_date, out show_y);
+								calc_cross_sizes (s, point, out size, show_x, show_time, show_date, show_y);
 								CursorCross cc = {si, point, size, show_x, show_date, show_time, show_y};
 								crossings += cc;
 							}
@@ -145,11 +155,11 @@ namespace CairoChart {
 						case Orientation.HORIZONTAL:
 							Float128 x = 0.0;
 							if (chart.math.hcross(s.get_scr_point(points[i]), s.get_scr_point(points[i+1]),
-							                chart.plarea.x, chart.plarea.x + chart.plarea.width, chart.rel2scr_y(c.y), out x)) {
-								var point = Point128(s.get_real_x(x), s.get_real_y(chart.rel2scr_y(c.y)));
+							                chart.plarea.x, chart.plarea.x + chart.plarea.width, rel2scr_y(c.y), out x)) {
+								var point = Point128(s.get_real_x(x), s.get_real_y(rel2scr_y(c.y)));
 								Point128 size; bool show_x, show_date, show_time, show_y;
-								cross_what_to_show(chart, s, out show_x, out show_time, out show_date, out show_y);
-								calc_cross_sizes (chart, s, point, out size, show_x, show_time, show_date, show_y);
+								cross_what_to_show(s, out show_x, out show_time, out show_date, out show_y);
+								calc_cross_sizes (s, point, out size, show_x, show_time, show_date, show_y);
 								CursorCross cc = {si, point, size, show_x, show_date, show_time, show_y};
 								crossings += cc;
 							}
@@ -165,7 +175,7 @@ namespace CairoChart {
 			cursors_crossings = local_cursor_crossings;
 		}
 
-		protected virtual void calc_cursors_value_positions (Chart chart) {
+		protected virtual void calc_cursors_value_positions () {
 			for (var ccsi = 0, max_ccsi = cursors_crossings.length; ccsi < max_ccsi; ++ccsi) {
 				for (var cci = 0, max_cci = cursors_crossings[ccsi].crossings.length; cci < max_cci; ++cci) {
 					// TODO: Ticket #142: find smart algorithm of cursors values placements
@@ -177,8 +187,8 @@ namespace CairoChart {
 			}
 		}
 
-		protected virtual void cross_what_to_show (Chart chart, Series s, out bool show_x, out bool show_time,
-		                                                                  out bool show_date, out bool show_y) {
+		protected virtual void cross_what_to_show (Series s, out bool show_x, out bool show_time,
+		                                                     out bool show_date, out bool show_y) {
 			show_x = show_time = show_date = show_y = false;
 			switch (cursor_style.orientation) {
 			case Orientation.VERTICAL:
@@ -205,11 +215,11 @@ namespace CairoChart {
 			}
 		}
 
-		protected virtual void calc_cross_sizes (Chart chart, Series s, Point128 p, out Point128 size,
+		protected virtual void calc_cross_sizes (Series s, Point128 p, out Point128 size,
 		                                         bool show_x = false, bool show_time = false,
 		                                         bool show_date = false, bool show_y = false) {
 			if (show_x == show_time == show_date == show_y == false)
-				cross_what_to_show(chart, s, out show_x, out show_time, out show_date, out show_y);
+				cross_what_to_show(s, out show_x, out show_time, out show_date, out show_y);
 			size = Point128 ();
 			string date, time;
 			s.axis_x.format_date_time(p.x, out date, out time);
@@ -227,11 +237,11 @@ namespace CairoChart {
 			size.y = double.max (h_x, h_y);
 		}
 
-		public virtual void draw_cursors (Chart chart) {
+		public virtual void draw_cursors () {
 			if (chart.series.length == 0) return;
 
-			var all_cursors = get_all_cursors(chart);
-			calc_cursors_value_positions(chart);
+			var all_cursors = get_all_cursors();
+			calc_cursors_value_positions();
 
 			for (var cci = 0, max_cci = cursors_crossings.length; cci < max_cci; ++cci) {
 				var low = Point128(chart.plarea.x + chart.plarea.width, chart.plarea.y + chart.plarea.height);  // low and high
@@ -279,13 +289,13 @@ namespace CairoChart {
 				switch (cursor_style.orientation) {
 				case Orientation.VERTICAL:
 					if (low.y > high.y) continue;
-					chart.ctx.move_to (chart.rel2scr_x(c.x), low.y);
-					chart.ctx.line_to (chart.rel2scr_x(c.x), high.y);
+					chart.ctx.move_to (rel2scr_x(c.x), low.y);
+					chart.ctx.line_to (rel2scr_x(c.x), high.y);
 
 					// show joint X value
 					if (chart.joint_x) {
 						var s = chart.series[chart.zoom_1st_idx];
-						var x = s.get_real_x(chart.rel2scr_x(c.x));
+						var x = s.get_real_x(rel2scr_x(c.x));
 						string text = "", time_text = "";
 						switch (s.axis_x.type) {
 						case Axis.Type.NUMBERS:
@@ -340,13 +350,13 @@ namespace CairoChart {
 					break;
 				case Orientation.HORIZONTAL:
 					if (low.x > high.x) continue;
-					chart.ctx.move_to (low.x, chart.rel2scr_y(c.y));
-					chart.ctx.line_to (high.x, chart.rel2scr_y(c.y));
+					chart.ctx.move_to (low.x, rel2scr_y(c.y));
+					chart.ctx.line_to (high.x, rel2scr_y(c.y));
 
 					// show joint Y value
 					if (chart.joint_y) {
 						var s = chart.series[chart.zoom_1st_idx];
-						var y = s.get_real_y(chart.rel2scr_y(c.y));
+						var y = s.get_real_y(rel2scr_y(c.y));
 						var text_t = new Text(s.axis_y.format.printf((LongDouble)y, s.axis_y.font_style));
 						var print_y = s.compact_rec_y_pos (y, text_t);
 						var print_x = 0.0;
@@ -429,17 +439,17 @@ namespace CairoChart {
 			}
 		}
 
-		public bool get_cursors_delta (Chart chart, out Float128 delta) {
+		public bool get_cursors_delta (out Float128 delta) {
 			delta = 0.0;
 			if (chart.series.length == 0) return false;
 			if (list.length() + (is_cursor_active ? 1 : 0) != 2) return false;
 			if (chart.joint_x && cursor_style.orientation == Orientation.VERTICAL) {
-				Float128 val1 = chart.series[chart.zoom_1st_idx].get_real_x(chart.rel2scr_x(list.nth_data(0).x));
+				Float128 val1 = chart.series[chart.zoom_1st_idx].get_real_x(rel2scr_x(list.nth_data(0).x));
 				Float128 val2 = 0;
 				if (is_cursor_active)
-					val2 = chart.series[chart.zoom_1st_idx].get_real_x(chart.rel2scr_x(active_cursor.x));
+					val2 = chart.series[chart.zoom_1st_idx].get_real_x(rel2scr_x(active_cursor.x));
 				else
-					val2 = chart.series[chart.zoom_1st_idx].get_real_x(chart.rel2scr_x(list.nth_data(1).x));
+					val2 = chart.series[chart.zoom_1st_idx].get_real_x(rel2scr_x(list.nth_data(1).x));
 				if (val2 > val1)
 					delta = val2 - val1;
 				else
@@ -447,12 +457,12 @@ namespace CairoChart {
 				return true;
 			}
 			if (chart.joint_y && cursor_style.orientation == Orientation.HORIZONTAL) {
-				Float128 val1 = chart.series[chart.zoom_1st_idx].get_real_y(chart.rel2scr_y(list.nth_data(0).y));
+				Float128 val1 = chart.series[chart.zoom_1st_idx].get_real_y(rel2scr_y(list.nth_data(0).y));
 				Float128 val2 = 0;
 				if (is_cursor_active)
-					val2 = chart.series[chart.zoom_1st_idx].get_real_y(chart.rel2scr_y(active_cursor.y));
+					val2 = chart.series[chart.zoom_1st_idx].get_real_y(rel2scr_y(active_cursor.y));
 				else
-					val2 = chart.series[chart.zoom_1st_idx].get_real_y(chart.rel2scr_y(list.nth_data(1).y));
+					val2 = chart.series[chart.zoom_1st_idx].get_real_y(rel2scr_y(list.nth_data(1).y));
 				if (val2 > val1)
 					delta = val2 - val1;
 				else
@@ -462,9 +472,9 @@ namespace CairoChart {
 			return false;
 		}
 
-		public string get_cursors_delta_str (Chart chart) {
+		public string get_cursors_delta_str () {
 			Float128 delta = 0.0;
-			if (!get_cursors_delta(chart, out delta)) return "";
+			if (!get_cursors_delta(out delta)) return "";
 			var str = "";
 			var s = chart.series[chart.zoom_1st_idx];
 			if (chart.joint_x)

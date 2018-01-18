@@ -86,7 +86,7 @@ namespace CairoChart {
 		/**
 		 * ``Chart`` cursors.
 		 */
-		public Cursors cursors { get; protected set; default = new Cursors (); }
+		public Cursors cursors { get; protected set; default = null; }
 
 		/**
 		 * Math functions.
@@ -111,7 +111,9 @@ namespace CairoChart {
 		/**
 		 * Constructs a new ``Chart``.
 		 */
-		public Chart () { }
+		public Chart () {
+			cursors = new Cursors (this);
+		}
 
 		/**
 		 * Gets a copy of the ``Chart``.
@@ -156,7 +158,7 @@ namespace CairoChart {
 
 			set_vertical_axes_titles ();
 
-			cursors.get_cursors_crossings(this);
+			cursors.get_cursors_crossings();
 
 			calc_plot_area ();
 
@@ -172,7 +174,7 @@ namespace CairoChart {
 			draw_series ();
 			fix_evarea ();
 
-			cursors.draw_cursors (this);
+			cursors.draw_cursors ();
 			fix_evarea ();
 
 			return true;
@@ -349,16 +351,6 @@ namespace CairoChart {
 				if (s.zoom_show && s.points.length != 0)
 					s.draw();
 			}
-		}
-
-		public virtual Float128 rel2scr_x(Float128 x) {
-			return plarea.x + plarea.width * (x - zoom.x) / zoom.width;
-		}
-		public virtual Float128 rel2scr_y(Float128 y) {
-			return plarea.y + plarea.height * (y - zoom.y) / zoom.height;
-		}
-		public virtual Point128 rel2scr_point (Point128 p) {
-			return Point128 (rel2scr_x(p.x), rel2scr_y(p.y));
 		}
 	}
 }
