@@ -132,7 +132,7 @@ namespace CairoChart {
 						case Orientation.VERTICAL:
 							Float128 y = 0.0;
 							if (chart.math.vcross(s.get_scr_point(points[i]), s.get_scr_point(points[i+1]), chart.rel2scr_x(c.x),
-							                chart.plot_y_min, chart.plot_y_max, out y)) {
+							                chart.plarea.y, chart.plarea.y + chart.plarea.height, out y)) {
 								var point = Point128(s.get_real_x(chart.rel2scr_x(c.x)), s.get_real_y(y));
 								Point128 size; bool show_x, show_date, show_time, show_y;
 								cross_what_to_show(chart, s, out show_x, out show_time, out show_date, out show_y);
@@ -144,7 +144,7 @@ namespace CairoChart {
 						case Orientation.HORIZONTAL:
 							Float128 x = 0.0;
 							if (chart.math.hcross(s.get_scr_point(points[i]), s.get_scr_point(points[i+1]),
-							                chart.plot_x_min, chart.plot_x_max, chart.rel2scr_y(c.y), out x)) {
+							                chart.plarea.x, chart.plarea.x + chart.plarea.width, chart.rel2scr_y(c.y), out x)) {
 								var point = Point128(s.get_real_x(x), s.get_real_y(chart.rel2scr_y(c.y)));
 								Point128 size; bool show_x, show_date, show_time, show_y;
 								cross_what_to_show(chart, s, out show_x, out show_time, out show_date, out show_y);
@@ -233,8 +233,8 @@ namespace CairoChart {
 			calc_cursors_value_positions(chart);
 
 			for (var cci = 0, max_cci = cursors_crossings.length; cci < max_cci; ++cci) {
-				var low = Point128(chart.plot_x_max, chart.plot_y_max);  // low and high
-				var high = Point128(chart.plot_x_min, chart.plot_y_min); //              points of the cursor
+				var low = Point128(chart.plarea.x + chart.plarea.width, chart.plarea.y + chart.plarea.height);  // low and high
+				var high = Point128(chart.plarea.x, chart.plarea.y); //              points of the cursor
 				unowned CursorCross[] ccs = cursors_crossings[cci].crossings;
 				cursor_style.line_style.set(chart);
 				for (var ci = 0, max_ci = ccs.length; ci < max_ci; ++ci) {
@@ -250,21 +250,21 @@ namespace CairoChart {
 
 					if (chart.joint_x) {
 						switch (s.axis_x.position) {
-						case Axis.Position.LOW: high.y = chart.plot_y_max + s.axis_x.font_indent; break;
-						case Axis.Position.HIGH: low.y = chart.plot_y_min - s.axis_x.font_indent; break;
+						case Axis.Position.LOW: high.y = chart.plarea.y + chart.plarea.height + s.axis_x.font_indent; break;
+						case Axis.Position.HIGH: low.y = chart.plarea.y - s.axis_x.font_indent; break;
 						case Axis.Position.BOTH:
-							high.y = chart.plot_y_max + s.axis_x.font_indent;
-							low.y = chart.plot_y_min - s.axis_x.font_indent;
+							high.y = chart.plarea.y + chart.plarea.height + s.axis_x.font_indent;
+							low.y = chart.plarea.y - s.axis_x.font_indent;
 							break;
 						}
 					}
 					if (chart.joint_y) {
 						switch (s.axis_y.position) {
-						case Axis.Position.LOW: low.x = chart.plot_x_min - s.axis_y.font_indent; break;
-						case Axis.Position.HIGH: high.x = chart.plot_x_max + s.axis_y.font_indent; break;
+						case Axis.Position.LOW: low.x = chart.plarea.x - s.axis_y.font_indent; break;
+						case Axis.Position.HIGH: high.x = chart.plarea.x + chart.plarea.width + s.axis_y.font_indent; break;
 						case Axis.Position.BOTH:
-							low.x = chart.plot_x_min - s.axis_y.font_indent;
-							high.x = chart.plot_x_max + s.axis_y.font_indent;
+							low.x = chart.plarea.x - s.axis_y.font_indent;
+							high.x = chart.plarea.x + chart.plarea.width + s.axis_y.font_indent;
 							break;
 						}
 					}

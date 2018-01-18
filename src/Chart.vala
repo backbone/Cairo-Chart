@@ -14,13 +14,19 @@ namespace CairoChart {
 		 * Current evaluated area.
 		 */
 		public Cairo.Rectangle evarea = Cairo.Rectangle()
-		                                   { x = 0, y = 0, width = 1, height = 1 };
+		                                { x = 0, y = 0, width = 1, height = 1 };
 
 		/**
 		 * Zoom Limits (relative coordinates: 0.0-1.0).
 		 */
 		public Cairo.Rectangle zoom = Cairo.Rectangle()
 		                              { x = 0, y = 0, width = 1, height = 1 };
+
+		/**
+		 * Plot Area Bounds.
+		 */
+		public Cairo.Rectangle plarea = Cairo.Rectangle()
+		                                { x = 0, y = 0, width = 1, height = 1 };
 
 		/**
 		 * Cairo Context of the Drawing Area.
@@ -61,16 +67,6 @@ namespace CairoChart {
 
 		public Line.Style selection_style = Line.Style ();
 
-		/**
-		 * Plot Area Bounds.
-		 */
-		//public Cairo.Rectangle plot = ;
-
-		public double plot_x_min = 0;
-		public double plot_x_max = 0;
-		public double plot_y_min = 0;
-		public double plot_y_max = 0;
-
 		public bool joint_x { get; protected set; default = false; }
 		public bool joint_y { get; protected set; default = false; }
 		public Color joint_axis_color = Color (0, 0, 0, 1);
@@ -96,10 +92,7 @@ namespace CairoChart {
 			chart.evarea = this.evarea;
 			chart.cursors = this.cursors.copy();
 			chart.legend = this.legend.copy();
-			chart.plot_x_max = this.plot_x_max;
-			chart.plot_x_min = this.plot_x_min;
-			chart.plot_y_max = this.plot_y_max;
-			chart.plot_y_min = this.plot_y_min;
+			chart.plarea = this.plarea;
 			chart.zoom = this.zoom;
 			chart.selection_style = this.selection_style;
 			chart.series = this.series;
@@ -187,11 +180,11 @@ namespace CairoChart {
 		protected virtual void draw_plot_area_border () {
 			color = border_color;
 			ctx.set_dash(null, 0);
-			ctx.move_to (plot_x_min, plot_y_min);
-			ctx.line_to (plot_x_min, plot_y_max);
-			ctx.line_to (plot_x_max, plot_y_max);
-			ctx.line_to (plot_x_max, plot_y_min);
-			ctx.line_to (plot_x_min, plot_y_min);
+			ctx.move_to (plarea.x, plarea.y);
+			ctx.line_to (plarea.x, plarea.y + plarea.height);
+			ctx.line_to (plarea.x + plarea.width, plarea.y + plarea.height);
+			ctx.line_to (plarea.x + plarea.width, plarea.y);
+			ctx.line_to (plarea.x, plarea.y);
 			ctx.stroke ();
 		}
 		protected virtual void draw_series () {
@@ -252,11 +245,11 @@ namespace CairoChart {
 				}
 			var new_zoom = zoom;
 			// TODO
-			new_zoom.x += (rect.x - plot_x_min) / (plot_x_max - plot_x_min) * zoom.width;
-			var x_max = zoom.x + (x1 - plot_x_min) / (plot_x_max - plot_x_min) * zoom.width;
+			new_zoom.x += (rect.x - plarea.x) / plarea.width * zoom.width;
+			var x_max = zoom.x + (x1 - plarea.x) / plarea.width * zoom.width;
 			new_zoom.width = x_max - new_zoom.x;
-			new_zoom.y += (rect.y - plot_y_min) / (plot_y_max - plot_y_min) * zoom.height;
-			var y_max = zoom.y + (y1 - plot_y_min) / (plot_y_max - plot_y_min) * zoom.height;
+			new_zoom.y += (rect.y - plarea.y) / plarea.height * zoom.height;
+			var y_max = zoom.y + (y1 - plarea.y) / plarea.height * zoom.height;
 			new_zoom.height = y_max - new_zoom.y;
 			zoom = new_zoom;
 		}
@@ -277,23 +270,23 @@ namespace CairoChart {
 		}
 		public virtual void move (Point delta) {
 			var d = delta;
-			d.x /= plot_x_max - plot_x_min; d.x *= - 1.0;
-			d.y /= plot_y_max - plot_y_min; d.y *= - 1.0;
+			d.x /= plarea.width; d.x *= - 1.0;
+			d.y /= plarea.height; d.y *= - 1.0;
 			var rzxmin = zoom.x, rzxmax = zoom.x + zoom.width, rzymin = zoom.y, rzymax = zoom.y + zoom.height;
 			zoom_out();
-			d.x *= plot_x_max - plot_x_min;
-			d.y *= plot_y_max - plot_y_min;
-			var xmin = plot_x_min + (plot_x_max - plot_x_min) * rzxmin;
-			var xmax = plot_x_min + (plot_x_max - plot_x_min) * rzxmax;
-			var ymin = plot_y_min + (plot_y_max - plot_y_min) * rzymin;
-			var ymax = plot_y_min + (plot_y_max - plot_y_min) * rzymax;
+			d.x *= plarea.width;
+			d.y *= plarea.height;
+			var xmin = plarea.x + plarea.width * rzxmin;
+			var xmax = plarea.x + plarea.width * rzxmax;
+			var ymin = plarea.y + plarea.height * rzymin;
+			var ymax = plarea.y + plarea.height * rzymax;
 
 			d.x *= rzxmax - rzxmin; d.y *= rzymax - rzymin;
 
-			if (xmin + d.x < plot_x_min) d.x = plot_x_min - xmin;
-			if (xmax + d.x > plot_x_max) d.x = plot_x_max - xmax;
-			if (ymin + d.y < plot_y_min) d.y = plot_y_min - ymin;
-			if (ymax + d.y > plot_y_max) d.y = plot_y_max - ymax;
+			if (xmin + d.x < plarea.x) d.x = plarea.x - xmin;
+			if (xmax + d.x > plarea.x + plarea.width) d.x = plarea.x + plarea.width - xmax;
+			if (ymin + d.y < plarea.y) d.y = plarea.y - ymin;
+			if (ymax + d.y > plarea.y + plarea.height) d.y = plarea.y + plarea.height - ymax;
 
 			zoom_in (Cairo.Rectangle(){x = xmin + d.x, y = ymin + d.y, width = xmax - xmin, height = ymax - ymin});
 		}
@@ -303,10 +296,10 @@ namespace CairoChart {
 				series[si].join_calc(is_x, si, ref nskip);
 		}
 		protected virtual void calc_plot_area () {
-			plot_x_min = evarea.x + legend.indent;
-			plot_x_max = evarea.x + evarea.width - legend.indent;
-			plot_y_min = evarea.y + legend.indent;
-			plot_y_max = evarea.y + evarea.height - legend.indent;
+			plarea.x = evarea.x + legend.indent;
+			plarea.width = evarea.width - 2 * legend.indent;
+			plarea.y = evarea.y + legend.indent;
+			plarea.height = evarea.height - 2 * legend.indent;
 
 			// Check for joint axes
 			joint_x = joint_y = true;
@@ -325,35 +318,35 @@ namespace CairoChart {
 		}
 
 		protected virtual bool x_in_plot_area (double x) {
-			if (math.x_in_range(x, plot_x_min, plot_x_max))
+			if (math.x_in_range(x, plarea.x, plarea.x + plarea.width))
 				return true;
 			return false;
 		}
 		protected virtual bool y_in_plot_area (double y) {
-			if (math.y_in_range(y, plot_y_min, plot_y_max))
+			if (math.y_in_range(y, plarea.y, plarea.y + plarea.height))
 				return true;
 			return false;
 		}
 		public virtual bool point_in_plot_area (Point p) {
-			if (math.point_in_rect (p, plot_x_min, plot_x_max, plot_y_min, plot_y_max))
+			if (math.point_in_rect (p, plarea.x, plarea.x + plarea.width, plarea.y, plarea.y + plarea.height))
 				return true;
 			return false;
 		}
 
 		public virtual Float128 scr2rel_x (Float128 x) {
-			return zoom.x + (x - plot_x_min) / (plot_x_max - plot_x_min) * zoom.width;
+			return zoom.x + (x - plarea.x) / plarea.width * zoom.width;
 		}
 		public virtual Float128 scr2rel_y (Float128 y) {
-			return zoom.y + zoom.height - (plot_y_max - y) / (plot_y_max - plot_y_min) * zoom.height;
+			return zoom.y + zoom.height - (plarea.y + plarea.height - y) / plarea.height * zoom.height;
 		}
 		public virtual Point scr2rel_point (Point p) {
 			return Point (scr2rel_x(p.x), scr2rel_y(p.y));
 		}
 		public virtual Float128 rel2scr_x(Float128 x) {
-			return plot_x_min + (plot_x_max - plot_x_min) * (x - zoom.x) / zoom.width;
+			return plarea.x + plarea.width * (x - zoom.x) / zoom.width;
 		}
 		public virtual Float128 rel2scr_y(Float128 y) {
-			return plot_y_min + (plot_y_max - plot_y_min) * (y - zoom.y) / zoom.height;
+			return plarea.y + plarea.height * (y - zoom.y) / zoom.height;
 		}
 		public virtual Point128 rel2scr_point (Point128 p) {
 			return Point128 (rel2scr_x(p.x), rel2scr_y(p.y));

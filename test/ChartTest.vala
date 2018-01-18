@@ -206,10 +206,10 @@ void plot_chart4 (Chart chart) {
 }
 
 bool point_in_chart (Chart chart, double x, double y) {
-	if (x < chart.plot_x_min) return false;
-	if (x > chart.plot_x_max) return false;
-	if (y < chart.plot_y_min) return false;
-	if (y > chart.plot_y_max) return false;
+	if (x < chart.plarea.x) return false;
+	if (x > chart.plarea.x + chart.plarea.width) return false;
+	if (y < chart.plarea.y) return false;
+	if (y > chart.plarea.y + chart.plarea.height) return false;
 	return true;
 }
 
@@ -435,8 +435,8 @@ int main (string[] args) {
 			var text_t = new Text(text);
 			var w = text_t.get_width(ctx);
 			var h = text_t.get_height(ctx);
-			var x0 = chart.plot_x_max - w - 5;
-			var y0 = chart.plot_y_min + h + 5;
+			var x0 = chart.plarea.x + chart.plarea.width - w - 5;
+			var y0 = chart.plarea.y + h + 5;
 			chart.color = chart.legend.bg_color;
 			ctx.rectangle (x0, y0 - h, w, h);
 			ctx.fill();
