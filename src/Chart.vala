@@ -115,21 +115,22 @@ namespace CairoChart {
 		 */
 		public Chart copy () {
 			var chart = new Chart ();
+			chart.area = this.area;
 			chart.bg_color = this.bg_color;
 			chart.border_color = this.border_color;
+			chart.ctx = this.ctx;
+			chart.cursors = this.cursors.copy();
+			chart.evarea = this.evarea;
+			chart.joint_color = this.joint_color;
 			chart.joint_x = this.joint_x;
 			chart.joint_y = this.joint_y;
-			chart.ctx = this.ctx;
-			chart.evarea = this.evarea;
-			chart.cursors = this.cursors.copy();
 			chart.legend = this.legend.copy();
 			chart.plarea = this.plarea;
-			chart.zoom = this.zoom;
 			chart.selection_style = this.selection_style;
 			chart.series = this.series;
 			chart.title = this.title.copy();
 			chart.title_indent = this.title_indent;
-			chart.area = this.area;
+			chart.zoom = this.zoom;
 			chart.zoom_1st_idx = this.zoom_1st_idx;
 			return chart;
 		}
