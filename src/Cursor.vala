@@ -386,7 +386,7 @@ namespace CairoChart {
 						chart.color = s.axis_x.color;
 						var text_t = new Text(s.axis_x.format.printf((LongDouble)point.x), s.axis_x.font_style);
 						chart.ctx.move_to (svp.x - size.x / 2, svp.y + text_t.get_height(chart.ctx) / 2);
-						if (chart.joint_x) chart.color = chart.joint_axis_color;
+						if (chart.joint_x) chart.color = chart.joint_color;
 						text_t.show(chart.ctx);
 					}
 
@@ -399,7 +399,7 @@ namespace CairoChart {
 						var y = svp.y + sz.height / 2;
 						if (show_date) y -= sz.height / 2 + s.axis_x.font_indent / 2;
 						chart.ctx.move_to (svp.x - size.x / 2, y);
-						if (chart.joint_x) chart.color = chart.joint_axis_color;
+						if (chart.joint_x) chart.color = chart.joint_color;
 						text_t.show(chart.ctx);
 					}
 
@@ -412,7 +412,7 @@ namespace CairoChart {
 						var y = svp.y + sz.height / 2;
 						if (show_time) y += sz.height / 2 + s.axis_x.font_indent / 2;
 						chart.ctx.move_to (svp.x - size.x / 2, y);
-						if (chart.joint_x) chart.color = chart.joint_axis_color;
+						if (chart.joint_x) chart.color = chart.joint_color;
 						text_t.show(chart.ctx);
 					}
 
@@ -421,7 +421,7 @@ namespace CairoChart {
 						var text_t = new Text(s.axis_y.format.printf((LongDouble)point.y), s.axis_y.font_style);
 						var sz = text_t.get_size(chart.ctx);
 						chart.ctx.move_to (svp.x + size.x / 2 - sz.width, svp.y + sz.height / 2);
-						if (chart.joint_y) chart.color = chart.joint_axis_color;
+						if (chart.joint_y) chart.color = chart.joint_color;
 						text_t.show(chart.ctx);
 					}
 				}

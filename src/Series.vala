@@ -253,7 +253,7 @@ namespace CairoChart {
 			var joint_x = chart.joint_x;
 
 			for (Float128 x = x_min, x_max = axis_x.zoom_max; chart.math.point_belong (x, x_min, x_max); x += step) {
-				if (joint_x) chart.color = chart.joint_axis_color;
+				if (joint_x) chart.color = chart.joint_color;
 				else chart.color = axis_x.color;
 				string text = "", time_text = "";
 				switch (axis_x.type) {
@@ -377,7 +377,7 @@ namespace CairoChart {
 				}
 				chart.ctx.move_to(scr_x - sz.width / 2.0, scr_y);
 				chart.color = s.axis_x.color;
-				if (chart.joint_x) chart.color = chart.joint_axis_color;
+				if (chart.joint_x) chart.color = chart.joint_color;
 				s.axis_x.title.show(chart.ctx);
 			}
 
@@ -408,7 +408,7 @@ namespace CairoChart {
 			var joint_y = chart.joint_y;
 
 			for (Float128 y = y_min, y_max = axis_y.zoom_max; chart.math.point_belong (y, y_min, y_max); y += step) {
-				if (joint_y) chart.color = chart.joint_axis_color;
+				if (joint_y) chart.color = chart.joint_color;
 				else chart.color = axis_y.color;
 				var text = axis_y.format.printf((LongDouble)y);
 				var scr_y = get_scr_y (y);
@@ -505,7 +505,7 @@ namespace CairoChart {
 					break;
 				}
 				chart.color = s.axis_y.color;
-				if (chart.joint_y) chart.color = chart.joint_axis_color;
+				if (chart.joint_y) chart.color = chart.joint_color;
 				s.axis_y.title.show(chart.ctx);
 			}
 

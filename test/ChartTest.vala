@@ -441,7 +441,7 @@ int main (string[] args) {
 			ctx.rectangle (x0, y0 - h, w, h);
 			ctx.fill();
 			ctx.move_to (x0, y0);
-			chart.color = chart.joint_axis_color;
+			chart.color = chart.joint_color;
 			ctx.show_text(text);
 		}
 

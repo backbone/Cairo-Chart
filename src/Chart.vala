@@ -17,13 +17,13 @@ namespace CairoChart {
 		                                { x = 0, y = 0, width = 1, height = 1 };
 
 		/**
-		 * Zoom Limits (relative coordinates: 0.0-1.0).
+		 * Zoom area limits (relative coordinates: 0.0-1.0).
 		 */
 		public Cairo.Rectangle zoom = Cairo.Rectangle()
 		                              { x = 0, y = 0, width = 1, height = 1 };
 
 		/**
-		 * Plot Area Bounds.
+		 * Plot area bounds.
 		 */
 		public Cairo.Rectangle plarea = Cairo.Rectangle()
 		                                { x = 0, y = 0, width = 1, height = 1 };
@@ -76,7 +76,7 @@ namespace CairoChart {
 		/**
 		 * Joint/common axis color.
 		 */
-		public Color joint_axis_color = Color (0, 0, 0, 1);
+		public Color joint_color = Color (0, 0, 0, 1);
 
 		/**
 		 * Selection line style.
