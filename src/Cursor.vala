@@ -304,8 +304,11 @@ namespace CairoChart {
 							case Axis.Position.LOW: print_y = chart.pos.y + chart.pos.height - s.axis_x.font_indent
 								                    - (chart.legend.position == Legend.Position.BOTTOM ? chart.legend.height : 0);
 								break;
-							case Axis.Position.HIGH: print_y = chart.pos.y + chart.title_height + s.axis_x.font_indent
-								                     + (chart.legend.position == Legend.Position.TOP ? chart.legend.height : 0);
+							case Axis.Position.HIGH:
+								var title_height = chart.title.get_height(chart.ctx) + (chart.legend.position == Legend.Position.TOP ?
+								                   chart.title_indent * 2 : chart.title_indent);
+								print_y = chart.pos.y + title_height + s.axis_x.font_indent
+								          + (chart.legend.position == Legend.Position.TOP ? chart.legend.height : 0);
 								switch (s.axis_x.type) {
 								case Axis.Type.NUMBERS:
 									print_y += sz.height;

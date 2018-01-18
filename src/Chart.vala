@@ -57,9 +57,6 @@ namespace CairoChart {
 		 */
 		public int zoom_1st_idx { get; protected set; default = 0; }
 
-		public double title_width { get; protected set; default = 0.0; }
-		public double title_height { get; protected set; default = 0.0; }
-
 		public double title_indent = 4;
 
 		public Line.Style selection_style = Line.Style ();
@@ -102,9 +99,7 @@ namespace CairoChart {
 			chart.selection_style = this.selection_style;
 			chart.series = this.series;
 			chart.title = this.title.copy();
-			chart.title_height = this.title_height;
 			chart.title_indent = this.title_indent;
-			chart.title_width = this.title_width;
 			chart.pos = this.pos;
 			chart.zoom_1st_idx = this.zoom_1st_idx;
 			return chart;
@@ -164,7 +159,7 @@ namespace CairoChart {
 		}
 		protected virtual void draw_chart_title () {
 			var sz = title.get_size(ctx);
-			title_height = sz.height + (legend.position == Legend.Position.TOP ? title_indent * 2 : title_indent);
+			var title_height = sz.height + (legend.position == Legend.Position.TOP ? title_indent * 2 : title_indent);
 			calc_pos.y += title_height;
 			calc_pos.height -= title_height;
 			color = title.color;

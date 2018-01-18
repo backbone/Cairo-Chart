@@ -52,7 +52,9 @@ namespace CairoChart {
 				switch (position) {
 				case Position.TOP:
 					x0 = (chart.pos.width - width) / 2;
-					y0 = chart.title_height;
+					var title_height = chart.title.get_height(chart.ctx) + (chart.legend.position == Legend.Position.TOP ?
+					                   chart.title_indent * 2 : chart.title_indent);
+					y0 = title_height;
 				break;
 
 				case Position.BOTTOM:
