@@ -1,8 +1,8 @@
 namespace CairoChart {
 
-	public class Math {
+	namespace Math {
 
-		public virtual Float128 calc_round_step (Float128 aver_step, bool date_time = false) {
+		internal Float128 calc_round_step (Float128 aver_step, bool date_time = false) {
 			Float128 step = 1.0;
 
 			if (aver_step > 1.0) {
@@ -21,38 +21,38 @@ namespace CairoChart {
 			return step;
 		}
 
-		public virtual bool are_intersect (double a_min, double a_max, double b_min, double b_max) {
+		internal bool are_intersect (double a_min, double a_max, double b_min, double b_max) {
 			if (   a_min < a_max <= b_min < b_max
 			    || b_min < b_max <= a_min < a_max)
 				return false;
 			return true;
 		}
 
-		public virtual bool point_belong (Float128 p, Float128 a, Float128 b) {
+		internal bool point_belong (Float128 p, Float128 a, Float128 b) {
 			if (a > b) { Float128 tmp = a; a = b; b = tmp; }
 			if (a <= p <= b) return true;
 			return false;
 		}
 
-		public virtual bool x_in_range (double x, double x0, double x1) {
+		internal bool x_in_range (double x, double x0, double x1) {
 			if (x0 <= x <= x1 || x1 <= x <= x0)
 				return true;
 			return false;
 		}
 
-		public virtual bool y_in_range (double y, double y0, double y1) {
+		internal bool y_in_range (double y, double y0, double y1) {
 			if (y0 <= y <= y1 || y1 <= y <= y0)
 				return true;
 			return false;
 		}
 
-		public virtual bool point_in_rect (Point p, double x0, double x1, double y0, double y1) {
+		internal bool point_in_rect (Point p, double x0, double x1, double y0, double y1) {
 			if (x_in_range(p.x, x0, x1) && y_in_range(p.y, y0, y1))
 				return true;
 			return false;
 		}
 
-		public virtual bool hcross (Point a1, Point a2, double h_x1, double h_x2, double h_y, out double x) {
+		internal bool hcross (Point a1, Point a2, double h_x1, double h_x2, double h_y, out double x) {
 			x = 0;
 			if (a1.y == a2.y) return false;
 			if (a1.y >= h_y && a2.y >= h_y || a1.y <= h_y && a2.y <= h_y) return false;
@@ -62,7 +62,7 @@ namespace CairoChart {
 			return false;
 		}
 
-		public virtual bool vcross (Point a1, Point a2, double v_x, double v_y1, double v_y2, out double y) {
+		internal bool vcross (Point a1, Point a2, double v_x, double v_y1, double v_y2, out double y) {
 			y = 0;
 			if (a1.x == a2.x) return false;
 			if (a1.x >= v_x && a2.x >= v_x || a1.x <= v_x && a2.x <= v_x) return false;
@@ -72,9 +72,9 @@ namespace CairoChart {
 			return false;
 		}
 
-		public delegate int PointComparator(Point128 a, Point128 b);
+		internal delegate int PointComparator(Point128 a, Point128 b);
 
-		public virtual void sort_points_delegate(Point128[] points, PointComparator compare) {
+		internal void sort_points_delegate(Point128[] points, PointComparator compare) {
 			for(var i = 0; i < points.length; ++i) {
 				for(var j = i + 1; j < points.length; ++j) {
 					if(compare(points[i], points[j]) > 0) {
@@ -86,7 +86,7 @@ namespace CairoChart {
 			}
 		}
 
-		public virtual bool cut_line (Point p_min, Point p_max, Point a, Point b, out Point c, out Point d) {
+		internal bool cut_line (Point p_min, Point p_max, Point a, Point b, out Point c, out Point d) {
 			int ncross = 0;
 			Float128 x = 0, y = 0;
 			Point pc[4];
@@ -124,7 +124,7 @@ namespace CairoChart {
 			return false;
 		}
 
-		public virtual Point128[] sort_points (Series s, Series.Sort sort) {
+		internal Point128[] sort_points (Series s, Series.Sort sort) {
 			var points = s.points;
 			switch(sort) {
 			case Series.Sort.BY_X:
@@ -144,8 +144,5 @@ namespace CairoChart {
 			}
 			return points;
 		}
-
-
-		public Math () {}
 	}
 }

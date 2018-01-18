@@ -131,10 +131,10 @@ namespace CairoChart {
 					Point128[] points = {};
 					switch (cursor_style.orientation) {
 					case Orientation.VERTICAL:
-						points = chart.math.sort_points (s, s.sort);
+						points = Math.sort_points (s, s.sort);
 						break;
 					case Orientation.HORIZONTAL:
-						points = chart.math.sort_points (s, s.sort);
+						points = Math.sort_points (s, s.sort);
 						break;
 					}
 
@@ -142,7 +142,7 @@ namespace CairoChart {
 						switch (cursor_style.orientation) {
 						case Orientation.VERTICAL:
 							Float128 y = 0.0;
-							if (chart.math.vcross(s.get_scr_point(points[i]), s.get_scr_point(points[i+1]), rel2scr_x(c.x),
+							if (Math.vcross(s.get_scr_point(points[i]), s.get_scr_point(points[i+1]), rel2scr_x(c.x),
 							                chart.plarea.y, chart.plarea.y + chart.plarea.height, out y)) {
 								var point = Point128(s.get_real_x(rel2scr_x(c.x)), s.get_real_y(y));
 								Point128 size; bool show_x, show_date, show_time, show_y;
@@ -154,7 +154,7 @@ namespace CairoChart {
 							break;
 						case Orientation.HORIZONTAL:
 							Float128 x = 0.0;
-							if (chart.math.hcross(s.get_scr_point(points[i]), s.get_scr_point(points[i+1]),
+							if (Math.hcross(s.get_scr_point(points[i]), s.get_scr_point(points[i+1]),
 							                chart.plarea.x, chart.plarea.x + chart.plarea.width, rel2scr_y(c.y), out x)) {
 								var point = Point128(s.get_real_x(x), s.get_real_y(rel2scr_y(c.y)));
 								Point128 size; bool show_x, show_date, show_time, show_y;

@@ -64,12 +64,12 @@ namespace CairoChart {
 		}
 
 		public virtual void draw () {
-			var points = chart.math.sort_points(this, sort);
+			var points = Math.sort_points(this, sort);
 			line_style.set(chart);
 			// draw series line
 			for (int i = 1; i < points.length; ++i) {
 				Point c, d;
-				if (chart.math.cut_line (
+				if (Math.cut_line (
 				        Point(chart.plarea.x, chart.plarea.y),
 				        Point(chart.plarea.x + chart.plarea.width, chart.plarea.y + chart.plarea.height),
 				        Point(get_scr_x(points[i - 1].x), get_scr_y(points[i - 1].y)),
@@ -84,7 +84,7 @@ namespace CairoChart {
 			for (int i = 0; i < points.length; ++i) {
 				var x = get_scr_x(points[i].x);
 				var y = get_scr_y(points[i].y);
-				if (chart.math.point_in_rect (Point(x, y), chart.plarea.x, chart.plarea.x + chart.plarea.width,
+				if (Math.point_in_rect (Point(x, y), chart.plarea.x, chart.plarea.x + chart.plarea.width,
 				                                           chart.plarea.y, chart.plarea.y + chart.plarea.height))
 					marker.draw_at_pos(chart, x, y);
 			}
@@ -188,7 +188,7 @@ namespace CairoChart {
 				for (int sk = si; sk > sj; --sk) {
 					var s3 = chart.series[sk];
 					if (!s3.zoom_show) continue;
-					if (chart.math.are_intersect(s2.place.zoom_x_min, s2.place.zoom_x_max, s3.place.zoom_x_min, s3.place.zoom_x_max)
+					if (Math.are_intersect(s2.place.zoom_x_min, s2.place.zoom_x_max, s3.place.zoom_x_min, s3.place.zoom_x_max)
 					    || s2.axis_x.position != s3.axis_x.position
 					    || s2.axis_x.type != s3.axis_x.type) {
 						has_intersection = true;
@@ -226,7 +226,7 @@ namespace CairoChart {
 				for (int sk = si; sk > sj; --sk) {
 					var s3 = chart.series[sk];
 					if (!s3.zoom_show) continue;
-					if (chart.math.are_intersect(s2.place.zoom_y_min, s2.place.zoom_y_max, s3.place.zoom_y_min, s3.place.zoom_y_max)
+					if (Math.are_intersect(s2.place.zoom_y_min, s2.place.zoom_y_max, s3.place.zoom_y_min, s3.place.zoom_y_max)
 					    || s2.axis_y.position != s3.axis_y.position
 					    || s2.axis_y.type != s3.axis_y.type) {
 						has_intersection = true;
@@ -253,7 +253,7 @@ namespace CairoChart {
 			var ctx = chart.ctx;
 			var joint_x = chart.joint_x;
 
-			for (Float128 x = x_min, x_max = axis_x.zoom_max; chart.math.point_belong (x, x_min, x_max); x += step) {
+			for (Float128 x = x_min, x_max = axis_x.zoom_max; Math.point_belong (x, x_min, x_max); x += step) {
 				if (joint_x) chart.color = chart.joint_color;
 				else chart.color = axis_x.color;
 				string text = "", time_text = "";
@@ -342,7 +342,7 @@ namespace CairoChart {
 			long max_nrecs = (long) (chart.plarea.width * (s.place.zoom_x_max - s.place.zoom_x_min) / max_rec_width);
 
 			// 3. Calculate grid step.
-			Float128 step = chart.math.calc_round_step ((s.axis_x.zoom_max - s.axis_x.zoom_min) / max_nrecs, s.axis_x.type == Axis.Type.DATE_TIME);
+			Float128 step = Math.calc_round_step ((s.axis_x.zoom_max - s.axis_x.zoom_min) / max_nrecs, s.axis_x.type == Axis.Type.DATE_TIME);
 			if (step > s.axis_x.zoom_max - s.axis_x.zoom_min)
 				step = s.axis_x.zoom_max - s.axis_x.zoom_min;
 
@@ -408,7 +408,7 @@ namespace CairoChart {
 			var ctx = chart.ctx;
 			var joint_y = chart.joint_y;
 
-			for (Float128 y = y_min, y_max = axis_y.zoom_max; chart.math.point_belong (y, y_min, y_max); y += step) {
+			for (Float128 y = y_min, y_max = axis_y.zoom_max; Math.point_belong (y, y_min, y_max); y += step) {
 				if (joint_y) chart.color = chart.joint_color;
 				else chart.color = axis_y.color;
 				var text = axis_y.format.printf((LongDouble)y);
@@ -466,7 +466,7 @@ namespace CairoChart {
 			long max_nrecs = (long) (chart.plarea.height * (s.place.zoom_y_max - s.place.zoom_y_min) / max_rec_height);
 
 			// 3. Calculate grid step.
-			Float128 step = chart.math.calc_round_step ((s.axis_y.zoom_max - s.axis_y.zoom_min) / max_nrecs);
+			Float128 step = Math.calc_round_step ((s.axis_y.zoom_max - s.axis_y.zoom_min) / max_nrecs);
 			if (step > s.axis_y.zoom_max - s.axis_y.zoom_min)
 				step = s.axis_y.zoom_max - s.axis_y.zoom_min;
 

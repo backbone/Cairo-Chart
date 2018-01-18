@@ -89,11 +89,6 @@ namespace CairoChart {
 		public Cursors cursors { get; protected set; default = null; }
 
 		/**
-		 * Math functions.
-		 */
-		public CairoChart.Math math { get; protected set; default = new Math(); }
-
-		/**
 		 * Set paint color for further drawing.
 		 */
 		public Color color {
