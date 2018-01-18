@@ -107,9 +107,9 @@ namespace CairoChart {
 				var c = all_cursors.nth_data(ci);
 				switch (cursor_style.orientation) {
 				case Orientation.VERTICAL:
-					if (c.x <= chart.rz_x_min || c.x >= chart.rz_x_max) continue; break;
+					if (c.x <= chart.zoom.x || c.x >= chart.zoom.x + chart.zoom.width) continue; break;
 				case Orientation.HORIZONTAL:
-					if (c.y <= chart.rz_y_min || c.y >= chart.rz_y_max) continue; break;
+					if (c.y <= chart.zoom.y || c.y >= chart.zoom.y + chart.zoom.height) continue; break;
 				}
 
 				CursorCross[] crossings = {};

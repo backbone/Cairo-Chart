@@ -46,11 +46,11 @@ namespace CairoChart {
 		public Cairo.Rectangle calc_pos = Cairo.Rectangle()
 		                                  { x = 0, y = 0, width = 1, height = 1 };
 
-		// relative zoom limits
-		public double rz_x_min { get; protected set; default = 0.0; }
-		public double rz_x_max { get; protected set; default = 1.0; }
-		public double rz_y_min { get; protected set; default = 0.0; }
-		public double rz_y_max { get; protected set; default = 1.0; }
+		/**
+		 * Zoom Limits (relative coordinates: 0.0-1.0).
+		 */
+		public Cairo.Rectangle zoom = Cairo.Rectangle()
+		                              { x = 0, y = 0, width = 1, height = 1 };
 
 		public int zoom_first_show { get; protected set; default = 0; }
 
@@ -95,10 +95,7 @@ namespace CairoChart {
 			chart.plot_x_min = this.plot_x_min;
 			chart.plot_y_max = this.plot_y_max;
 			chart.plot_y_min = this.plot_y_min;
-			chart.rz_x_min = this.rz_x_min;
-			chart.rz_x_max = this.rz_x_max;
-			chart.rz_y_min = this.rz_y_min;
-			chart.rz_y_max = this.rz_y_max;
+			chart.zoom = this.zoom;
 			chart.selection_style = this.selection_style;
 			chart.series = this.series;
 			chart.title = this.title.copy();
@@ -250,15 +247,15 @@ namespace CairoChart {
 					zoom_first_show = si;
 					break;
 				}
-
-			var new_rz_x_min = rz_x_min + (rect.x - plot_x_min) / (plot_x_max - plot_x_min) * (rz_x_max - rz_x_min);
-			var new_rz_x_max = rz_x_min + (x1 - plot_x_min) / (plot_x_max - plot_x_min) * (rz_x_max - rz_x_min);
-			var new_rz_y_min = rz_y_min + (rect.y - plot_y_min) / (plot_y_max - plot_y_min) * (rz_y_max - rz_y_min);
-			var new_rz_y_max = rz_y_min + (y1 - plot_y_min) / (plot_y_max - plot_y_min) * (rz_y_max - rz_y_min);
-			rz_x_min = new_rz_x_min;
-			rz_x_max = new_rz_x_max;
-			rz_y_min = new_rz_y_min;
-			rz_y_max = new_rz_y_max;
+			var new_zoom = zoom;
+			// TODO
+			new_zoom.x += (rect.x - plot_x_min) / (plot_x_max - plot_x_min) * zoom.width;
+			var x_max = zoom.x + (x1 - plot_x_min) / (plot_x_max - plot_x_min) * zoom.width;
+			new_zoom.width = x_max - new_zoom.x;
+			new_zoom.y += (rect.y - plot_y_min) / (plot_y_max - plot_y_min) * zoom.height;
+			var y_max = zoom.y + (y1 - plot_y_min) / (plot_y_max - plot_y_min) * zoom.height;
+			new_zoom.height = y_max - new_zoom.y;
+			zoom = new_zoom;
 		}
 		public virtual void zoom_out () {
 			foreach (var s in series) {
@@ -272,18 +269,14 @@ namespace CairoChart {
 				s.place.zoom_y_min = s.place.y_min;
 				s.place.zoom_y_max = s.place.y_max;
 			}
-			rz_x_min = 0;
-			rz_x_max = 1;
-			rz_y_min = 0;
-			rz_y_max = 1;
-
+			zoom = Cairo.Rectangle() { x = 0, y = 0, width = 1, height = 1 };
 			zoom_first_show = 0;
 		}
 		public virtual void move (Point delta) {
 			var d = delta;
 			d.x /= plot_x_max - plot_x_min; d.x *= - 1.0;
 			d.y /= plot_y_max - plot_y_min; d.y *= - 1.0;
-			var rzxmin = rz_x_min, rzxmax = rz_x_max, rzymin = rz_y_min, rzymax = rz_y_max;
+			var rzxmin = zoom.x, rzxmax = zoom.x + zoom.width, rzymin = zoom.y, rzymax = zoom.y + zoom.height;
 			zoom_out();
 			d.x *= plot_x_max - plot_x_min;
 			d.y *= plot_y_max - plot_y_min;
@@ -345,19 +338,19 @@ namespace CairoChart {
 		}
 
 		public virtual Float128 scr2rel_x (Float128 x) {
-			return rz_x_min + (x - plot_x_min) / (plot_x_max - plot_x_min) * (rz_x_max - rz_x_min);
+			return zoom.x + (x - plot_x_min) / (plot_x_max - plot_x_min) * zoom.width;
 		}
 		public virtual Float128 scr2rel_y (Float128 y) {
-			return rz_y_max - (plot_y_max - y) / (plot_y_max - plot_y_min) * (rz_y_max - rz_y_min);
+			return zoom.y + zoom.height - (plot_y_max - y) / (plot_y_max - plot_y_min) * zoom.height;
 		}
 		public virtual Point scr2rel_point (Point p) {
 			return Point (scr2rel_x(p.x), scr2rel_y(p.y));
 		}
 		public virtual Float128 rel2scr_x(Float128 x) {
-			return plot_x_min + (plot_x_max - plot_x_min) * (x - rz_x_min) / (rz_x_max - rz_x_min);
+			return plot_x_min + (plot_x_max - plot_x_min) * (x - zoom.x) / zoom.width;
 		}
 		public virtual Float128 rel2scr_y(Float128 y) {
-			return plot_y_min + (plot_y_max - plot_y_min) * (y - rz_y_min) / (rz_y_max - rz_y_min);
+			return plot_y_min + (plot_y_max - plot_y_min) * (y - zoom.y) / zoom.height;
 		}
 		public virtual Point128 rel2scr_point (Point128 p) {
 			return Point128 (rel2scr_x(p.x), rel2scr_y(p.y));
