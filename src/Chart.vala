@@ -1,12 +1,12 @@
 namespace CairoChart {
 
 	/**
-	 * Cairo/GTK+ Chart.
+	 * Cairo/GTK+ ``Chart``.
 	 */
 	public class Chart {
 
 		/**
-		 * Chart Position.
+		 * ``Chart`` Position.
 		 */
 		public Cairo.Rectangle area = Cairo.Rectangle();
 
@@ -44,7 +44,7 @@ namespace CairoChart {
 		public Color border_color = Color(0, 0, 0, 0.3);
 
 		/**
-		 * Chart Title.
+		 * ``Chart`` Title.
 		 */
 		public Text title = new Text("Cairo Chart");
 
@@ -54,7 +54,7 @@ namespace CairoChart {
 		public Legend legend = new Legend();
 
 		/**
-		 * Chart Series.
+		 * ``Chart`` Series.
 		 */
 		public Series[] series = {};
 
@@ -84,7 +84,7 @@ namespace CairoChart {
 		public Line.Style selection_style = Line.Style ();
 
 		/**
-		 * Chart cursors.
+		 * ``Chart`` cursors.
 		 */
 		public Cursors cursors { get; protected set; default = new Cursors (); }
 
@@ -108,10 +108,13 @@ namespace CairoChart {
 		public double title_indent = 4;
 
 		/**
-		 * Constructs a new Chart.
+		 * Constructs a new ``Chart``.
 		 */
 		public Chart () { }
 
+		/**
+		 * Gets a copy of the ``Chart``.
+		 */
 		public Chart copy () {
 			var chart = new Chart ();
 			chart.bg_color = this.bg_color;
