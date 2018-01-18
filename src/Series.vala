@@ -131,7 +131,7 @@ namespace CairoChart {
 				s.join_relative_y_axes (si, true, ref max_rec_width, ref max_rec_height, ref max_font_indent, ref max_axis_font_width, ref nskip);
 
 			// for 4.2. Cursor values for joint X axis
-			if (si == chart.zoom_first_show && chart.cursors.cursors_crossings.length != 0) {
+			if (si == chart.zoom_1st_idx && chart.cursors.cursors_crossings.length != 0) {
 				switch (chart.cursors.cursor_style.orientation) {
 				case Cursors.Orientation.VERTICAL:
 					if (is_x && chart.joint_x)
@@ -149,12 +149,12 @@ namespace CairoChart {
 					break;
 				}
 			}
-			if (is_x && (!chart.joint_x || si == chart.zoom_first_show))
+			if (is_x && (!chart.joint_x || si == chart.zoom_1st_idx))
 				switch (axis.position) {
 				case Axis.Position.LOW: chart.plot_y_max -= max_rec_height + max_font_indent + max_axis_font_height; break;
 				case Axis.Position.HIGH: chart.plot_y_min += max_rec_height + max_font_indent + max_axis_font_height; break;
 				}
-			if (!is_x && (!chart.joint_y || si == chart.zoom_first_show))
+			if (!is_x && (!chart.joint_y || si == chart.zoom_1st_idx))
 				switch (s.axis_y.position) {
 				case Axis.Position.LOW: chart.plot_x_min += max_rec_width + max_font_indent + max_axis_font_width; break;
 				case Axis.Position.HIGH: chart.plot_x_max -= max_rec_width + max_font_indent + max_axis_font_width; break;
@@ -319,7 +319,7 @@ namespace CairoChart {
 		public virtual void draw_horizontal_axis (int si, ref int nskip) {
 			var s = chart.series[si];
 			if (!s.zoom_show) return;
-			if (chart.joint_x && si != chart.zoom_first_show) return;
+			if (chart.joint_x && si != chart.zoom_1st_idx) return;
 
 			// 1. Detect max record width/height by axis.nrecords equally selected points using format.
 			double max_rec_width, max_rec_height;
@@ -444,7 +444,7 @@ namespace CairoChart {
 		public virtual void draw_vertical_axis (int si, ref int nskip) {
 			var s = chart.series[si];
 			if (!s.zoom_show) return;
-			if (chart.joint_y && si != chart.zoom_first_show) return;
+			if (chart.joint_y && si != chart.zoom_1st_idx) return;
 			// 1. Detect max record width/height by axis.nrecords equally selected points using format.
 			double max_rec_width, max_rec_height;
 			s.axis_y.calc_rec_sizes (chart, out max_rec_width, out max_rec_height, false);

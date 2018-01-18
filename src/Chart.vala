@@ -52,7 +52,10 @@ namespace CairoChart {
 		public Cairo.Rectangle zoom = Cairo.Rectangle()
 		                              { x = 0, y = 0, width = 1, height = 1 };
 
-		public int zoom_first_show { get; protected set; default = 0; }
+		/**
+		 * 1'st shown series index in zoom area.
+		 */
+		public int zoom_1st_idx { get; protected set; default = 0; }
 
 		public double title_width { get; protected set; default = 0.0; }
 		public double title_height { get; protected set; default = 0.0; }
@@ -103,7 +106,7 @@ namespace CairoChart {
 			chart.title_indent = this.title_indent;
 			chart.title_width = this.title_width;
 			chart.pos = this.pos;
-			chart.zoom_first_show = this.zoom_first_show;
+			chart.zoom_1st_idx = this.zoom_1st_idx;
 			return chart;
 		}
 
@@ -241,10 +244,10 @@ namespace CairoChart {
 				}
 			}
 
-			zoom_first_show = 0;
+			zoom_1st_idx = 0;
 			for (var si = 0, max_i = series.length; si < max_i; ++si)
 				if (series[si].zoom_show) {
-					zoom_first_show = si;
+					zoom_1st_idx = si;
 					break;
 				}
 			var new_zoom = zoom;
@@ -270,7 +273,7 @@ namespace CairoChart {
 				s.place.zoom_y_max = s.place.y_max;
 			}
 			zoom = Cairo.Rectangle() { x = 0, y = 0, width = 1, height = 1 };
-			zoom_first_show = 0;
+			zoom_1st_idx = 0;
 		}
 		public virtual void move (Point delta) {
 			var d = delta;

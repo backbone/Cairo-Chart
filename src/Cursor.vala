@@ -283,7 +283,7 @@ namespace CairoChart {
 
 					// show joint X value
 					if (chart.joint_x) {
-						var s = chart.series[chart.zoom_first_show];
+						var s = chart.series[chart.zoom_1st_idx];
 						var x = s.get_real_x(chart.rel2scr_x(c.x));
 						string text = "", time_text = "";
 						switch (s.axis_x.type) {
@@ -341,7 +341,7 @@ namespace CairoChart {
 
 					// show joint Y value
 					if (chart.joint_y) {
-						var s = chart.series[chart.zoom_first_show];
+						var s = chart.series[chart.zoom_1st_idx];
 						var y = s.get_real_y(chart.rel2scr_y(c.y));
 						var text_t = new Text(s.axis_y.format.printf((LongDouble)y, s.axis_y.font_style));
 						var print_y = s.compact_rec_y_pos (y, text_t);
@@ -430,12 +430,12 @@ namespace CairoChart {
 			if (chart.series.length == 0) return false;
 			if (list.length() + (is_cursor_active ? 1 : 0) != 2) return false;
 			if (chart.joint_x && cursor_style.orientation == Orientation.VERTICAL) {
-				Float128 val1 = chart.series[chart.zoom_first_show].get_real_x(chart.rel2scr_x(list.nth_data(0).x));
+				Float128 val1 = chart.series[chart.zoom_1st_idx].get_real_x(chart.rel2scr_x(list.nth_data(0).x));
 				Float128 val2 = 0;
 				if (is_cursor_active)
-					val2 = chart.series[chart.zoom_first_show].get_real_x(chart.rel2scr_x(active_cursor.x));
+					val2 = chart.series[chart.zoom_1st_idx].get_real_x(chart.rel2scr_x(active_cursor.x));
 				else
-					val2 = chart.series[chart.zoom_first_show].get_real_x(chart.rel2scr_x(list.nth_data(1).x));
+					val2 = chart.series[chart.zoom_1st_idx].get_real_x(chart.rel2scr_x(list.nth_data(1).x));
 				if (val2 > val1)
 					delta = val2 - val1;
 				else
@@ -443,12 +443,12 @@ namespace CairoChart {
 				return true;
 			}
 			if (chart.joint_y && cursor_style.orientation == Orientation.HORIZONTAL) {
-				Float128 val1 = chart.series[chart.zoom_first_show].get_real_y(chart.rel2scr_y(list.nth_data(0).y));
+				Float128 val1 = chart.series[chart.zoom_1st_idx].get_real_y(chart.rel2scr_y(list.nth_data(0).y));
 				Float128 val2 = 0;
 				if (is_cursor_active)
-					val2 = chart.series[chart.zoom_first_show].get_real_y(chart.rel2scr_y(active_cursor.y));
+					val2 = chart.series[chart.zoom_1st_idx].get_real_y(chart.rel2scr_y(active_cursor.y));
 				else
-					val2 = chart.series[chart.zoom_first_show].get_real_y(chart.rel2scr_y(list.nth_data(1).y));
+					val2 = chart.series[chart.zoom_1st_idx].get_real_y(chart.rel2scr_y(list.nth_data(1).y));
 				if (val2 > val1)
 					delta = val2 - val1;
 				else
@@ -462,7 +462,7 @@ namespace CairoChart {
 			Float128 delta = 0.0;
 			if (!get_cursors_delta(chart, out delta)) return "";
 			var str = "";
-			var s = chart.series[chart.zoom_first_show];
+			var s = chart.series[chart.zoom_1st_idx];
 			if (chart.joint_x)
 				switch (s.axis_x.type) {
 				case Axis.Type.NUMBERS:
