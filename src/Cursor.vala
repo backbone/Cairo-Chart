@@ -301,13 +301,13 @@ namespace CairoChart {
 						var time_text_t = new Text(time_text, s.axis_x.font_style, s.axis_x.color);
 						var print_y = 0.0;
 						switch (s.axis_x.position) {
-							case Axis.Position.LOW: print_y = chart.pos.y + chart.pos.height - s.axis_x.font_indent
+							case Axis.Position.LOW: print_y = chart.area.y + chart.area.height - s.axis_x.font_indent
 								                    - (chart.legend.position == Legend.Position.BOTTOM ? chart.legend.height : 0);
 								break;
 							case Axis.Position.HIGH:
 								var title_height = chart.title.get_height(chart.ctx) + (chart.legend.position == Legend.Position.TOP ?
 								                   chart.title_indent * 2 : chart.title_indent);
-								print_y = chart.pos.y + title_height + s.axis_x.font_indent
+								print_y = chart.area.y + title_height + s.axis_x.font_indent
 								          + (chart.legend.position == Legend.Position.TOP ? chart.legend.height : 0);
 								switch (s.axis_x.type) {
 								case Axis.Type.NUMBERS:
@@ -351,11 +351,11 @@ namespace CairoChart {
 						var print_x = 0.0;
 						switch (s.axis_y.position) {
 						case Axis.Position.LOW:
-							print_x = chart.pos.x + s.axis_y.font_indent
+							print_x = chart.area.x + s.axis_y.font_indent
 							          + (chart.legend.position == Legend.Position.LEFT ? chart.legend.width : 0);
 							break;
 						case Axis.Position.HIGH:
-							print_x = chart.pos.x + chart.pos.width - text_t.get_width(chart.ctx) - s.axis_y.font_indent
+							print_x = chart.area.x + chart.area.width - text_t.get_width(chart.ctx) - s.axis_y.font_indent
 							          - (chart.legend.position == Legend.Position.RIGHT ? chart.legend.width : 0);
 							break;
 						}

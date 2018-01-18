@@ -8,7 +8,19 @@ namespace CairoChart {
 		/**
 		 * Chart Position.
 		 */
-		public Cairo.Rectangle pos = Cairo.Rectangle();
+		public Cairo.Rectangle area = Cairo.Rectangle();
+
+		/**
+		 * Current evaluated area.
+		 */
+		public Cairo.Rectangle evarea = Cairo.Rectangle()
+		                                   { x = 0, y = 0, width = 1, height = 1 };
+
+		/**
+		 * Zoom Limits (relative coordinates: 0.0-1.0).
+		 */
+		public Cairo.Rectangle zoom = Cairo.Rectangle()
+		                              { x = 0, y = 0, width = 1, height = 1 };
 
 		/**
 		 * Cairo Context of the Drawing Area.
@@ -21,36 +33,24 @@ namespace CairoChart {
 		public Color bg_color = Color(1, 1, 1);
 
 		/**
-		 * Chart Title.
-		 */
-		public Text title = new Text ("Cairo Chart");
-
-		/**
 		 * Border Color.
 		 */
 		public Color border_color = Color(0, 0, 0, 0.3);
 
 		/**
+		 * Chart Title.
+		 */
+		public Text title = new Text("Cairo Chart");
+
+		/**
 		 * Legend.
 		 */
-		public Legend legend = new Legend ();
+		public Legend legend = new Legend();
 
 		/**
 		 * Chart Series.
 		 */
 		public Series[] series = {};
-
-		/**
-		 * Current calculated Plot Position.
-		 */
-		public Cairo.Rectangle calc_pos = Cairo.Rectangle()
-		                                  { x = 0, y = 0, width = 1, height = 1 };
-
-		/**
-		 * Zoom Limits (relative coordinates: 0.0-1.0).
-		 */
-		public Cairo.Rectangle zoom = Cairo.Rectangle()
-		                              { x = 0, y = 0, width = 1, height = 1 };
 
 		/**
 		 * 1'st shown series index in zoom area.
@@ -60,6 +60,11 @@ namespace CairoChart {
 		public double title_indent = 4;
 
 		public Line.Style selection_style = Line.Style ();
+
+		/**
+		 * Plot Area Bounds.
+		 */
+		//public Cairo.Rectangle plot = ;
 
 		public double plot_x_min = 0;
 		public double plot_x_max = 0;
@@ -88,7 +93,7 @@ namespace CairoChart {
 			chart.joint_x = this.joint_x;
 			chart.joint_y = this.joint_y;
 			chart.ctx = this.ctx;
-			chart.calc_pos = this.calc_pos;
+			chart.evarea = this.evarea;
 			chart.cursors = this.cursors.copy();
 			chart.legend = this.legend.copy();
 			chart.plot_x_max = this.plot_x_max;
@@ -100,14 +105,14 @@ namespace CairoChart {
 			chart.series = this.series;
 			chart.title = this.title.copy();
 			chart.title_indent = this.title_indent;
-			chart.pos = this.pos;
+			chart.area = this.area;
 			chart.zoom_1st_idx = this.zoom_1st_idx;
 			return chart;
 		}
 
-		protected virtual void fix_calc_pos () {
-			if (calc_pos.width < 0) calc_pos.width = 0;
-			if (calc_pos.height < 0) calc_pos.height = 0;
+		protected virtual void fix_evarea () {
+			if (evarea.width < 0) evarea.width = 0;
+			if (evarea.height < 0) evarea.height = 0;
 		}
 		protected virtual void set_vertical_axes_titles () {
 			for (var si = 0; si < series.length; ++si) {
@@ -126,13 +131,13 @@ namespace CairoChart {
 
 		public virtual bool draw () {
 
-			calc_pos = pos;
+			evarea = area;
 
 			draw_chart_title ();
-			fix_calc_pos ();
+			fix_evarea ();
 
 			legend.draw (this);
-			fix_calc_pos ();
+			fix_evarea ();
 
 			set_vertical_axes_titles ();
 
@@ -141,29 +146,29 @@ namespace CairoChart {
 			calc_plot_area ();
 
 			draw_horizontal_axes ();
-			fix_calc_pos ();
+			fix_evarea ();
 
 			draw_vertical_axes ();
-			fix_calc_pos ();
+			fix_evarea ();
 
 			draw_plot_area_border ();
-			fix_calc_pos ();
+			fix_evarea ();
 
 			draw_series ();
-			fix_calc_pos ();
+			fix_evarea ();
 
 			cursors.draw_cursors (this);
-			fix_calc_pos ();
+			fix_evarea ();
 
 			return true;
 		}
 		protected virtual void draw_chart_title () {
 			var sz = title.get_size(ctx);
 			var title_height = sz.height + (legend.position == Legend.Position.TOP ? title_indent * 2 : title_indent);
-			calc_pos.y += title_height;
-			calc_pos.height -= title_height;
+			evarea.y += title_height;
+			evarea.height -= title_height;
 			color = title.color;
-			ctx.move_to (pos.width/2 - sz.width/2, sz.height + title_indent);
+			ctx.move_to (area.width/2 - sz.width/2, sz.height + title_indent);
 			title.show(ctx);
 		}
 		public virtual void draw_selection (Cairo.Rectangle rect) {
@@ -298,10 +303,10 @@ namespace CairoChart {
 				series[si].join_calc(is_x, si, ref nskip);
 		}
 		protected virtual void calc_plot_area () {
-			plot_x_min = calc_pos.x + legend.indent;
-			plot_x_max = calc_pos.x + calc_pos.width - legend.indent;
-			plot_y_min = calc_pos.y + legend.indent;
-			plot_y_max = calc_pos.y + calc_pos.height - legend.indent;
+			plot_x_min = evarea.x + legend.indent;
+			plot_x_max = evarea.x + evarea.width - legend.indent;
+			plot_y_min = evarea.y + legend.indent;
+			plot_y_max = evarea.y + evarea.height - legend.indent;
 
 			// Check for joint axes
 			joint_x = joint_y = true;

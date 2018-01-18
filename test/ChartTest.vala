@@ -415,8 +415,8 @@ int main (string[] args) {
 
 	da.draw.connect((ctx) => {
 		chart.ctx = ctx;
-		chart.pos.width = da.get_allocated_width();
-		chart.pos.height = da.get_allocated_height();
+		chart.area.width = da.get_allocated_width();
+		chart.area.height = da.get_allocated_height();
 		chart.clear();
 
 		// user's pre draw operations here...
