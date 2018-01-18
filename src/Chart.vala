@@ -139,6 +139,9 @@ namespace CairoChart {
 			return chart;
 		}
 
+		/**
+		 * Clears the ``Chart`` with a {@link bg_color} background color.
+		 */
 		public virtual void clear () {
 			if (ctx != null) {
 				color = bg_color;
@@ -146,6 +149,10 @@ namespace CairoChart {
 				color = Color (0, 0, 0, 1);
 			}
 		}
+
+		/**
+		 * Draws the ``Chart``.
+		 */
 		public virtual bool draw () {
 
 			evarea = area;
@@ -179,12 +186,21 @@ namespace CairoChart {
 
 			return true;
 		}
+
+		/**
+		 * Draws selection with a {@link selection_style} line style.
+		 * @param rect selection square.
+		 */
 		public virtual void draw_selection (Cairo.Rectangle rect) {
 			selection_style.set(this);
 			ctx.rectangle (rect.x, rect.y, rect.width, rect.height);
 			ctx.stroke();
 		}
 
+		/**
+		 * Zooms the ``Chart``.
+		 * @param rect selected zoom area.
+		 */
 		public virtual void zoom_in (Cairo.Rectangle rect) {
 			var x1 = rect.x + rect.width;
 			var y1 = rect.y + rect.height;
@@ -243,6 +259,10 @@ namespace CairoChart {
 			new_zoom.height = y_max - new_zoom.y;
 			zoom = new_zoom;
 		}
+
+		/**
+		 * Zooms out the ``Chart``.
+		 */
 		public virtual void zoom_out () {
 			foreach (var s in series) {
 				s.zoom_show = true;
@@ -258,6 +278,11 @@ namespace CairoChart {
 			zoom = Cairo.Rectangle() { x = 0, y = 0, width = 1, height = 1 };
 			zoom_1st_idx = 0;
 		}
+
+		/**
+		 * Moves the ``Chart``.
+		 * @param delta delta Δ(x;y) value to move the ``Chart``.
+		 */
 		public virtual void move (Point delta) {
 			var d = delta;
 			d.x /= plarea.width; d.x *= - 1.0;
