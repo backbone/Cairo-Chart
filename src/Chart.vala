@@ -63,23 +63,53 @@ namespace CairoChart {
 		 */
 		public int zoom_1st_idx { get; protected set; default = 0; }
 
-		public double title_indent = 4;
-
-		public Line.Style selection_style = Line.Style ();
-
+		/**
+		 * Joint/common X axes or not.
+		 */
 		public bool joint_x { get; protected set; default = false; }
+
+		/**
+		 * Joint/common Y axes or not.
+		 */
 		public bool joint_y { get; protected set; default = false; }
+
+		/**
+		 * Joint/common axis color.
+		 */
 		public Color joint_axis_color = Color (0, 0, 0, 1);
 
-		public CairoChart.Math math { get; protected set; default = new Math(); }
+		/**
+		 * Selection line style.
+		 */
+		public Line.Style selection_style = Line.Style ();
+
+		/**
+		 * Chart cursors.
+		 */
 		public Cursors cursors { get; protected set; default = new Cursors (); }
 
+		/**
+		 * Math functions.
+		 */
+		public CairoChart.Math math { get; protected set; default = new Math(); }
+
+		/**
+		 * Set paint color for further drawing.
+		 */
 		public Color color {
 			private get { return Color(); }
 			set { ctx.set_source_rgba (value.red, value.green, value.blue, value.alpha); }
 			default = Color();
 		}
 
+		/**
+		 * TODO: remove it.
+		 */
+		public double title_indent = 4;
+
+		/**
+		 * Constructs a new Chart.
+		 */
 		public Chart () { }
 
 		public Chart copy () {
