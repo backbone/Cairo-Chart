@@ -350,22 +350,6 @@ namespace CairoChart {
 			}
 		}
 
-		protected virtual bool x_in_plot_area (double x) {
-			if (math.x_in_range(x, plarea.x, plarea.x + plarea.width))
-				return true;
-			return false;
-		}
-		protected virtual bool y_in_plot_area (double y) {
-			if (math.y_in_range(y, plarea.y, plarea.y + plarea.height))
-				return true;
-			return false;
-		}
-		public virtual bool point_in_plot_area (Point p) {
-			if (math.point_in_rect (p, plarea.x, plarea.x + plarea.width, plarea.y, plarea.y + plarea.height))
-				return true;
-			return false;
-		}
-
 		public virtual Float128 scr2rel_x (Float128 x) {
 			return zoom.x + (x - plarea.x) / plarea.width * zoom.width;
 		}
