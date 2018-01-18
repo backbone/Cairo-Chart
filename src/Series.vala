@@ -258,7 +258,7 @@ namespace CairoChart {
 
 				switch (axis_x.position) {
 				case Axis.Position.LOW:
-					var print_y = chart.cur_y_max - axis_x.font_indent - (axis_x.title.text == "" ? 0 : sz.height + axis_x.font_indent);
+					var print_y = chart.calc_pos.y + chart.calc_pos.height - axis_x.font_indent - (axis_x.title.text == "" ? 0 : sz.height + axis_x.font_indent);
 					var print_x = compact_rec_x_pos (x, text_t);
 					ctx.move_to (print_x, print_y);
 					switch (axis_x.type) {
@@ -277,7 +277,7 @@ namespace CairoChart {
 					var line_style = grid.line_style;
 					if (joint_x) line_style.color = Color(0, 0, 0, 0.5);
 					line_style.set(chart);
-					double y = chart.cur_y_max - max_rec_height - axis_x.font_indent - (axis_x.title.text == "" ? 0 : sz.height + axis_x.font_indent);
+					double y = chart.calc_pos.y + chart.calc_pos.height - max_rec_height - axis_x.font_indent - (axis_x.title.text == "" ? 0 : sz.height + axis_x.font_indent);
 					ctx.move_to (scr_x, y);
 					if (joint_x)
 						ctx.line_to (scr_x, chart.plot_y_min);
@@ -285,7 +285,7 @@ namespace CairoChart {
 						ctx.line_to (scr_x, double.min (y, chart.plot_y_max - (chart.plot_y_max - chart.plot_y_min) * place.zoom_y_max));
 					break;
 				case Axis.Position.HIGH:
-					var print_y = chart.cur_y_min + max_rec_height + axis_x.font_indent + (axis_x.title.text == "" ? 0 : sz.height + axis_x.font_indent);
+					var print_y = chart.calc_pos.y + max_rec_height + axis_x.font_indent + (axis_x.title.text == "" ? 0 : sz.height + axis_x.font_indent);
 					var print_x = compact_rec_x_pos (x, text_t);
 					ctx.move_to (print_x, print_y);
 
@@ -305,7 +305,7 @@ namespace CairoChart {
 					var line_style = grid.line_style;
 					if (joint_x) line_style.color = Color(0, 0, 0, 0.5);
 					line_style.set(chart);
-					double y = chart.cur_y_min + max_rec_height + axis_x.font_indent + (axis_x.title.text == "" ? 0 : sz.height + axis_x.font_indent);
+					double y = chart.calc_pos.y + max_rec_height + axis_x.font_indent + (axis_x.title.text == "" ? 0 : sz.height + axis_x.font_indent);
 					ctx.move_to (scr_x, y);
 					if (joint_x)
 						ctx.line_to (scr_x, chart.plot_y_max);
@@ -348,8 +348,8 @@ namespace CairoChart {
 			// 4.2. Cursor values for joint X axis
 			if (chart.joint_x && chart.cursors.cursor_style.orientation == Cursors.Orientation.VERTICAL && chart.cursors.cursors_crossings.length != 0) {
 				switch (s.axis_x.position) {
-				case Axis.Position.LOW: chart.cur_y_max -= max_rec_height + s.axis_x.font_indent; break;
-				case Axis.Position.HIGH: chart.cur_y_min += max_rec_height + s.axis_x.font_indent; break;
+				case Axis.Position.LOW: chart.calc_pos.height -= max_rec_height + s.axis_x.font_indent; break;
+				case Axis.Position.HIGH: var tmp = max_rec_height + s.axis_x.font_indent; chart.calc_pos.y += tmp; chart.calc_pos.height -= tmp; break;
 				}
 			}
 
@@ -360,8 +360,8 @@ namespace CairoChart {
 				var scr_x = chart.plot_x_min + (chart.plot_x_max - chart.plot_x_min) * (s.place.zoom_x_min + s.place.zoom_x_max) / 2.0;
 				double scr_y = 0.0;
 				switch (s.axis_x.position) {
-				case Axis.Position.LOW: scr_y = chart.cur_y_max - s.axis_x.font_indent; break;
-				case Axis.Position.HIGH: scr_y = chart.cur_y_min + s.axis_x.font_indent + sz.height; break;
+				case Axis.Position.LOW: scr_y = chart.calc_pos.y + chart.calc_pos.height - s.axis_x.font_indent; break;
+				case Axis.Position.HIGH: scr_y = chart.calc_pos.y + s.axis_x.font_indent + sz.height; break;
 				}
 				chart.ctx.move_to(scr_x - sz.width / 2.0, scr_y);
 				chart.color = s.axis_x.color;
@@ -380,12 +380,12 @@ namespace CairoChart {
 
 			switch (s.axis_x.position) {
 			case Axis.Position.LOW:
-				chart.cur_y_max -= max_rec_height + s.axis_x.font_indent
+				chart.calc_pos.height -= max_rec_height + s.axis_x.font_indent
 				             + (s.axis_x.title.text == "" ? 0 : sz.height + s.axis_x.font_indent);
 				break;
 			case Axis.Position.HIGH:
-				chart.cur_y_min += max_rec_height +  s.axis_x.font_indent
-				             + (s.axis_x.title.text == "" ? 0 : sz.height + s.axis_x.font_indent);
+				var tmp = max_rec_height + s.axis_x.font_indent + (s.axis_x.title.text == "" ? 0 : sz.height + s.axis_x.font_indent);
+				chart.calc_pos.y += tmp; chart.calc_pos.height -= tmp;
 				break;
 			}
 		}
@@ -406,7 +406,7 @@ namespace CairoChart {
 
 				switch (axis_y.position) {
 				case Axis.Position.LOW:
-					ctx.move_to (chart.cur_x_min + max_rec_width - text_sz.width + axis_y.font_indent
+					ctx.move_to (chart.calc_pos.x + max_rec_width - text_sz.width + axis_y.font_indent
 					                 + (axis_y.title.text == "" ? 0 : sz.width + axis_y.font_indent),
 					                 compact_rec_y_pos (y, text_t));
 					text_t.show(ctx);
@@ -414,7 +414,7 @@ namespace CairoChart {
 					var line_style = grid.line_style;
 					if (joint_y) line_style.color = Color(0, 0, 0, 0.5);
 					line_style.set(chart);
-					double x = chart.cur_x_min + max_rec_width + axis_y.font_indent + (axis_y.title.text == "" ? 0 : sz.width + axis_y.font_indent);
+					double x = chart.calc_pos.x + max_rec_width + axis_y.font_indent + (axis_y.title.text == "" ? 0 : sz.width + axis_y.font_indent);
 					ctx.move_to (x, scr_y);
 					if (joint_y)
 						ctx.line_to (chart.plot_x_max, scr_y);
@@ -422,7 +422,7 @@ namespace CairoChart {
 						ctx.line_to (double.max (x, chart.plot_x_min + (chart.plot_x_max - chart.plot_x_min) * place.zoom_x_max), scr_y);
 					break;
 				case Axis.Position.HIGH:
-					ctx.move_to (chart.cur_x_max - text_sz.width - axis_y.font_indent
+					ctx.move_to (chart.calc_pos.x + chart.calc_pos.width - text_sz.width - axis_y.font_indent
 					                 - (axis_y.title.text == "" ? 0 : sz.width + axis_y.font_indent),
 					                 compact_rec_y_pos (y, text_t));
 					text_t.show(ctx);
@@ -430,7 +430,7 @@ namespace CairoChart {
 					var line_style = grid.line_style;
 					if (joint_y) line_style.color = Color(0, 0, 0, 0.5);
 					line_style.set(chart);
-					double x = chart.cur_x_max - max_rec_width - axis_y.font_indent - (axis_y.title.text == "" ? 0 : sz.width + axis_y.font_indent);
+					double x = chart.calc_pos.x + chart.calc_pos.width - max_rec_width - axis_y.font_indent - (axis_y.title.text == "" ? 0 : sz.width + axis_y.font_indent);
 					ctx.move_to (x, scr_y);
 					if (joint_y)
 						ctx.line_to (chart.plot_x_min, scr_y);
@@ -472,8 +472,8 @@ namespace CairoChart {
 			// 4.2. Cursor values for joint Y axis
 			if (chart.joint_y && chart.cursors.cursor_style.orientation == Cursors.Orientation.HORIZONTAL && chart.cursors.cursors_crossings.length != 0) {
 				switch (s.axis_y.position) {
-				case Axis.Position.LOW: chart.cur_x_min += max_rec_width + s.axis_y.font_indent; break;
-				case Axis.Position.HIGH: chart.cur_x_max -= max_rec_width + s.axis_y.font_indent; break;
+				case Axis.Position.LOW: var tmp = max_rec_width + s.axis_y.font_indent; chart.calc_pos.x += tmp; chart.calc_pos.width -= tmp; break;
+				case Axis.Position.HIGH: chart.calc_pos.width -= max_rec_width + s.axis_y.font_indent; break;
 				}
 			}
 
@@ -484,11 +484,11 @@ namespace CairoChart {
 				var scr_y = chart.plot_y_max - (chart.plot_y_max - chart.plot_y_min) * (s.place.zoom_y_min + s.place.zoom_y_max) / 2.0;
 				switch (s.axis_y.position) {
 				case Axis.Position.LOW:
-					var scr_x = chart.cur_x_min + s.axis_y.font_indent + sz.width;
+					var scr_x = chart.calc_pos.x + s.axis_y.font_indent + sz.width;
 					chart.ctx.move_to(scr_x, scr_y + sz.height / 2.0);
 					break;
 				case Axis.Position.HIGH:
-					var scr_x = chart.cur_x_max - s.axis_y.font_indent;
+					var scr_x = chart.calc_pos.x + chart.calc_pos.width - s.axis_y.font_indent;
 					chart.ctx.move_to(scr_x, scr_y + sz.height / 2.0);
 					break;
 				}
@@ -508,10 +508,11 @@ namespace CairoChart {
 
 			switch (s.axis_y.position) {
 			case Axis.Position.LOW:
-				chart.cur_x_min += max_rec_width + s.axis_y.font_indent
-				             + (s.axis_y.title.text == "" ? 0 : sz.width + s.axis_y.font_indent); break;
+				var tmp = max_rec_width + s.axis_y.font_indent + (s.axis_y.title.text == "" ? 0 : sz.width + s.axis_y.font_indent);
+				chart.calc_pos.x += tmp; chart.calc_pos.width -= tmp;
+				break;
 			case Axis.Position.HIGH:
-				chart.cur_x_max -= max_rec_width + s.axis_y.font_indent
+				chart.calc_pos.width -= max_rec_width + s.axis_y.font_indent
 				             + (s.axis_y.title.text == "" ? 0 : sz.width + s.axis_y.font_indent); break;
 			}
 		}

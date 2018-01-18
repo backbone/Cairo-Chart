@@ -40,10 +40,11 @@ namespace CairoChart {
 		 */
 		public Series[] series = {};
 
-		public double cur_x_min = 0.0;
-		public double cur_x_max = 1.0;
-		public double cur_y_min = 0.0;
-		public double cur_y_max = 1.0;
+		/**
+		 * Current calculated Plot Position.
+		 */
+		public Cairo.Rectangle calc_pos = Cairo.Rectangle()
+		                                  { x = 0, y = 0, width = 1, height = 1 };
 
 		// relative zoom limits
 		public double rz_x_min { get; protected set; default = 0.0; }
@@ -87,10 +88,7 @@ namespace CairoChart {
 			chart.joint_x = this.joint_x;
 			chart.joint_y = this.joint_y;
 			chart.ctx = this.ctx;
-			chart.cur_x_max = this.cur_x_max;
-			chart.cur_x_min = this.cur_x_min;
-			chart.cur_y_max = this.cur_y_max;
-			chart.cur_y_min = this.cur_y_min;
+			chart.calc_pos = this.calc_pos;
 			chart.cursors = this.cursors.copy();
 			chart.legend = this.legend.copy();
 			chart.plot_x_max = this.plot_x_max;
@@ -112,11 +110,9 @@ namespace CairoChart {
 			return chart;
 		}
 
-		protected virtual void check_cur_values () {
-			if (cur_x_min > cur_x_max)
-				cur_x_max = cur_x_min;
-			if (cur_y_min > cur_y_max)
-				cur_y_max = cur_y_min;
+		protected virtual void fix_calc_pos () {
+			if (calc_pos.width < 0) calc_pos.width = 0;
+			if (calc_pos.height < 0) calc_pos.height = 0;
 		}
 		protected virtual void set_vertical_axes_titles () {
 			for (var si = 0; si < series.length; ++si) {
@@ -135,16 +131,13 @@ namespace CairoChart {
 
 		public virtual bool draw () {
 
-			cur_x_min = pos.x;
-			cur_y_min = pos.y;
-			cur_x_max = pos.x + pos.width;
-			cur_y_max = pos.y + pos.height;
+			calc_pos = pos;
 
 			draw_chart_title ();
-			check_cur_values ();
+			fix_calc_pos ();
 
 			legend.draw (this);
-			check_cur_values ();
+			fix_calc_pos ();
 
 			set_vertical_axes_titles ();
 
@@ -153,26 +146,27 @@ namespace CairoChart {
 			calc_plot_area ();
 
 			draw_horizontal_axes ();
-			check_cur_values ();
+			fix_calc_pos ();
 
 			draw_vertical_axes ();
-			check_cur_values ();
+			fix_calc_pos ();
 
 			draw_plot_area_border ();
-			check_cur_values ();
+			fix_calc_pos ();
 
 			draw_series ();
-			check_cur_values ();
+			fix_calc_pos ();
 
 			cursors.draw_cursors (this);
-			check_cur_values ();
+			fix_calc_pos ();
 
 			return true;
 		}
 		protected virtual void draw_chart_title () {
 			var sz = title.get_size(ctx);
 			title_height = sz.height + (legend.position == Legend.Position.TOP ? title_indent * 2 : title_indent);
-			cur_y_min += title_height;
+			calc_pos.y += title_height;
+			calc_pos.height -= title_height;
 			color = title.color;
 			ctx.move_to (pos.width/2 - sz.width/2, sz.height + title_indent);
 			title.show(ctx);
@@ -313,10 +307,10 @@ namespace CairoChart {
 				series[si].join_calc(is_x, si, ref nskip);
 		}
 		protected virtual void calc_plot_area () {
-			plot_x_min = cur_x_min + legend.indent;
-			plot_x_max = cur_x_max - legend.indent;
-			plot_y_min = cur_y_min + legend.indent;
-			plot_y_max = cur_y_max - legend.indent;
+			plot_x_min = calc_pos.x + legend.indent;
+			plot_x_max = calc_pos.x + calc_pos.width - legend.indent;
+			plot_y_min = calc_pos.y + legend.indent;
+			plot_y_max = calc_pos.y + calc_pos.height - legend.indent;
 
 			// Check for joint axes
 			joint_x = joint_y = true;

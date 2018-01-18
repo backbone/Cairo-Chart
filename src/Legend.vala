@@ -201,16 +201,18 @@ namespace CairoChart {
 				height = leg_height_sum;
 				switch (position) {
 					case Position.TOP:
-						chart.cur_y_min += height;
+						chart.calc_pos.y += height;
+						chart.calc_pos.height -= height;
 						break;
 					case Position.BOTTOM:
-						chart.cur_y_max -= height;
+						chart.calc_pos.height -= height;
 						break;
 					case Position.LEFT:
-						chart.cur_x_min += width;
+						chart.calc_pos.x += width;
+						chart.calc_pos.width -= width;
 						break;
 					case Position.RIGHT:
-						chart.cur_x_max -= width;
+						chart.calc_pos.width -= width;
 						break;
 				}
 				break;
