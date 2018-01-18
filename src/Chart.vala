@@ -104,6 +104,7 @@ namespace CairoChart {
 
 		/**
 		 * TODO: remove all indent fields / evaluate automatically.
+		 * @deprecated 0.1.1
 		 */
 		public double title_indent = 4;
 
@@ -350,15 +351,6 @@ namespace CairoChart {
 			}
 		}
 
-		public virtual Float128 scr2rel_x (Float128 x) {
-			return zoom.x + (x - plarea.x) / plarea.width * zoom.width;
-		}
-		public virtual Float128 scr2rel_y (Float128 y) {
-			return zoom.y + zoom.height - (plarea.y + plarea.height - y) / plarea.height * zoom.height;
-		}
-		public virtual Point scr2rel_point (Point p) {
-			return Point (scr2rel_x(p.x), scr2rel_y(p.y));
-		}
 		public virtual Float128 rel2scr_x(Float128 x) {
 			return plarea.x + plarea.width * (x - zoom.x) / zoom.width;
 		}

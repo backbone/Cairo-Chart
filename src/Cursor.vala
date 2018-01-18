@@ -56,7 +56,8 @@ namespace CairoChart {
 		}
 
 		public virtual void set_active_cursor (Chart chart, Point p, bool remove = false) {
-			active_cursor = chart.scr2rel_point(p);
+			active_cursor.x = chart.zoom.x + (p.x - chart.plarea.x) / chart.plarea.width * chart.zoom.width;
+			active_cursor.y = chart.zoom.y + chart.zoom.height - (chart.plarea.y + chart.plarea.height - p.y) / chart.plarea.height * chart.zoom.height;
 			is_cursor_active = ! remove;
 		}
 
