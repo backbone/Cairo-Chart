@@ -29,17 +29,17 @@ namespace CairoChart {
 		                                { x = 0, y = 0, width = 1, height = 1 };
 
 		/**
-		 * Cairo Context of the Drawing Area.
+		 * Cairo ``Context`` of the Drawing Area.
 		 */
 		public Cairo.Context ctx = null;
 
 		/**
-		 * Background Color.
+		 * Background ``Color``.
 		 */
 		public Color bg_color = Color(1, 1, 1);
 
 		/**
-		 * Border Color.
+		 * Border ``Color``.
 		 */
 		public Color border_color = Color(0, 0, 0, 0.3);
 
@@ -74,7 +74,7 @@ namespace CairoChart {
 		public bool joint_y { get; protected set; default = false; }
 
 		/**
-		 * Joint/common axis color.
+		 * Joint/common {@link Axis} ``Color``.
 		 */
 		public Color joint_color = Color (0, 0, 0, 1);
 
@@ -104,8 +104,8 @@ namespace CairoChart {
 
 		/**
 		 * TODO: remove all indent fields / evaluate automatically.
-		 * @deprecated 0.1.1
 		 */
+		[Version (deprecated = true)]
 		public double title_indent = 4;
 
 		/**
