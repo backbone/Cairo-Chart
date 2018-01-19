@@ -26,22 +26,24 @@ namespace CairoChart {
 	}
 
 	/**
-	 *
+	 * 128-bit point.
 	 */
 	public struct Point128 {
 
 		/**
-		 *
+		 * X-coordinate.
 		 */
 		Float128 x;
 
 		/**
-		 *
+		 * Y-coordinate.
 		 */
 		Float128 y;
 
 		/**
-		 *
+		 * Constructs a new ``Point128``.
+		 * @param x x-coordinate.
+		 * @param y y-coordinate.
 		 */
 		public Point128 (Float128 x = 0.0, Float128 y = 0.0) {
 			this.x = x; this.y = y;
