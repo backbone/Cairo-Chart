@@ -13,7 +13,7 @@ namespace CairoChart {
 		public Font.Style font_style = Font.Style();
 		public Color bg_color = Color(1, 1, 1);
 		public Line.Style border_style = Line.Style ();
-		public double indent = 5;
+		public double spacing = 5;
 		public double width = 0;
 		public double height = 0;
 		public double line_length = 30.0;
@@ -26,7 +26,7 @@ namespace CairoChart {
 			legend.position = this.position;
 			legend.font_style = this.font_style;
 			legend.bg_color = this.bg_color;
-			legend.indent = this.indent;
+			legend.spacing = this.spacing;
 			legend.height = this.height;
 			legend.line_length = this.line_length;
 			legend.text_hspace = this.text_hspace;
@@ -53,7 +53,7 @@ namespace CairoChart {
 				case Position.TOP:
 					x0 = (chart.area.width - width) / 2;
 					var title_height = chart.title.get_height(chart.ctx) + (chart.legend.position == Legend.Position.TOP ?
-					                   chart.title_indent * 2 : chart.title_indent);
+					                   chart.title_spacing * 2 : chart.title_spacing);
 					y0 = title_height;
 				break;
 

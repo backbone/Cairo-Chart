@@ -98,10 +98,10 @@ namespace CairoChart {
 		}
 
 		/**
-		 * TODO: remove all indent fields / evaluate automatically.
+		 * TODO: remove all spacing fields / evaluate automatically.
 		 */
 		[Version (deprecated = true)]
-		public double title_indent = 4;
+		public double title_spacing = 4;
 
 		/**
 		 * Constructs a new ``Chart``.
@@ -129,7 +129,7 @@ namespace CairoChart {
 			chart.selection_style = this.selection_style;
 			chart.series = this.series;
 			chart.title = this.title.copy();
-			chart.title_indent = this.title_indent;
+			chart.title_spacing = this.title_spacing;
 			chart.zoom = this.zoom;
 			chart.zoom_1st_idx = this.zoom_1st_idx;
 			return chart;
@@ -314,10 +314,10 @@ namespace CairoChart {
 		}
 
 		protected virtual void eval_plarea () {
-			plarea.x = evarea.x + legend.indent;
-			plarea.width = evarea.width - 2 * legend.indent;
-			plarea.y = evarea.y + legend.indent;
-			plarea.height = evarea.height - 2 * legend.indent;
+			plarea.x = evarea.x + legend.spacing;
+			plarea.width = evarea.width - 2 * legend.spacing;
+			plarea.y = evarea.y + legend.spacing;
+			plarea.height = evarea.height - 2 * legend.spacing;
 
 			// Check for joint axes
 			joint_x = joint_y = true;
@@ -350,11 +350,11 @@ namespace CairoChart {
 		}
 		protected virtual void draw_title () {
 			var sz = title.get_size(ctx);
-			var title_height = sz.height + (legend.position == Legend.Position.TOP ? title_indent * 2 : title_indent);
+			var title_height = sz.height + (legend.position == Legend.Position.TOP ? title_spacing * 2 : title_spacing);
 			evarea.y += title_height;
 			evarea.height -= title_height;
 			color = title.color;
-			ctx.move_to (area.width/2 - sz.width/2, sz.height + title_indent);
+			ctx.move_to (area.width/2 - sz.width/2, sz.height + title_spacing);
 			title.show(ctx);
 		}
 		protected virtual void draw_haxes () {

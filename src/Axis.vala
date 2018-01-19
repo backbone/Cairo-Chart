@@ -75,7 +75,7 @@ namespace CairoChart {
 		public Font.Style font_style = Font.Style ();
 		public Color color = Color ();
 		public Line.Style line_style = Line.Style ();
-		public double font_indent = 5;
+		public double font_spacing = 5;
 
 		public virtual Axis copy () {
 			var axis = new Axis ();
@@ -84,7 +84,7 @@ namespace CairoChart {
 			axis._format = this._format;
 			axis._time_format = this._time_format;
 			axis.color = this.color;
-			axis.font_indent = this.font_indent;
+			axis.font_spacing = this.font_spacing;
 			axis.font_style = this.font_style;
 			axis.line_style = this.line_style;
 			axis.max = this.max;

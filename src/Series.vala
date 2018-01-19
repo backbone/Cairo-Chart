@@ -122,14 +122,14 @@ namespace CairoChart {
 			if (nskip != 0) {--nskip; return;}
 			double max_rec_width = 0; double max_rec_height = 0;
 			axis.calc_rec_sizes (chart, out max_rec_width, out max_rec_height, is_x);
-			var max_font_indent = axis.font_indent;
-			var max_axis_font_width = axis.title.text == "" ? 0 : axis.title.get_width(chart.ctx) + axis.font_indent;
-			var max_axis_font_height = axis.title.text == "" ? 0 : axis.title.get_height(chart.ctx) + axis.font_indent;
+			var max_font_spacing = axis.font_spacing;
+			var max_axis_font_width = axis.title.text == "" ? 0 : axis.title.get_width(chart.ctx) + axis.font_spacing;
+			var max_axis_font_height = axis.title.text == "" ? 0 : axis.title.get_height(chart.ctx) + axis.font_spacing;
 
 			if (is_x)
-				s.join_relative_x_axes (si, true, ref max_rec_width, ref max_rec_height, ref max_font_indent, ref max_axis_font_height, ref nskip);
+				s.join_relative_x_axes (si, true, ref max_rec_width, ref max_rec_height, ref max_font_spacing, ref max_axis_font_height, ref nskip);
 			else
-				s.join_relative_y_axes (si, true, ref max_rec_width, ref max_rec_height, ref max_font_indent, ref max_axis_font_width, ref nskip);
+				s.join_relative_y_axes (si, true, ref max_rec_width, ref max_rec_height, ref max_font_spacing, ref max_axis_font_width, ref nskip);
 
 			// for 4.2. Cursor values for joint X axis
 			if (si == chart.zoom_1st_idx && chart.cursors.cursors_crossings.length != 0) {
@@ -137,9 +137,9 @@ namespace CairoChart {
 				case Cursors.Orientation.VERTICAL:
 					if (is_x && chart.joint_x)
 						switch (axis.position) {
-						case Axis.Position.LOW: chart.plarea.height -= max_rec_height + axis.font_indent; break;
+						case Axis.Position.LOW: chart.plarea.height -= max_rec_height + axis.font_spacing; break;
 						case Axis.Position.HIGH:
-							var tmp = max_rec_height + axis.font_indent;
+							var tmp = max_rec_height + axis.font_spacing;
 							chart.plarea.y += tmp; chart.plarea.height -= tmp;
 							break;
 						}
@@ -148,29 +148,29 @@ namespace CairoChart {
 					if (!is_x && chart.joint_y)
 						switch (s.axis_y.position) {
 						case Axis.Position.LOW:
-							var tmp = max_rec_width + s.axis_y.font_indent;
+							var tmp = max_rec_width + s.axis_y.font_spacing;
 							chart.plarea.x += tmp; chart.plarea.width -= tmp;
 							break;
-						case Axis.Position.HIGH: chart.plarea.width -= max_rec_width + s.axis_y.font_indent; break;
+						case Axis.Position.HIGH: chart.plarea.width -= max_rec_width + s.axis_y.font_spacing; break;
 						}
 					break;
 				}
 			}
 			if (is_x && (!chart.joint_x || si == chart.zoom_1st_idx))
 				switch (axis.position) {
-				case Axis.Position.LOW: chart.plarea.height -= max_rec_height + max_font_indent + max_axis_font_height; break;
+				case Axis.Position.LOW: chart.plarea.height -= max_rec_height + max_font_spacing + max_axis_font_height; break;
 				case Axis.Position.HIGH:
-					var tmp = max_rec_height + max_font_indent + max_axis_font_height;
+					var tmp = max_rec_height + max_font_spacing + max_axis_font_height;
 					chart.plarea.y += tmp; chart.plarea.height -= tmp;
 					break;
 				}
 			if (!is_x && (!chart.joint_y || si == chart.zoom_1st_idx))
 				switch (s.axis_y.position) {
 				case Axis.Position.LOW:
-					var tmp = max_rec_width + max_font_indent + max_axis_font_width;
+					var tmp = max_rec_width + max_font_spacing + max_axis_font_width;
 					chart.plarea.x += tmp; chart.plarea.width -= tmp;
 					break;
-				case Axis.Position.HIGH: chart.plarea.width -= max_rec_width + max_font_indent + max_axis_font_width; break;
+				case Axis.Position.HIGH: chart.plarea.width -= max_rec_width + max_font_spacing + max_axis_font_width; break;
 				}
 		}
 
@@ -178,7 +178,7 @@ namespace CairoChart {
 		                                          bool calc_max_values,
 		                                          ref double max_rec_width,
 		                                          ref double max_rec_height,
-		                                          ref double max_font_indent,
+		                                          ref double max_font_spacing,
 		                                          ref double max_axis_font_height,
 		                                          ref int nskip) {
 			for (int sj = si - 1; sj >= 0; --sj) {
@@ -201,9 +201,9 @@ namespace CairoChart {
 						s2.axis_x.calc_rec_sizes (chart, out tmp_max_rec_width, out tmp_max_rec_height, true);
 						max_rec_width = double.max (max_rec_width, tmp_max_rec_width);
 						max_rec_height = double.max (max_rec_height, tmp_max_rec_height);
-						max_font_indent = double.max (max_font_indent, s2.axis_x.font_indent);
+						max_font_spacing = double.max (max_font_spacing, s2.axis_x.font_spacing);
 						max_axis_font_height = double.max (max_axis_font_height, s2.axis_x.title.text == "" ? 0 :
-						                                   s2.axis_x.title.get_height(chart.ctx) + this.axis_x.font_indent);
+						                                   s2.axis_x.title.get_height(chart.ctx) + this.axis_x.font_spacing);
 					}
 					++nskip;
 				} else {
@@ -216,7 +216,7 @@ namespace CairoChart {
 		                                          bool calc_max_values,
 		                                          ref double max_rec_width,
 		                                          ref double max_rec_height,
-		                                          ref double max_font_indent,
+		                                          ref double max_font_spacing,
 		                                          ref double max_axis_font_width,
 		                                          ref int nskip) {
 			for (int sj = si - 1; sj >= 0; --sj) {
@@ -238,9 +238,9 @@ namespace CairoChart {
 					s2.axis_y.calc_rec_sizes (chart, out tmp_max_rec_width, out tmp_max_rec_height, false);
 					max_rec_width = double.max (max_rec_width, tmp_max_rec_width);
 					max_rec_height = double.max (max_rec_height, tmp_max_rec_height);
-					max_font_indent = double.max (max_font_indent, s2.axis_y.font_indent);
+					max_font_spacing = double.max (max_font_spacing, s2.axis_y.font_spacing);
 					max_axis_font_width = double.max (max_axis_font_width, s2.axis_y.title.text == "" ? 0
-					                                   : s2.axis_y.title.get_width(chart.ctx) + this.axis_y.font_indent);
+					                                   : s2.axis_y.title.get_width(chart.ctx) + this.axis_y.font_spacing);
 					++nskip;
 				} else {
 					break;
@@ -271,7 +271,7 @@ namespace CairoChart {
 
 				switch (axis_x.position) {
 				case Axis.Position.LOW:
-					var print_y = chart.evarea.y + chart.evarea.height - axis_x.font_indent - (axis_x.title.text == "" ? 0 : sz.height + axis_x.font_indent);
+					var print_y = chart.evarea.y + chart.evarea.height - axis_x.font_spacing - (axis_x.title.text == "" ? 0 : sz.height + axis_x.font_spacing);
 					var print_x = compact_rec_x_pos (x, text_t);
 					ctx.move_to (print_x, print_y);
 					switch (axis_x.type) {
@@ -282,7 +282,7 @@ namespace CairoChart {
 						if (axis_x.date_format != "") text_t.show(ctx);
 						var time_text_t = new Text(time_text, axis_x.font_style, axis_x.color);
 						print_x = compact_rec_x_pos (x, time_text_t);
-						ctx.move_to (print_x, print_y - (axis_x.date_format == "" ? 0 : text_t.get_height(ctx) + axis_x.font_indent));
+						ctx.move_to (print_x, print_y - (axis_x.date_format == "" ? 0 : text_t.get_height(ctx) + axis_x.font_spacing));
 						if (axis_x.time_format != "") time_text_t.show(ctx);
 						break;
 					}
@@ -290,7 +290,7 @@ namespace CairoChart {
 					var line_style = grid.line_style;
 					if (joint_x) line_style.color = Color(0, 0, 0, 0.5);
 					line_style.set(chart);
-					double y = chart.evarea.y + chart.evarea.height - max_rec_height - axis_x.font_indent - (axis_x.title.text == "" ? 0 : sz.height + axis_x.font_indent);
+					double y = chart.evarea.y + chart.evarea.height - max_rec_height - axis_x.font_spacing - (axis_x.title.text == "" ? 0 : sz.height + axis_x.font_spacing);
 					ctx.move_to (scr_x, y);
 					if (joint_x)
 						ctx.line_to (scr_x, chart.plarea.y);
@@ -298,7 +298,7 @@ namespace CairoChart {
 						ctx.line_to (scr_x, double.min (y, chart.plarea.y + chart.plarea.height * (1.0 - place.zoom_y_max)));
 					break;
 				case Axis.Position.HIGH:
-					var print_y = chart.evarea.y + max_rec_height + axis_x.font_indent + (axis_x.title.text == "" ? 0 : sz.height + axis_x.font_indent);
+					var print_y = chart.evarea.y + max_rec_height + axis_x.font_spacing + (axis_x.title.text == "" ? 0 : sz.height + axis_x.font_spacing);
 					var print_x = compact_rec_x_pos (x, text_t);
 					ctx.move_to (print_x, print_y);
 
@@ -310,7 +310,7 @@ namespace CairoChart {
 						if (axis_x.date_format != "") text_t.show(ctx);
 						var time_text_t = new Text(time_text, axis_x.font_style, axis_x.color);
 						print_x = compact_rec_x_pos (x, time_text_t);
-						ctx.move_to (print_x, print_y - (axis_x.date_format == "" ? 0 : text_t.get_height(ctx) + axis_x.font_indent));
+						ctx.move_to (print_x, print_y - (axis_x.date_format == "" ? 0 : text_t.get_height(ctx) + axis_x.font_spacing));
 						if (axis_x.time_format != "") time_text_t.show(ctx);
 						break;
 					}
@@ -318,7 +318,7 @@ namespace CairoChart {
 					var line_style = grid.line_style;
 					if (joint_x) line_style.color = Color(0, 0, 0, 0.5);
 					line_style.set(chart);
-					double y = chart.evarea.y + max_rec_height + axis_x.font_indent + (axis_x.title.text == "" ? 0 : sz.height + axis_x.font_indent);
+					double y = chart.evarea.y + max_rec_height + axis_x.font_spacing + (axis_x.title.text == "" ? 0 : sz.height + axis_x.font_spacing);
 					ctx.move_to (scr_x, y);
 					if (joint_x)
 						ctx.line_to (scr_x, chart.plarea.y + chart.plarea.height);
@@ -361,8 +361,8 @@ namespace CairoChart {
 			// 4.2. Cursor values for joint X axis
 			if (chart.joint_x && chart.cursors.cursor_style.orientation == Cursors.Orientation.VERTICAL && chart.cursors.cursors_crossings.length != 0) {
 				switch (s.axis_x.position) {
-				case Axis.Position.LOW: chart.evarea.height -= max_rec_height + s.axis_x.font_indent; break;
-				case Axis.Position.HIGH: var tmp = max_rec_height + s.axis_x.font_indent; chart.evarea.y += tmp; chart.evarea.height -= tmp; break;
+				case Axis.Position.LOW: chart.evarea.height -= max_rec_height + s.axis_x.font_spacing; break;
+				case Axis.Position.HIGH: var tmp = max_rec_height + s.axis_x.font_spacing; chart.evarea.y += tmp; chart.evarea.height -= tmp; break;
 				}
 			}
 
@@ -373,8 +373,8 @@ namespace CairoChart {
 				var scr_x = chart.plarea.x + chart.plarea.width * (s.place.zoom_x_min + s.place.zoom_x_max) / 2.0;
 				double scr_y = 0.0;
 				switch (s.axis_x.position) {
-				case Axis.Position.LOW: scr_y = chart.evarea.y + chart.evarea.height - s.axis_x.font_indent; break;
-				case Axis.Position.HIGH: scr_y = chart.evarea.y + s.axis_x.font_indent + sz.height; break;
+				case Axis.Position.LOW: scr_y = chart.evarea.y + chart.evarea.height - s.axis_x.font_spacing; break;
+				case Axis.Position.HIGH: scr_y = chart.evarea.y + s.axis_x.font_spacing + sz.height; break;
 				}
 				chart.ctx.move_to(scr_x - sz.width / 2.0, scr_y);
 				chart.color = s.axis_x.color;
@@ -393,11 +393,11 @@ namespace CairoChart {
 
 			switch (s.axis_x.position) {
 			case Axis.Position.LOW:
-				chart.evarea.height -= max_rec_height + s.axis_x.font_indent
-				             + (s.axis_x.title.text == "" ? 0 : sz.height + s.axis_x.font_indent);
+				chart.evarea.height -= max_rec_height + s.axis_x.font_spacing
+				             + (s.axis_x.title.text == "" ? 0 : sz.height + s.axis_x.font_spacing);
 				break;
 			case Axis.Position.HIGH:
-				var tmp = max_rec_height + s.axis_x.font_indent + (s.axis_x.title.text == "" ? 0 : sz.height + s.axis_x.font_indent);
+				var tmp = max_rec_height + s.axis_x.font_spacing + (s.axis_x.title.text == "" ? 0 : sz.height + s.axis_x.font_spacing);
 				chart.evarea.y += tmp; chart.evarea.height -= tmp;
 				break;
 			}
@@ -419,15 +419,15 @@ namespace CairoChart {
 
 				switch (axis_y.position) {
 				case Axis.Position.LOW:
-					ctx.move_to (chart.evarea.x + max_rec_width - text_sz.width + axis_y.font_indent
-					                 + (axis_y.title.text == "" ? 0 : sz.width + axis_y.font_indent),
+					ctx.move_to (chart.evarea.x + max_rec_width - text_sz.width + axis_y.font_spacing
+					                 + (axis_y.title.text == "" ? 0 : sz.width + axis_y.font_spacing),
 					                 compact_rec_y_pos (y, text_t));
 					text_t.show(ctx);
 					// 6. Draw grid lines to the place.zoom_x_min.
 					var line_style = grid.line_style;
 					if (joint_y) line_style.color = Color(0, 0, 0, 0.5);
 					line_style.set(chart);
-					double x = chart.evarea.x + max_rec_width + axis_y.font_indent + (axis_y.title.text == "" ? 0 : sz.width + axis_y.font_indent);
+					double x = chart.evarea.x + max_rec_width + axis_y.font_spacing + (axis_y.title.text == "" ? 0 : sz.width + axis_y.font_spacing);
 					ctx.move_to (x, scr_y);
 					if (joint_y)
 						ctx.line_to (chart.plarea.x + chart.plarea.width, scr_y);
@@ -435,15 +435,15 @@ namespace CairoChart {
 						ctx.line_to (double.max (x, chart.plarea.x + chart.plarea.width * place.zoom_x_max), scr_y);
 					break;
 				case Axis.Position.HIGH:
-					ctx.move_to (chart.evarea.x + chart.evarea.width - text_sz.width - axis_y.font_indent
-					                 - (axis_y.title.text == "" ? 0 : sz.width + axis_y.font_indent),
+					ctx.move_to (chart.evarea.x + chart.evarea.width - text_sz.width - axis_y.font_spacing
+					                 - (axis_y.title.text == "" ? 0 : sz.width + axis_y.font_spacing),
 					                 compact_rec_y_pos (y, text_t));
 					text_t.show(ctx);
 					// 6. Draw grid lines to the place.zoom_x_max.
 					var line_style = grid.line_style;
 					if (joint_y) line_style.color = Color(0, 0, 0, 0.5);
 					line_style.set(chart);
-					double x = chart.evarea.x + chart.evarea.width - max_rec_width - axis_y.font_indent - (axis_y.title.text == "" ? 0 : sz.width + axis_y.font_indent);
+					double x = chart.evarea.x + chart.evarea.width - max_rec_width - axis_y.font_spacing - (axis_y.title.text == "" ? 0 : sz.width + axis_y.font_spacing);
 					ctx.move_to (x, scr_y);
 					if (joint_y)
 						ctx.line_to (chart.plarea.x, scr_y);
@@ -485,8 +485,8 @@ namespace CairoChart {
 			// 4.2. Cursor values for joint Y axis
 			if (chart.joint_y && chart.cursors.cursor_style.orientation == Cursors.Orientation.HORIZONTAL && chart.cursors.cursors_crossings.length != 0) {
 				switch (s.axis_y.position) {
-				case Axis.Position.LOW: var tmp = max_rec_width + s.axis_y.font_indent; chart.evarea.x += tmp; chart.evarea.width -= tmp; break;
-				case Axis.Position.HIGH: chart.evarea.width -= max_rec_width + s.axis_y.font_indent; break;
+				case Axis.Position.LOW: var tmp = max_rec_width + s.axis_y.font_spacing; chart.evarea.x += tmp; chart.evarea.width -= tmp; break;
+				case Axis.Position.HIGH: chart.evarea.width -= max_rec_width + s.axis_y.font_spacing; break;
 				}
 			}
 
@@ -497,11 +497,11 @@ namespace CairoChart {
 				var scr_y = chart.plarea.y + chart.plarea.height * (1.0 - (s.place.zoom_y_min + s.place.zoom_y_max) / 2.0);
 				switch (s.axis_y.position) {
 				case Axis.Position.LOW:
-					var scr_x = chart.evarea.x + s.axis_y.font_indent + sz.width;
+					var scr_x = chart.evarea.x + s.axis_y.font_spacing + sz.width;
 					chart.ctx.move_to(scr_x, scr_y + sz.height / 2.0);
 					break;
 				case Axis.Position.HIGH:
-					var scr_x = chart.evarea.x + chart.evarea.width - s.axis_y.font_indent;
+					var scr_x = chart.evarea.x + chart.evarea.width - s.axis_y.font_spacing;
 					chart.ctx.move_to(scr_x, scr_y + sz.height / 2.0);
 					break;
 				}
@@ -521,12 +521,12 @@ namespace CairoChart {
 
 			switch (s.axis_y.position) {
 			case Axis.Position.LOW:
-				var tmp = max_rec_width + s.axis_y.font_indent + (s.axis_y.title.text == "" ? 0 : sz.width + s.axis_y.font_indent);
+				var tmp = max_rec_width + s.axis_y.font_spacing + (s.axis_y.title.text == "" ? 0 : sz.width + s.axis_y.font_spacing);
 				chart.evarea.x += tmp; chart.evarea.width -= tmp;
 				break;
 			case Axis.Position.HIGH:
-				chart.evarea.width -= max_rec_width + s.axis_y.font_indent
-				             + (s.axis_y.title.text == "" ? 0 : sz.width + s.axis_y.font_indent); break;
+				chart.evarea.width -= max_rec_width + s.axis_y.font_spacing
+				             + (s.axis_y.title.text == "" ? 0 : sz.width + s.axis_y.font_spacing); break;
 			}
 		}
 
