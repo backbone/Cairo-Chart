@@ -265,8 +265,8 @@ namespace CairoChart {
 		 */
 		public virtual void move (Point delta) {
 			var d = delta;
-			d.x /= plarea.width; d.x *= - 1.0;
-			d.y /= plarea.height; d.y *= - 1.0;
+			d.x /= -plarea.width;
+			d.y /= -plarea.height;
 			var rzxmin = zoom.x, rzxmax = zoom.x + zoom.width, rzymin = zoom.y, rzymax = zoom.y + zoom.height;
 			zoom_out();
 			d.x *= plarea.width;
