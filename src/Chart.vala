@@ -359,11 +359,9 @@ namespace CairoChart {
 				series[si].draw_vertical_axis (si, ref nskip);
 		}
 		protected virtual void draw_series () {
-			for (var si = 0; si < series.length; ++si) {
-				var s = series[si];
+			foreach (var s in series)
 				if (s.zoom_show && s.points.length != 0)
 					s.draw();
-			}
 		}
 	}
 }
