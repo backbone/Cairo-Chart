@@ -135,7 +135,6 @@ namespace CairoChart {
 			if (ctx != null) {
 				color = bg_color;
 				ctx.paint();
-				color = Color (0, 0, 0, 1);
 			}
 		}
 
@@ -154,7 +153,7 @@ namespace CairoChart {
 
 			rot_axes_titles ();
 
-			cursors.get_cursors_crossings();
+			cursors.get_crossings();
 
 			eval_plarea ();
 

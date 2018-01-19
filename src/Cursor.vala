@@ -109,7 +109,7 @@ namespace CairoChart {
 			return all_cursors;
 		}
 
-		public void get_cursors_crossings () {
+		public void get_crossings () {
 			var all_cursors = get_all_cursors();
 
 			CursorCrossings[] local_cursor_crossings = {};
