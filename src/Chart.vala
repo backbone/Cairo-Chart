@@ -190,15 +190,13 @@ namespace CairoChart {
 		 * @param rect selected zoom area.
 		 */
 		public virtual void zoom_in (Cairo.Rectangle rect) {
-			var x1 = rect.x + rect.width;
-			var y1 = rect.y + rect.height;
 			for (var si = 0, max_i = series.length; si < max_i; ++si) {
 				var s = series[si];
 				if (!s.zoom_show) continue;
 				var real_x0 = s.get_real_x (rect.x);
-				var real_x1 = s.get_real_x (x1);
+				var real_x1 = s.get_real_x (rect.x + rect.width);
 				var real_y0 = s.get_real_y (rect.y);
-				var real_y1 = s.get_real_y (y1);
+				var real_y1 = s.get_real_y (rect.y + rect.height);
 				// if selected square does not intersect with the series's square
 				if (   real_x1 <= s.axis_x.zoom_min || real_x0 >= s.axis_x.zoom_max
 					|| real_y0 <= s.axis_y.zoom_min || real_y1 >= s.axis_y.zoom_max) {
@@ -240,10 +238,10 @@ namespace CairoChart {
 			var new_zoom = zoom;
 			// TODO
 			new_zoom.x += (rect.x - plarea.x) / plarea.width * zoom.width;
-			var x_max = zoom.x + (x1 - plarea.x) / plarea.width * zoom.width;
+			var x_max = zoom.x + (rect.x + rect.width - plarea.x) / plarea.width * zoom.width;
 			new_zoom.width = x_max - new_zoom.x;
 			new_zoom.y += (rect.y - plarea.y) / plarea.height * zoom.height;
-			var y_max = zoom.y + (y1 - plarea.y) / plarea.height * zoom.height;
+			var y_max = zoom.y + (rect.y + rect.height - plarea.y) / plarea.height * zoom.height;
 			new_zoom.height = y_max - new_zoom.y;
 			zoom = new_zoom;
 		}
