@@ -280,12 +280,17 @@ namespace CairoChart {
 
 			var px1 = plarea.x + plarea.width;
 			var py1 = plarea.y + plarea.height;
-			if (xmin + d.x < plarea.x) d.x = plarea.x - xmin;
+			var zrect = Cairo.Rectangle();
+			zrect.x = xmin + d.x;
+			zrect.y = ymin + d.y;
+			if (zrect.x < plarea.x) d.x = plarea.x - xmin;
 			if (xmax + d.x > px1) d.x = px1 - xmax;
-			if (ymin + d.y < plarea.y) d.y = plarea.y - ymin;
+			if (zrect.y < plarea.y) d.y = plarea.y - ymin;
 			if (ymax + d.y > py1) d.y = py1 - ymax;
+			zrect.width = xmax - xmin;
+			zrect.height = ymax - ymin;
 
-			zoom_in (Cairo.Rectangle(){x = xmin + d.x, y = ymin + d.y, width = xmax - xmin, height = ymax - ymin});
+			zoom_in (zrect);//Cairo.Rectangle(){x = xmindx, y = ymindx, width = xmax - xmin, height = ymax - ymin});
 		}
 
 		protected virtual void fix_evarea () {
