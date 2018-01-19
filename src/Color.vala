@@ -27,6 +27,10 @@ namespace CairoChart {
 
 		/**
 		 * Constructs a new ``Color``.
+		 * @param red red component.
+		 * @param green green component.
+		 * @param blue blue component.
+		 * @param alpha alpha component.
 		 */
 		public Color (double red = 0.0,
 		              double green = 0.0,
