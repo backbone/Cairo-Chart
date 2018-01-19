@@ -313,10 +313,6 @@ namespace CairoChart {
 			}
 		}
 
-		protected virtual void join_calc (bool is_x) {
-			for (var si = series.length - 1, nskip = 0; si >= 0; --si)
-				series[si].join_calc(is_x, si, ref nskip);
-		}
 		protected virtual void calc_plot_area () {
 			plarea.x = evarea.x + legend.indent;
 			plarea.width = evarea.width - 2 * legend.indent;
@@ -335,8 +331,11 @@ namespace CairoChart {
 			}
 			if (nzoom_series_show == 1) joint_x = joint_y = false;
 
-			join_calc (true);
-			join_calc (false);
+			for (var si = series.length - 1, nskip = 0; si >= 0; --si)
+				series[si].join_calc(true, si, ref nskip);
+
+			for (var si = series.length - 1, nskip = 0; si >= 0; --si)
+				series[si].join_calc(false, si, ref nskip);
 		}
 
 		protected virtual void draw_plot_area_border () {
