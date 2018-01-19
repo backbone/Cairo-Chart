@@ -1,7 +1,7 @@
 namespace CairoChart {
 
 	/**
-	 *
+	 * Grid of the {@link Series}.
 	 */
 	public class Grid {
 		/*public enum GridType {
@@ -10,17 +10,17 @@ namespace CairoChart {
 		}*/
 
 		/**
-		 *
+		 * Color of the ``Grid``.
 		 */
 		public Color color = Color (0, 0, 0, 0.1);
 
 		/**
-		 *
+		 * Line style of the ``Grid``.
 		 */
 		public Line.Style line_style = Line.Style ();
 
 		/**
-		 *
+		 * Gets a copy of the ``Grid``.
 		 */
 		public virtual Grid copy () {
 			var grid = new Grid ();
@@ -30,7 +30,7 @@ namespace CairoChart {
 		}
 
 		/**
-		 *
+		 * Constructs a new ``Grid``.
 		 */
 		public Grid () {
 			line_style.dashes = {2, 3};
