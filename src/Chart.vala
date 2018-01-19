@@ -237,12 +237,13 @@ namespace CairoChart {
 					break;
 				}
 			var new_zoom = zoom;
-			// TODO
-			new_zoom.x += (rect.x - plarea.x) / plarea.width * zoom.width;
-			var x_max = zoom.x + (rect.x + rect.width - plarea.x) / plarea.width * zoom.width;
+			var rmpx = rect.x - plarea.x;
+			new_zoom.x += rmpx / plarea.width * zoom.width;
+			var x_max = zoom.x + (rmpx + rect.width) / plarea.width * zoom.width;
 			new_zoom.width = x_max - new_zoom.x;
-			new_zoom.y += (rect.y - plarea.y) / plarea.height * zoom.height;
-			var y_max = zoom.y + (rect.y + rect.height - plarea.y) / plarea.height * zoom.height;
+			var rmpy = rect.y - plarea.y;
+			new_zoom.y += rmpy / plarea.height * zoom.height;
+			var y_max = zoom.y + (rmpy + rect.height) / plarea.height * zoom.height;
 			new_zoom.height = y_max - new_zoom.y;
 			zoom = new_zoom;
 		}
