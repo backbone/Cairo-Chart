@@ -269,7 +269,6 @@ namespace CairoChart {
 			d.x /= -plarea.width; d.y /= -plarea.height;
 
 			var z0 = zoom;
-			//var x0 = zoom.x, x1 = zoom.x + zoom.width, y0 = zoom.y, y1 = zoom.y + zoom.height;
 
 			zoom_out();
 
@@ -293,8 +292,8 @@ namespace CairoChart {
 			zoom_in(Cairo.Rectangle() {
 				x = xmin + d.x,
 				y = ymin + d.y,
-				width = xmax - xmin,
-				height = ymax - ymin
+				width = plarea.width * z0.width,
+				height = plarea.height * z0.height
 			});
 		}
 
