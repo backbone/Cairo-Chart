@@ -3,6 +3,17 @@ namespace CairoChart {
 		public string text = "";
 		public Font.Style style = Font.Style ();
 		public Color color = Color();
+		public double vspacing = 4;
+		public double hspacing = 4;
+		public double spacing {
+			protected get {
+				return 0;
+			}
+			set {
+				vspacing = hspacing = value;
+			}
+			default = 4;
+		}
 
 		public virtual Cairo.TextExtents get_extents (Cairo.Context ctx) {
 			ctx.select_font_face (style.family, style.slant, style.weight);

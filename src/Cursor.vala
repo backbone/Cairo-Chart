@@ -317,7 +317,7 @@ namespace CairoChart {
 								break;
 							case Axis.Position.HIGH:
 								var title_height = chart.title.get_height(chart.ctx) + (chart.legend.position == Legend.Position.TOP ?
-								                   chart.title_spacing * 2 : chart.title_spacing);
+								                   chart.title.vspacing * 2 : chart.title.vspacing);
 								print_y = chart.area.y + title_height + s.axis_x.font_spacing
 								          + (chart.legend.position == Legend.Position.TOP ? chart.legend.height : 0);
 								switch (s.axis_x.type) {

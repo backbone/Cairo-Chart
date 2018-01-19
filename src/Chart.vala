@@ -98,12 +98,6 @@ namespace CairoChart {
 		}
 
 		/**
-		 * TODO: remove all spacing fields / evaluate automatically.
-		 */
-		[Version (deprecated = true)]
-		public double title_spacing = 4;
-
-		/**
 		 * Constructs a new ``Chart``.
 		 */
 		public Chart () {
@@ -129,7 +123,6 @@ namespace CairoChart {
 			chart.selection_style = this.selection_style;
 			chart.series = this.series;
 			chart.title = this.title.copy();
-			chart.title_spacing = this.title_spacing;
 			chart.zoom = this.zoom;
 			chart.zoom_1st_idx = this.zoom_1st_idx;
 			return chart;
@@ -350,11 +343,11 @@ namespace CairoChart {
 		}
 		protected virtual void draw_title () {
 			var sz = title.get_size(ctx);
-			var title_height = sz.height + (legend.position == Legend.Position.TOP ? title_spacing * 2 : title_spacing);
+			var title_height = sz.height + (legend.position == Legend.Position.TOP ? title.vspacing * 2 : title.vspacing);
 			evarea.y += title_height;
 			evarea.height -= title_height;
 			color = title.color;
-			ctx.move_to (area.width/2 - sz.width/2, sz.height + title_spacing);
+			ctx.move_to (area.width/2 - sz.width/2, sz.height + title.vspacing);
 			title.show(ctx);
 		}
 		protected virtual void draw_haxes () {
