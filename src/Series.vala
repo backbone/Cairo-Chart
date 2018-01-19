@@ -114,7 +114,7 @@ namespace CairoChart {
 			return true;
 		}
 
-		public virtual void join_calc (bool is_x, int si, ref int nskip) {
+		public virtual void join_axes (bool is_x, int si, ref int nskip) {
 			var s = chart.series[si];
 			Axis axis = s.axis_x;
 			if (!is_x) axis = s.axis_y;

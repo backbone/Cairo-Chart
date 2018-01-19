@@ -306,7 +306,6 @@ namespace CairoChart {
 				s.axis_y.title.style.orientation = Font.Orientation.VERTICAL;
 		}
 
-		// TODO
 		protected virtual void eval_plarea () {
 			plarea.x = evarea.x + legend.spacing;
 			plarea.width = evarea.width - 2 * legend.spacing;
@@ -318,17 +317,17 @@ namespace CairoChart {
 			int nshow = 0;
 			foreach (var s in series) {
 				if (!s.zoom_show) continue;
-				++nshow;
 				if (!s.equal_x_axis(series[0])) joint_x = false;
 				if (!s.equal_y_axis(series[0])) joint_y = false;
+				++nshow;
 			}
 			if (nshow == 1) joint_x = joint_y = false;
 
 			for (var si = series.length - 1, nskip = 0; si >= 0; --si)
-				series[si].join_calc(true, si, ref nskip);
+				series[si].join_axes(true, si, ref nskip);
 
 			for (var si = series.length - 1, nskip = 0; si >= 0; --si)
-				series[si].join_calc(false, si, ref nskip);
+				series[si].join_axes(false, si, ref nskip);
 		}
 
 		protected virtual void draw_plarea_border () {
@@ -346,12 +345,10 @@ namespace CairoChart {
 			ctx.move_to (area.width/2 - sz.width/2, sz.height + title.vspacing);
 			title.show(ctx);
 		}
-		// TODO
 		protected virtual void draw_haxes () {
 			for (var si = series.length - 1, nskip = 0; si >=0; --si)
 				series[si].draw_horizontal_axis (si, ref nskip);
 		}
-		// TODO
 		protected virtual void draw_vaxes () {
 			for (var si = series.length - 1, nskip = 0; si >=0; --si)
 				series[si].draw_vertical_axis (si, ref nskip);
