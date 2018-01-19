@@ -38,7 +38,8 @@ namespace CairoChart {
 			return place;
 		}
 
-		public Place (double x_min = 0, double x_max = 1, double y_min = 0, double y_max = 1) {
+		public Place (double x_min = 0,
+		              double x_max = 1, double y_min = 0, double y_max = 1) {
 			this.x_min = x_min;
 			this.x_max = x_max;
 			this.y_min = y_min;

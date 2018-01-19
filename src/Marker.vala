@@ -15,7 +15,9 @@ namespace CairoChart {
 		public Type type = Type.NONE;
 		public double size = 8.0;
 
-		public Marker (Type type = Type.NONE, double size = 8.0) {
+		public Marker (Type type = Type.NONE,
+		               double size = 8.0
+		) {
 			this.type = type;
 			this.size = size;
 		}

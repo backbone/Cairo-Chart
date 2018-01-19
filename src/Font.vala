@@ -63,7 +63,8 @@ namespace CairoChart {
 			                  Cairo.FontSlant slant = Cairo.FontSlant.NORMAL,
 			                  Cairo.FontWeight weight = Cairo.FontWeight.NORMAL,
 			                  double size = 10,
-			                  Font.Orientation orientation = Font.Orientation.HORIZONTAL) {
+			                  Font.Orientation orientation = Font.Orientation.HORIZONTAL
+			) {
 				this.family = family;
 				this.slant = slant;
 				this.weight = weight;
