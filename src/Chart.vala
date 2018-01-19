@@ -180,7 +180,7 @@ namespace CairoChart {
 		 * @param rect selection square.
 		 */
 		public virtual void draw_selection (Cairo.Rectangle rect) {
-			selection_style.set(this);
+			selection_style.apply(this);
 			ctx.rectangle (rect.x, rect.y, rect.width, rect.height);
 			ctx.stroke();
 		}

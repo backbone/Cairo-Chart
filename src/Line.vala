@@ -25,7 +25,7 @@ namespace CairoChart {
 				this.color = color;
 			}
 
-			public void set (Chart chart) {
+			public void apply (Chart chart) {
 				chart.color = color;
 				chart.ctx.set_line_join(join);
 				chart.ctx.set_line_cap(cap);

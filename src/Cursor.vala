@@ -247,7 +247,7 @@ namespace CairoChart {
 				var low = Point128(chart.plarea.x + chart.plarea.width, chart.plarea.y + chart.plarea.height);  // low and high
 				var high = Point128(chart.plarea.x, chart.plarea.y); //              points of the cursor
 				unowned CursorCross[] ccs = cursors_crossings[cci].crossings;
-				cursor_style.line_style.set(chart);
+				cursor_style.line_style.apply(chart);
 				for (var ci = 0, max_ci = ccs.length; ci < max_ci; ++ci) {
 					var si = ccs[ci].series_index;
 					var s = chart.series[si];

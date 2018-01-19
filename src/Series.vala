@@ -65,7 +65,7 @@ namespace CairoChart {
 
 		public virtual void draw () {
 			var points = Math.sort_points(this, sort);
-			line_style.set(chart);
+			line_style.apply(chart);
 			// draw series line
 			for (int i = 1; i < points.length; ++i) {
 				Point c, d;
@@ -289,7 +289,7 @@ namespace CairoChart {
 					// 6. Draw grid lines to the place.zoom_y_min.
 					var line_style = grid.line_style;
 					if (joint_x) line_style.color = Color(0, 0, 0, 0.5);
-					line_style.set(chart);
+					line_style.apply(chart);
 					double y = chart.evarea.y + chart.evarea.height - max_rec_height - axis_x.font_spacing - (axis_x.title.text == "" ? 0 : sz.height + axis_x.font_spacing);
 					ctx.move_to (scr_x, y);
 					if (joint_x)
@@ -317,7 +317,7 @@ namespace CairoChart {
 					// 6. Draw grid lines to the place.zoom_y_max.
 					var line_style = grid.line_style;
 					if (joint_x) line_style.color = Color(0, 0, 0, 0.5);
-					line_style.set(chart);
+					line_style.apply(chart);
 					double y = chart.evarea.y + max_rec_height + axis_x.font_spacing + (axis_x.title.text == "" ? 0 : sz.height + axis_x.font_spacing);
 					ctx.move_to (scr_x, y);
 					if (joint_x)
@@ -426,7 +426,7 @@ namespace CairoChart {
 					// 6. Draw grid lines to the place.zoom_x_min.
 					var line_style = grid.line_style;
 					if (joint_y) line_style.color = Color(0, 0, 0, 0.5);
-					line_style.set(chart);
+					line_style.apply(chart);
 					double x = chart.evarea.x + max_rec_width + axis_y.font_spacing + (axis_y.title.text == "" ? 0 : sz.width + axis_y.font_spacing);
 					ctx.move_to (x, scr_y);
 					if (joint_y)
@@ -442,7 +442,7 @@ namespace CairoChart {
 					// 6. Draw grid lines to the place.zoom_x_max.
 					var line_style = grid.line_style;
 					if (joint_y) line_style.color = Color(0, 0, 0, 0.5);
-					line_style.set(chart);
+					line_style.apply(chart);
 					double x = chart.evarea.x + chart.evarea.width - max_rec_width - axis_y.font_spacing - (axis_y.title.text == "" ? 0 : sz.width + axis_y.font_spacing);
 					ctx.move_to (x, scr_y);
 					if (joint_y)

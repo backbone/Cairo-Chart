@@ -75,7 +75,7 @@ namespace CairoChart {
 				chart.color = bg_color;
 				chart.ctx.rectangle (x0, y0, width, height);
 				chart.ctx.fill();
-				border_style.set(chart);
+				border_style.apply(chart);
 				chart.ctx.move_to (x0, y0);
 				chart.ctx.rel_line_to (width, 0);
 				chart.ctx.rel_line_to (0, height);
@@ -151,7 +151,7 @@ namespace CairoChart {
 
 					// series line style
 					chart.ctx.move_to (x, y - title_sz.height / 2);
-					s.line_style.set(chart);
+					s.line_style.apply(chart);
 					chart.ctx.rel_line_to (line_length, 0);
 					chart.ctx.stroke();
 					s.marker.draw_at_pos (chart, x + line_length / 2, y - title_sz.height / 2);
