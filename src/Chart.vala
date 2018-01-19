@@ -268,32 +268,32 @@ namespace CairoChart {
 
 			d.x /= -plarea.width; d.y /= -plarea.height;
 
-			var z0 = zoom;
+			var z = zoom;
 
 			zoom_out();
 
 			d.x *= plarea.width; d.y *= plarea.height;
 
-			var xmin = plarea.x + plarea.width * z0.x;
-			var xmax = plarea.x + plarea.width * (z0.x + z0.width);
-			var ymin = plarea.y + plarea.height * z0.y;
-			var ymax = plarea.y + plarea.height * (z0.y + z0.height);
+			var x0 = plarea.x + plarea.width * z.x;
+			var x1 = plarea.x + plarea.width * (z.x + z.width);
+			var y0 = plarea.y + plarea.height * z.y;
+			var y1 = plarea.y + plarea.height * (z.y + z.height);
 
-			d.x *= z0.width; d.y *= z0.height;
+			d.x *= z.width; d.y *= z.height;
 
 			var px1 = plarea.x + plarea.width;
 			var py1 = plarea.y + plarea.height;
 
-			if (xmin + d.x < plarea.x) d.x = plarea.x - xmin;
-			if (xmax + d.x > px1) d.x = px1 - xmax;
-			if (ymin + d.y < plarea.y) d.y = plarea.y - ymin;
-			if (ymax + d.y > py1) d.y = py1 - ymax;
+			if (x0 + d.x < plarea.x) d.x = plarea.x - x0;
+			if (x1 + d.x > px1) d.x = px1 - x1;
+			if (y0 + d.y < plarea.y) d.y = plarea.y - y0;
+			if (y1 + d.y > py1) d.y = py1 - y1;
 
 			zoom_in(Cairo.Rectangle() {
-				x = xmin + d.x,
-				y = ymin + d.y,
-				width = plarea.width * z0.width,
-				height = plarea.height * z0.height
+				x = x0 + d.x,
+				y = y0 + d.y,
+				width = plarea.width * z.width,
+				height = plarea.height * z.height
 			});
 		}
 
