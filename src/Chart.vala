@@ -265,12 +265,15 @@ namespace CairoChart {
 		 */
 		public virtual void move (Point delta) {
 			var d = delta;
-			d.x /= -plarea.width;
-			d.y /= -plarea.height;
+
+			d.x /= -plarea.width; d.y /= -plarea.height;
+
 			var x0 = zoom.x, x1 = zoom.x + zoom.width, y0 = zoom.y, y1 = zoom.y + zoom.height;
+
 			zoom_out();
-			d.x *= plarea.width;
-			d.y *= plarea.height;
+
+			d.x *= plarea.width; d.y *= plarea.height;
+
 			var xmin = plarea.x + plarea.width * x0;
 			var xmax = plarea.x + plarea.width * x1;
 			var ymin = plarea.y + plarea.height * y0;
@@ -280,19 +283,18 @@ namespace CairoChart {
 
 			var px1 = plarea.x + plarea.width;
 			var py1 = plarea.y + plarea.height;
-			var zrect = Cairo.Rectangle();
-			zrect.x = xmin + d.x;
-			zrect.y = ymin + d.y;
-			if (zrect.x < plarea.x) d.x = plarea.x - xmin;
-			if (xmax + d.x > px1) d.x = px1 - xmax;
-			if (zrect.y < plarea.y) d.y = plarea.y - ymin;
-			if (ymax + d.y > py1) d.y = py1 - ymax;
-			zrect.x = xmin + d.x;
-			zrect.y = ymin + d.y;
-			zrect.width = xmax - xmin;
-			zrect.height = ymax - ymin;
 
-			zoom_in (zrect);//Cairo.Rectangle(){x = xmindx, y = ymindx, width = xmax - xmin, height = ymax - ymin});
+			if (xmin + d.x < plarea.x) d.x = plarea.x - xmin;
+			if (xmax + d.x > px1) d.x = px1 - xmax;
+			if (ymin + d.y < plarea.y) d.y = plarea.y - ymin;
+			if (ymax + d.y > py1) d.y = py1 - ymax;
+
+			zoom_in(Cairo.Rectangle() {
+				x = xmin + d.x,
+				y = ymin + d.y,
+				width = xmax - xmin,
+				height = ymax - ymin
+			});
 		}
 
 		protected virtual void fix_evarea () {
