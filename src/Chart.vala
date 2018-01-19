@@ -190,8 +190,7 @@ namespace CairoChart {
 		 * @param rect selected zoom area.
 		 */
 		public virtual void zoom_in (Cairo.Rectangle rect) {
-			for (var si = 0, max_i = series.length; si < max_i; ++si) {
-				var s = series[si];
+			foreach (var s in series) {
 				if (!s.zoom_show) continue;
 				var real_x0 = s.get_real_x (rect.x);
 				var real_x1 = s.get_real_x (rect.x + rect.width);
@@ -230,7 +229,7 @@ namespace CairoChart {
 			}
 
 			zoom_1st_idx = 0;
-			for (var si = 0, max_i = series.length; si < max_i; ++si)
+			for (var si = 0; si < series.length; ++si)
 				if (series[si].zoom_show) {
 					zoom_1st_idx = si;
 					break;
