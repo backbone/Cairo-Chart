@@ -302,10 +302,8 @@ namespace CairoChart {
 			if (evarea.height < 0) evarea.height = 0;
 		}
 		protected virtual void rot_axes_titles () {
-			for (var si = 0; si < series.length; ++si) {
-				var s = series[si];
+			foreach (var s in series)
 				s.axis_y.title.style.orientation = Font.Orientation.VERTICAL;
-			}
 		}
 
 		protected virtual void eval_plarea () {
