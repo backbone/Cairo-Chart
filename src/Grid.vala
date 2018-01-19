@@ -4,6 +4,7 @@ namespace CairoChart {
 	 * Grid of the {@link Series}.
 	 */
 	public class Grid {
+
 		/*public enum GridType {
 			PRICK_LINE = 0, // default
 			LINE
