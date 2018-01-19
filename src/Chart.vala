@@ -59,7 +59,7 @@ namespace CairoChart {
 		public Series[] series = {};
 
 		/**
-		 * index of the 1'st shown series in a zoommed area.
+		 * Index of the 1'st shown series in a zoommed area.
 		 */
 		public int zoom_1st_idx { get; protected set; default = 0; }
 
