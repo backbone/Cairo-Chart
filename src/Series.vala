@@ -188,7 +188,7 @@ namespace CairoChart {
 				for (int sk = si; sk > sj; --sk) {
 					var s3 = chart.series[sk];
 					if (!s3.zoom_show) continue;
-					if (Math.are_intersect(s2.place.zoom_x_min, s2.place.zoom_x_max, s3.place.zoom_x_min, s3.place.zoom_x_max)
+					if (Math.coord_cross(s2.place.zoom_x_min, s2.place.zoom_x_max, s3.place.zoom_x_min, s3.place.zoom_x_max)
 					    || s2.axis_x.position != s3.axis_x.position
 					    || s2.axis_x.type != s3.axis_x.type) {
 						has_intersection = true;
@@ -226,7 +226,7 @@ namespace CairoChart {
 				for (int sk = si; sk > sj; --sk) {
 					var s3 = chart.series[sk];
 					if (!s3.zoom_show) continue;
-					if (Math.are_intersect(s2.place.zoom_y_min, s2.place.zoom_y_max, s3.place.zoom_y_min, s3.place.zoom_y_max)
+					if (Math.coord_cross(s2.place.zoom_y_min, s2.place.zoom_y_max, s3.place.zoom_y_min, s3.place.zoom_y_max)
 					    || s2.axis_y.position != s3.axis_y.position
 					    || s2.axis_y.type != s3.axis_y.type) {
 						has_intersection = true;

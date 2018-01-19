@@ -21,11 +21,16 @@ namespace CairoChart {
 			return step;
 		}
 
-		internal bool are_intersect (double a_min, double a_max, double b_min, double b_max) {
+		internal bool coord_cross (double a_min, double a_max, double b_min, double b_max) {
 			if (   a_min < a_max <= b_min < b_max
 			    || b_min < b_max <= a_min < a_max)
 				return false;
 			return true;
+		}
+
+		internal bool rect_cross (Cairo.Rectangle r1, Cairo.Rectangle r2) {
+			return    coord_cross(r1.x, r1.x + r1.width, r2.x, r2.x + r2.width)
+			       && coord_cross(r1.y, r1.y + r1.height, r2.y, r2.y + r2.height);
 		}
 
 		internal bool point_belong (Float128 p, Float128 a, Float128 b) {
