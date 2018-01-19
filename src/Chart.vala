@@ -279,7 +279,7 @@ namespace CairoChart {
 			var ymin = plarea.y + plarea.height * z0.y;
 			var ymax = plarea.y + plarea.height * (z0.y + z0.height);
 
-			d.x *= (z0.x + z0.width) - z0.x; d.y *= (z0.y + z0.height) - z0.y;
+			d.x *= z0.width; d.y *= z0.height;
 
 			var px1 = plarea.x + plarea.width;
 			var py1 = plarea.y + plarea.height;
