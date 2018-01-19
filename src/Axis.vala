@@ -143,5 +143,10 @@ namespace CairoChart {
 				}
 			}
 		}
+
+		public virtual void unzoom () {
+			zoom_min = min;
+			zoom_max = max;
+		}
 	}
 }

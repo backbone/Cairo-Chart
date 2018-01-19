@@ -254,17 +254,7 @@ namespace CairoChart {
 		 * Zooms out the ``Chart``.
 		 */
 		public virtual void zoom_out () {
-			foreach (var s in series) {
-				s.zoom_show = true;
-				s.axis_x.zoom_min = s.axis_x.min;
-				s.axis_x.zoom_max = s.axis_x.max;
-				s.axis_y.zoom_min = s.axis_y.min;
-				s.axis_y.zoom_max = s.axis_y.max;
-				s.place.zoom_x_min = s.place.x_min;
-				s.place.zoom_x_max = s.place.x_max;
-				s.place.zoom_y_min = s.place.y_min;
-				s.place.zoom_y_max = s.place.y_max;
-			}
+			foreach (var s in series) s.unzoom();
 			zoom = Cairo.Rectangle() { x = 0, y = 0, width = 1, height = 1 };
 			zoom_1st_idx = 0;
 		}

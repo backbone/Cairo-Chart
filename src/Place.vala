@@ -48,5 +48,12 @@ namespace CairoChart {
 			zoom_y_min = y_min;
 			zoom_y_max = y_max;
 		}
+
+		public virtual void unzoom () {
+			zoom_x_min = x_min;
+			zoom_x_max = x_max;
+			zoom_y_min = y_min;
+			zoom_y_max = y_max;
+		}
 	}
 }

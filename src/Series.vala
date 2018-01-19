@@ -567,5 +567,12 @@ namespace CairoChart {
 		public virtual Point128 get_real_point (Point p) {
 			return Point128 (get_real_x(p.x), get_real_y(p.y));
 		}
+
+		public virtual void unzoom () {
+				zoom_show = true;
+				axis_x.unzoom();
+				axis_y.unzoom();
+				place.unzoom();
+		}
 	}
 }
