@@ -54,12 +54,12 @@ namespace CairoChart {
 		public Legend legend = new Legend();
 
 		/**
-		 * ``Chart`` Series.
+		 * ``Chart`` Series array.
 		 */
 		public Series[] series = {};
 
 		/**
-		 * 1'st shown series index in zoom area.
+		 * index of the 1'st shown series in a zoommed area.
 		 */
 		public int zoom_1st_idx { get; protected set; default = 0; }
 
@@ -153,7 +153,7 @@ namespace CairoChart {
 
 			evarea = area;
 
-			draw_chart_title ();
+			draw_title ();
 			fix_evarea ();
 
 			legend.draw (this);
@@ -163,15 +163,15 @@ namespace CairoChart {
 
 			cursors.get_cursors_crossings();
 
-			calc_plot_area ();
+			eval_plarea ();
 
-			draw_horizontal_axes ();
+			draw_haxes ();
 			fix_evarea ();
 
-			draw_vertical_axes ();
+			draw_vaxes ();
 			fix_evarea ();
 
-			draw_plot_area_border ();
+			draw_plarea_border ();
 			fix_evarea ();
 
 			draw_series ();
@@ -313,7 +313,7 @@ namespace CairoChart {
 			}
 		}
 
-		protected virtual void calc_plot_area () {
+		protected virtual void eval_plarea () {
 			plarea.x = evarea.x + legend.indent;
 			plarea.width = evarea.width - 2 * legend.indent;
 			plarea.y = evarea.y + legend.indent;
@@ -338,7 +338,7 @@ namespace CairoChart {
 				series[si].join_calc(false, si, ref nskip);
 		}
 
-		protected virtual void draw_plot_area_border () {
+		protected virtual void draw_plarea_border () {
 			color = border_color;
 			ctx.set_dash(null, 0);
 			ctx.move_to (plarea.x, plarea.y);
@@ -348,7 +348,7 @@ namespace CairoChart {
 			ctx.line_to (plarea.x, plarea.y);
 			ctx.stroke ();
 		}
-		protected virtual void draw_chart_title () {
+		protected virtual void draw_title () {
 			var sz = title.get_size(ctx);
 			var title_height = sz.height + (legend.position == Legend.Position.TOP ? title_indent * 2 : title_indent);
 			evarea.y += title_height;
@@ -357,11 +357,11 @@ namespace CairoChart {
 			ctx.move_to (area.width/2 - sz.width/2, sz.height + title_indent);
 			title.show(ctx);
 		}
-		protected virtual void draw_horizontal_axes () {
+		protected virtual void draw_haxes () {
 			for (var si = series.length - 1, nskip = 0; si >=0; --si)
 				series[si].draw_horizontal_axis (si, ref nskip);
 		}
-		protected virtual void draw_vertical_axes () {
+		protected virtual void draw_vaxes () {
 			for (var si = series.length - 1, nskip = 0; si >=0; --si)
 				series[si].draw_vertical_axis (si, ref nskip);
 		}
