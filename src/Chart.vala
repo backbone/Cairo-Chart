@@ -200,7 +200,7 @@ namespace CairoChart {
 				var real_height = real_y0 - real_y1;
 				// if selected square does not intersect with the series's square
 				if (   real_x1 <= s.axis_x.zoom_min || real_x0 >= s.axis_x.zoom_max
-					|| real_y0 <= s.axis_y.zoom_min || real_y1 >= s.axis_y.zoom_max) {
+				    || real_y0 <= s.axis_y.zoom_min || real_y1 >= s.axis_y.zoom_max) {
 					s.zoom_show = false;
 					continue;
 				}
