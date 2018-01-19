@@ -237,7 +237,7 @@ namespace CairoChart {
 			size.y = double.max (h_x, h_y);
 		}
 
-		public virtual void draw_cursors () {
+		public virtual void draw () {
 			if (chart.series.length == 0) return;
 
 			var all_cursors = get_all_cursors();

@@ -169,7 +169,7 @@ namespace CairoChart {
 			draw_series ();
 			fix_evarea ();
 
-			cursors.draw_cursors ();
+			cursors.draw ();
 			fix_evarea ();
 
 			return true;
