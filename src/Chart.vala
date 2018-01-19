@@ -268,18 +268,19 @@ namespace CairoChart {
 
 			d.x /= -plarea.width; d.y /= -plarea.height;
 
-			var x0 = zoom.x, x1 = zoom.x + zoom.width, y0 = zoom.y, y1 = zoom.y + zoom.height;
+			var z0 = zoom;
+			//var x0 = zoom.x, x1 = zoom.x + zoom.width, y0 = zoom.y, y1 = zoom.y + zoom.height;
 
 			zoom_out();
 
 			d.x *= plarea.width; d.y *= plarea.height;
 
-			var xmin = plarea.x + plarea.width * x0;
-			var xmax = plarea.x + plarea.width * x1;
-			var ymin = plarea.y + plarea.height * y0;
-			var ymax = plarea.y + plarea.height * y1;
+			var xmin = plarea.x + plarea.width * z0.x;
+			var xmax = plarea.x + plarea.width * (z0.x + z0.width);
+			var ymin = plarea.y + plarea.height * z0.y;
+			var ymax = plarea.y + plarea.height * (z0.y + z0.height);
 
-			d.x *= x1 - x0; d.y *= y1 - y0;
+			d.x *= (z0.x + z0.width) - z0.x; d.y *= (z0.y + z0.height) - z0.y;
 
 			var px1 = plarea.x + plarea.width;
 			var py1 = plarea.y + plarea.height;
