@@ -159,7 +159,7 @@ namespace CairoChart {
 			legend.draw (this);
 			fix_evarea ();
 
-			set_vertical_axes_titles ();
+			rot_axes_titles ();
 
 			cursors.get_cursors_crossings();
 
@@ -306,7 +306,7 @@ namespace CairoChart {
 			if (evarea.width < 0) evarea.width = 0;
 			if (evarea.height < 0) evarea.height = 0;
 		}
-		protected virtual void set_vertical_axes_titles () {
+		protected virtual void rot_axes_titles () {
 			for (var si = 0; si < series.length; ++si) {
 				var s = series[si];
 				s.axis_y.title.style.orientation = Font.Orientation.VERTICAL;
