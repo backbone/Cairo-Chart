@@ -335,16 +335,11 @@ namespace CairoChart {
 			color = border_color;
 			ctx.set_dash(null, 0);
 			ctx.rectangle(plarea.x, plarea.y, plarea.width, plarea.height);
-			/*ctx.move_to (plarea.x, plarea.y);
-			ctx.rel_line_to (0, plarea.height);
-			ctx.rel_line_to (plarea.width, 0);
-			ctx.rel_line_to (0, - plarea.height);
-			ctx.rel_line_to (-plarea.x, 0);*/
 			ctx.stroke ();
 		}
 		protected virtual void draw_title () {
 			var sz = title.get_size(ctx);
-			var title_height = sz.height + (legend.position == Legend.Position.TOP ? title.vspacing * 2 : title.vspacing);
+			var title_height = sz.height + title.vspacing * 2;
 			evarea.y += title_height;
 			evarea.height -= title_height;
 			color = title.color;
