@@ -287,6 +287,8 @@ namespace CairoChart {
 			if (xmax + d.x > px1) d.x = px1 - xmax;
 			if (zrect.y < plarea.y) d.y = plarea.y - ymin;
 			if (ymax + d.y > py1) d.y = py1 - ymax;
+			zrect.x = xmin + d.x;
+			zrect.y = ymin + d.y;
 			zrect.width = xmax - xmin;
 			zrect.height = ymax - ymin;
 
