@@ -1,4 +1,8 @@
 namespace CairoChart {
+
+	/**
+	 *
+	 */
 	public class Place {
 		double _x_min = 0;
 		double _x_max = 0;
@@ -39,7 +43,10 @@ namespace CairoChart {
 		}
 
 		public Place (double x_min = 0,
-		              double x_max = 1, double y_min = 0, double y_max = 1) {
+		              double x_max = 1,
+		              double y_min = 0,
+		              double y_max = 1
+		) {
 			this.x_min = x_min;
 			this.x_max = x_max;
 			this.y_min = y_min;

@@ -78,7 +78,8 @@ namespace CairoChart {
 
 		public Text (string text = "",
 		             Font.Style style = Font.Style(),
-		             Color color = Color()) {
+		             Color color = Color()
+		) {
 			this.text = text;
 			this.style = style;
 			this.color = color;
