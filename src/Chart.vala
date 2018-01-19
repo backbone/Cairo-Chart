@@ -334,11 +334,12 @@ namespace CairoChart {
 		protected virtual void draw_plarea_border () {
 			color = border_color;
 			ctx.set_dash(null, 0);
-			ctx.move_to (plarea.x, plarea.y);
+			ctx.rectangle(plarea.x, plarea.y, plarea.width, plarea.height);
+			/*ctx.move_to (plarea.x, plarea.y);
 			ctx.rel_line_to (0, plarea.height);
 			ctx.rel_line_to (plarea.width, 0);
 			ctx.rel_line_to (0, - plarea.height);
-			ctx.rel_line_to (-plarea.x, 0);
+			ctx.rel_line_to (-plarea.x, 0);*/
 			ctx.stroke ();
 		}
 		protected virtual void draw_title () {
