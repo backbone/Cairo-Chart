@@ -55,12 +55,12 @@ namespace CairoChart {
 			              Cairo.LineJoin join = Cairo.LineJoin.MITER,
 			              Cairo.LineCap cap = Cairo.LineCap.ROUND
 			) {
+				this.color = color;
 				this.width = width;
-				this.join = join;
-				this.cap = cap;
 				this.dashes = dashes;
 				this.dash_offset = dash_offset;
-				this.color = color;
+				this.join = join;
+				this.cap = cap;
 			}
 
 			/**
@@ -68,10 +68,10 @@ namespace CairoChart {
 			 */
 			public void apply (Chart chart) {
 				chart.color = color;
-				chart.ctx.set_line_join(join);
-				chart.ctx.set_line_cap(cap);
 				chart.ctx.set_line_width(width);
 				chart.ctx.set_dash(dashes, dash_offset);
+				chart.ctx.set_line_join(join);
+				chart.ctx.set_line_cap(cap);
 			}
 		}
 

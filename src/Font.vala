@@ -32,6 +32,11 @@ namespace CairoChart {
 			string family;
 
 			/**
+			 * The new font size, in user space units.
+			 */
+			double size;
+
+			/**
 			 * The slant for the font.
 			 */
 			Cairo.FontSlant slant;
@@ -42,11 +47,6 @@ namespace CairoChart {
 			Cairo.FontWeight weight;
 
 			/**
-			 * The new font size, in user space units.
-			 */
-			double size;
-
-			/**
 			 * Font/Text orientation.
 			 */
 			Orientation orientation;
@@ -54,21 +54,21 @@ namespace CairoChart {
 			/**
 			 * Constructs a new ``Style``.
 			 * @param family a font family name, encoded in UTF-8.
+			 * @param size the new font size, in user space units.
 			 * @param slant the slant for the font.
 			 * @param weight the weight for the font.
-			 * @param size the new font size, in user space units.
 			 * @param orientation font/text orientation.
 			 */
 			public Style (string family = "Sans",
-			                  Cairo.FontSlant slant = Cairo.FontSlant.NORMAL,
-			                  Cairo.FontWeight weight = Cairo.FontWeight.NORMAL,
-			                  double size = 10,
-			                  Font.Orientation orientation = Font.Orientation.HORIZONTAL
+			              double size = 10,
+			              Cairo.FontSlant slant = Cairo.FontSlant.NORMAL,
+			              Cairo.FontWeight weight = Cairo.FontWeight.NORMAL,
+			              Font.Orientation orientation = Font.Orientation.HORIZONTAL
 			) {
 				this.family = family;
+				this.size = size;
 				this.slant = slant;
 				this.weight = weight;
-				this.size = size;
 				this.orientation = orientation;
 			}
 		}
