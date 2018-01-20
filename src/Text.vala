@@ -25,18 +25,18 @@ namespace CairoChart {
 
 		public virtual double get_width (Cairo.Context ctx) {
 			var extents = get_extents (ctx);
-			switch (style.direct) {
-			case FontDirect.HORIZONTAL: return extents.width;
-			case FontDirect.VERTICAL: return extents.height;
+			switch (style.orient) {
+			case Gtk.Orientation.HORIZONTAL: return extents.width;
+			case Gtk.Orientation.VERTICAL: return extents.height;
 			default: return 0.0;
 			}
 		}
 
 		public virtual double get_height (Cairo.Context ctx) {
 			var extents = get_extents (ctx);
-			switch (style.direct) {
-			case FontDirect.HORIZONTAL: return extents.height;
-			case FontDirect.VERTICAL: return extents.width;
+			switch (style.orient) {
+			case Gtk.Orientation.HORIZONTAL: return extents.height;
+			case Gtk.Orientation.VERTICAL: return extents.width;
 			default: return 0.0;
 			}
 		}
@@ -49,12 +49,12 @@ namespace CairoChart {
 		public virtual Size get_size (Cairo.Context ctx) {
 			var sz = Size();
 			var extents = get_extents (ctx);
-			switch (style.direct) {
-			case FontDirect.HORIZONTAL:
+			switch (style.orient) {
+			case Gtk.Orientation.HORIZONTAL:
 				sz.width = extents.width + extents.x_bearing;
 				sz.height = extents.height;
 				break;
-			case FontDirect.VERTICAL:
+			case Gtk.Orientation.VERTICAL:
 				sz.width = extents.height; // + extents.x_bearing ?
 				sz.height = extents.width; // +- extents.y_bearing ?
 				break;
@@ -67,7 +67,7 @@ namespace CairoChart {
 			                         style.slant,
 			                         style.weight);
 			ctx.set_font_size(style.size);
-			if (style.direct == FontDirect.VERTICAL) {
+			if (style.orient == Gtk.Orientation.VERTICAL) {
 				ctx.rotate(- GLib.Math.PI / 2.0);
 				ctx.show_text(text);
 				ctx.rotate(GLib.Math.PI / 2.0);

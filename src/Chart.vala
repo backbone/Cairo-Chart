@@ -303,7 +303,7 @@ namespace CairoChart {
 		}
 		protected virtual void rot_axes_titles () {
 			foreach (var s in series)
-				s.axis_y.title.style.direct = FontDirect.VERTICAL;
+				s.axis_y.title.style.orient = Gtk.Orientation.VERTICAL;
 		}
 
 		protected virtual void eval_plarea () {

@@ -1,22 +1,6 @@
 namespace CairoChart {
 
 	/**
-	 * ``Font`` direction.
-	 */
-	public enum FontDirect {
-
-		/**
-		 * Horizontal font/text direction.
-		 */
-		HORIZONTAL = 0,
-
-		/**
-		 * Vertical font/text direction.
-		 */
-		VERTICAL
-	}
-
-	/**
 	 * ``Font`` style.
 	 */
 	public struct Font {
@@ -42,9 +26,9 @@ namespace CairoChart {
 		Cairo.FontWeight weight;
 
 		/**
-		 * Font/Text direction.
+		 * Font/Text orientation.
 		 */
-		FontDirect direct;
+		Gtk.Orientation orient;
 
 		/**
 		 * Constructs a new ``Font``.
@@ -52,19 +36,19 @@ namespace CairoChart {
 		 * @param size the new font size, in user space units.
 		 * @param slant the slant for the font.
 		 * @param weight the weight for the font.
-		 * @param direct font/text direction.
+		 * @param orient font/text orientation.
 		 */
 		public Font (string family = "Sans",
 		              double size = 10,
 		              Cairo.FontSlant slant = Cairo.FontSlant.NORMAL,
 		              Cairo.FontWeight weight = Cairo.FontWeight.NORMAL,
-		              FontDirect direct = FontDirect.HORIZONTAL
+		              Gtk.Orientation orient = Gtk.Orientation.HORIZONTAL
 		) {
 			this.family = family;
 			this.size = size;
 			this.slant = slant;
 			this.weight = weight;
-			this.direct = direct;
+			this.orient = orient;
 		}
 	}
 }
