@@ -81,7 +81,7 @@ namespace CairoChart {
 		/**
 		 * Selection line style.
 		 */
-		public Line.Style selection_style = Line.Style ();
+		public LineStyle selection_style = LineStyle ();
 
 		/**
 		 * ``Chart`` cursors.
@@ -303,7 +303,7 @@ namespace CairoChart {
 		}
 		protected virtual void rot_axes_titles () {
 			foreach (var s in series)
-				s.axis_y.title.style.orientation = Font.Orientation.VERTICAL;
+				s.axis_y.title.style.direct = FontDirect.VERTICAL;
 		}
 
 		protected virtual void eval_plarea () {

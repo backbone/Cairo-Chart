@@ -1,78 +1,70 @@
 namespace CairoChart {
 
 	/**
-	 * Text font.
+	 * ``Font`` direction.
 	 */
-	public class Font {
+	public enum FontDirect {
 
 		/**
-		 * ``Font`` orientation.
+		 * Horizontal font/text direction.
 		 */
-		public enum Orientation {
-
-			/**
-			 * Horizontal font/text orientation.
-			 */
-			HORIZONTAL = 0,
-
-			/**
-			 * Vertical font/text orientation.
-			 */
-			VERTICAL
-		}
+		HORIZONTAL = 0,
 
 		/**
-		 * ``Font`` Style.
+		 * Vertical font/text direction.
 		 */
-		public struct Style {
+		VERTICAL
+	}
 
-			/**
-			 * A font family name, encoded in UTF-8.
-			 */
-			string family;
+	/**
+	 * ``Font`` style.
+	 */
+	public struct Font {
 
-			/**
-			 * The new font size, in user space units.
-			 */
-			double size;
+		/**
+		 * A font family name, encoded in UTF-8.
+		 */
+		string family;
 
-			/**
-			 * The slant for the font.
-			 */
-			Cairo.FontSlant slant;
+		/**
+		 * The new font size, in user space units.
+		 */
+		double size;
 
-			/**
-			 * The weight for the font.
-			 */
-			Cairo.FontWeight weight;
+		/**
+		 * The slant for the font.
+		 */
+		Cairo.FontSlant slant;
 
-			/**
-			 * Font/Text orientation.
-			 */
-			Orientation orientation;
+		/**
+		 * The weight for the font.
+		 */
+		Cairo.FontWeight weight;
 
-			/**
-			 * Constructs a new ``Style``.
-			 * @param family a font family name, encoded in UTF-8.
-			 * @param size the new font size, in user space units.
-			 * @param slant the slant for the font.
-			 * @param weight the weight for the font.
-			 * @param orientation font/text orientation.
-			 */
-			public Style (string family = "Sans",
-			              double size = 10,
-			              Cairo.FontSlant slant = Cairo.FontSlant.NORMAL,
-			              Cairo.FontWeight weight = Cairo.FontWeight.NORMAL,
-			              Font.Orientation orientation = Font.Orientation.HORIZONTAL
-			) {
-				this.family = family;
-				this.size = size;
-				this.slant = slant;
-				this.weight = weight;
-				this.orientation = orientation;
-			}
+		/**
+		 * Font/Text direction.
+		 */
+		FontDirect direct;
+
+		/**
+		 * Constructs a new ``Font``.
+		 * @param family a font family name, encoded in UTF-8.
+		 * @param size the new font size, in user space units.
+		 * @param slant the slant for the font.
+		 * @param weight the weight for the font.
+		 * @param direct font/text direction.
+		 */
+		public Font (string family = "Sans",
+		              double size = 10,
+		              Cairo.FontSlant slant = Cairo.FontSlant.NORMAL,
+		              Cairo.FontWeight weight = Cairo.FontWeight.NORMAL,
+		              FontDirect direct = FontDirect.HORIZONTAL
+		) {
+			this.family = family;
+			this.size = size;
+			this.slant = slant;
+			this.weight = weight;
+			this.direct = direct;
 		}
-
-		private Font () { }
 	}
 }

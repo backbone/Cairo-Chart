@@ -1,36 +1,28 @@
 namespace CairoChart {
 
 	/**
-	 * Value of the point.
+	 * ``LabelStyle`` Style.
 	 */
-	public class Label {
+	public struct LabelStyle {
 
 		/**
-		 * ``Label`` Style.
+		 * Font style.
 		 */
-		public struct Style {
+		Font font_style;
 
-			/**
-			 * Font style.
-			 */
-			Font.Style font_style;
+		/**
+		 * Frame line style.
+		 */
+		LineStyle frame_line_style;
 
-			/**
-			 * Frame line style.
-			 */
-			Line.Style frame_line_style;
+		/**
+		 * Background color.
+		 */
+		Color bg_color;
 
-			/**
-			 * Background color.
-			 */
-			Color bg_color;
-
-			/**
-			 * Frame/border color.
-			 */
-			Color frame_color;
-		}
-
-		private Label () { }
+		/**
+		 * Frame/border color.
+		 */
+		Color frame_color;
 	}
 }

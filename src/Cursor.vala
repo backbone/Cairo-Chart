@@ -32,12 +32,12 @@ namespace CairoChart {
 
 			public Orientation orientation;
 			public double select_distance;
-			public Line.Style line_style;
+			public LineStyle line_style;
 
 			public Style () {
 				orientation = Orientation.VERTICAL;
 				select_distance = 32;
-				line_style = Line.Style(Color(0.2, 0.2, 0.2, 0.8));
+				line_style = LineStyle(Color(0.2, 0.2, 0.2, 0.8));
 			}
 		}
 

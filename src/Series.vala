@@ -21,7 +21,7 @@ namespace CairoChart {
 
 		public Grid grid = new Grid ();
 
-		public Line.Style line_style = Line.Style ();
+		public LineStyle line_style = LineStyle ();
 
 		protected Color _color = Color (0.0, 0.0, 0.0, 1.0);
 		public Color color {

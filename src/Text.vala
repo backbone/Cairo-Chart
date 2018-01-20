@@ -1,7 +1,7 @@
 namespace CairoChart {
 	public class Text {
 		public string text = "";
-		public Font.Style style = Font.Style ();
+		public Font style = Font ();
 		public Color color = Color();
 		public double vspacing = 4;
 		public double hspacing = 4;
@@ -25,18 +25,18 @@ namespace CairoChart {
 
 		public virtual double get_width (Cairo.Context ctx) {
 			var extents = get_extents (ctx);
-			switch (style.orientation) {
-			case Font.Orientation.HORIZONTAL: return extents.width;
-			case Font.Orientation.VERTICAL: return extents.height;
+			switch (style.direct) {
+			case FontDirect.HORIZONTAL: return extents.width;
+			case FontDirect.VERTICAL: return extents.height;
 			default: return 0.0;
 			}
 		}
 
 		public virtual double get_height (Cairo.Context ctx) {
 			var extents = get_extents (ctx);
-			switch (style.orientation) {
-			case Font.Orientation.HORIZONTAL: return extents.height;
-			case Font.Orientation.VERTICAL: return extents.width;
+			switch (style.direct) {
+			case FontDirect.HORIZONTAL: return extents.height;
+			case FontDirect.VERTICAL: return extents.width;
 			default: return 0.0;
 			}
 		}
@@ -49,12 +49,12 @@ namespace CairoChart {
 		public virtual Size get_size (Cairo.Context ctx) {
 			var sz = Size();
 			var extents = get_extents (ctx);
-			switch (style.orientation) {
-			case Font.Orientation.HORIZONTAL:
+			switch (style.direct) {
+			case FontDirect.HORIZONTAL:
 				sz.width = extents.width + extents.x_bearing;
 				sz.height = extents.height;
 				break;
-			case Font.Orientation.VERTICAL:
+			case FontDirect.VERTICAL:
 				sz.width = extents.height; // + extents.x_bearing ?
 				sz.height = extents.width; // +- extents.y_bearing ?
 				break;
@@ -67,7 +67,7 @@ namespace CairoChart {
 			                         style.slant,
 			                         style.weight);
 			ctx.set_font_size(style.size);
-			if (style.orientation == Font.Orientation.VERTICAL) {
+			if (style.direct == FontDirect.VERTICAL) {
 				ctx.rotate(- GLib.Math.PI / 2.0);
 				ctx.show_text(text);
 				ctx.rotate(GLib.Math.PI / 2.0);
@@ -77,7 +77,7 @@ namespace CairoChart {
 		}
 
 		public Text (string text = "",
-		             Font.Style style = Font.Style(),
+		             Font style = Font(),
 		             Color color = Color()
 		) {
 			this.text = text;

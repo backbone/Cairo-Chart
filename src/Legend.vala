@@ -10,9 +10,9 @@ namespace CairoChart {
 		}
 
 		public Position position = Position.TOP;
-		public Font.Style font_style = Font.Style();
+		public Font font_style = Font();
 		public Color bg_color = Color(1, 1, 1);
-		public Line.Style border_style = Line.Style ();
+		public LineStyle border_style = LineStyle ();
 		public double spacing = 5;
 		public double width = 0;
 		public double height = 0;

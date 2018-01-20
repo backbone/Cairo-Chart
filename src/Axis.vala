@@ -72,9 +72,9 @@ namespace CairoChart {
 			}
 			default = 2;
 		}
-		public Font.Style font_style = Font.Style ();
+		public Font font_style = Font ();
 		public Color color = Color ();
-		public Line.Style line_style = Line.Style ();
+		public LineStyle line_style = LineStyle ();
 		public double font_spacing = 5;
 
 		public virtual Axis copy () {

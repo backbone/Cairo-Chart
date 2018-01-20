@@ -18,7 +18,7 @@ namespace CairoChart {
 		/**
 		 * Line style of the ``Grid``.
 		 */
-		public Line.Style line_style = Line.Style ();
+		public LineStyle line_style = LineStyle ();
 
 		/**
 		 * Gets a copy of the ``Grid``.

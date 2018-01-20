@@ -249,7 +249,7 @@ int main (string[] args) {
 	plot_chart3 (chart3);
 	plot_chart4 (chart4);
 
-	chart1.selection_style = Line.Style(Color(0.3, 0.3, 0.3, 0.7));
+	chart1.selection_style = LineStyle(Color(0.3, 0.3, 0.3, 0.7));
 
 	var da = new DrawingArea();
 	da.set_events ( Gdk.EventMask.BUTTON_PRESS_MASK
