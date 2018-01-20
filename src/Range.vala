@@ -31,12 +31,12 @@ namespace CairoChart {
 		/**
 		 * Constructs a new ``Range``.
 		 */
-		Range () { }
+		public Range () { }
 
 		/**
 		 * Constructs a new ``Range`` with a ``Range`` instance.
 		 */
-		Range.with_range (Range range) {
+		public Range.with_range (Range range) {
 			this.low = range.low;
 			this.high = range.high;
 		}
@@ -44,7 +44,7 @@ namespace CairoChart {
 		/**
 		 * Constructs a new ``Range`` with absolute coordinates.
 		 */
-		Range.with_abs (double low, double high) {
+		public Range.with_abs (double low, double high) {
 			this.low = low;
 			this.high = high;
 		}
@@ -52,9 +52,9 @@ namespace CairoChart {
 		/**
 		 * Constructs a new ``Range`` with relative coordinates.
 		 */
-		Range.with_rel (double low, double range) {
+		public Range.with_rel (double low, double range) {
 			this.low = low;
-			this.high = low + range;
+			this.range = range;
 		}
 
 		/**

@@ -53,7 +53,7 @@ namespace CairoChart {
 		/**
 		 * Constructs a new ``Area``.
 		 */
-		Area () { }
+		public Area () { }
 
 		/**
 		 * Constructs a new ``Area`` with absolute coordinates.
@@ -62,7 +62,7 @@ namespace CairoChart {
 		 * @param x1 right bound.
 		 * @param y1 bottom bound.
 		 */
-		Area.with_abs (double x0, double y0, double x1, double y1) {
+		public Area.with_abs (double x0, double y0, double x1, double y1) {
 			this.x0 = x0;
 			this.y0 = y0;
 			this.x1 = x1;
@@ -76,7 +76,7 @@ namespace CairoChart {
 		 * @param width ``Area`` width.
 		 * @param height ``Area`` height.
 		 */
-		Area.with_rel (double x0, double y0, double width, double height) {
+		public Area.with_rel (double x0, double y0, double width, double height) {
 			this.x0 = x0;
 			this.y0 = y0;
 			this.width = width;
@@ -87,18 +87,18 @@ namespace CairoChart {
 		 * Constructs a new ``Area`` by other ``Area``.
 		 * @param area ``Area`` instance.
 		 */
-		Area.with_area (Area area) {
+		public Area.with_area (Area area) {
 			this.x0 = area.x0;
 			this.y0 = area.y0;
 			this.x1 = area.x1;
-			this.y1 = area.y0;
+			this.y1 = area.y1;
 		}
 
 		/**
 		 * Constructs a new ``Area`` by ``Cairo.Rectangle``.
 		 * @param rectangle ``Cairo.Rectangle`` instance.
 		 */
-		Area.with_rectangle (Cairo.Rectangle rectangle) {
+		public Area.with_rectangle (Cairo.Rectangle rectangle) {
 			this.x0 = rectangle.x;
 			this.y0 = rectangle.y;
 			this.width = rectangle.width;

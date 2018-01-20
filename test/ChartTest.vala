@@ -206,10 +206,10 @@ void plot_chart4 (Chart chart) {
 }
 
 bool point_in_chart (Chart chart, double x, double y) {
-	if (x < chart.plarea.x) return false;
-	if (x > chart.plarea.x + chart.plarea.width) return false;
-	if (y < chart.plarea.y) return false;
-	if (y > chart.plarea.y + chart.plarea.height) return false;
+	if (x < chart.plarea.x0) return false;
+	if (x > chart.plarea.x1) return false;
+	if (y < chart.plarea.y0) return false;
+	if (y > chart.plarea.y1) return false;
 	return true;
 }
 
@@ -426,7 +426,7 @@ int main (string[] args) {
 
 	    // user's post draw operations here...
 		if (mouse_state == MouseState.DRAW_SELECTION)
-			chart.draw_selection (Cairo.Rectangle() {x = sel_x0, y = sel_y0, width = sel_x1 - sel_x0, height = sel_y1 - sel_y0});
+			chart.draw_selection (new Area.with_abs(sel_x0, sel_y0, sel_x1, sel_y1));
 
 		// show delta
 		var str = chart.cursors.get_cursors_delta_str();
@@ -435,8 +435,8 @@ int main (string[] args) {
 			var text_t = new Text(text);
 			var w = text_t.get_width(ctx);
 			var h = text_t.get_height(ctx);
-			var x0 = chart.plarea.x + chart.plarea.width - w - 5;
-			var y0 = chart.plarea.y + h + 5;
+			var x0 = chart.plarea.x1 - w - 5;
+			var y0 = chart.plarea.y0 + h + 5;
 			chart.color = chart.legend.bg_color;
 			ctx.rectangle (x0, y0 - h, w, h);
 			ctx.fill();
@@ -499,7 +499,7 @@ int main (string[] args) {
 			sel_x1 = event.x;
 			sel_y1 = event.y;
 			if (sel_x1 > sel_x0 && sel_y1 > sel_y0)
-				chart.zoom_in (Cairo.Rectangle(){x = sel_x0, y = sel_y0, width = sel_x1 - sel_x0, height = sel_y1 - sel_y0});
+				chart.zoom_in (new Area.with_abs(sel_x0, sel_y0, sel_x1, sel_y1));
 			else
 				chart.zoom_out ();
 			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());

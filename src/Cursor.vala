@@ -58,8 +58,8 @@ namespace CairoChart {
 		}
 
 		public virtual void set_active_cursor (Point p, bool remove = false) {
-			active_cursor.x = chart.zoom.x + (p.x - chart.plarea.x) / chart.plarea.width * chart.zoom.width;
-			active_cursor.y = chart.zoom.y + chart.zoom.height - (chart.plarea.y + chart.plarea.height - p.y) / chart.plarea.height * chart.zoom.height;
+			active_cursor.x = chart.zoom.x0 + (p.x - chart.plarea.x0) / chart.plarea.width * chart.zoom.width;
+			active_cursor.y = chart.zoom.y1 - (chart.plarea.y1 - p.y) / chart.plarea.height * chart.zoom.height;
 			is_cursor_active = ! remove;
 		}
 
@@ -69,11 +69,11 @@ namespace CairoChart {
 		}
 
 		public virtual Float128 rel2scr_x(Float128 x) {
-			return chart.plarea.x + chart.plarea.width * (x - chart.zoom.x) / chart.zoom.width;
+			return chart.plarea.x0 + chart.plarea.width * (x - chart.zoom.x0) / chart.zoom.width;
 		}
 
 		public virtual Float128 rel2scr_y(Float128 y) {
-			return chart.plarea.y + chart.plarea.height * (y - chart.zoom.y) / chart.zoom.height;
+			return chart.plarea.y0 + chart.plarea.height * (y - chart.zoom.y0) / chart.zoom.height;
 		}
 
 		public virtual void remove_active_cursor () {
@@ -84,12 +84,8 @@ namespace CairoChart {
 			foreach (var c in list) {
 				double d = distance;
 				switch (cursor_style.orientation) {
-				case Cursors.Orientation.VERTICAL:
-					d = (rel2scr_x(c.x) - rel2scr_x(active_cursor.x)).abs();
-					break;
-				case Cursors.Orientation.HORIZONTAL:
-					d = (rel2scr_y(c.y) - rel2scr_y(active_cursor.y)).abs();
-					break;
+				case Cursors.Orientation.VERTICAL: d = (rel2scr_x(c.x) - rel2scr_x(active_cursor.x)).abs(); break;
+				case Cursors.Orientation.HORIZONTAL: d = (rel2scr_y(c.y) - rel2scr_y(active_cursor.y)).abs(); break;
 				}
 				if (d < distance) {
 					distance = d;
@@ -117,10 +113,8 @@ namespace CairoChart {
 			for (var ci = 0, max_ci = all_cursors.length(); ci < max_ci; ++ci) {
 				var c = all_cursors.nth_data(ci);
 				switch (cursor_style.orientation) {
-				case Orientation.VERTICAL:
-					if (c.x <= chart.zoom.x || c.x >= chart.zoom.x + chart.zoom.width) continue; break;
-				case Orientation.HORIZONTAL:
-					if (c.y <= chart.zoom.y || c.y >= chart.zoom.y + chart.zoom.height) continue; break;
+				case Orientation.VERTICAL: if (c.x <= chart.zoom.x0 || c.x >= chart.zoom.x1) continue; break;
+				case Orientation.HORIZONTAL: if (c.y <= chart.zoom.y0 || c.y >= chart.zoom.y1) continue; break;
 				}
 
 				CursorCross[] crossings = {};
@@ -128,22 +122,14 @@ namespace CairoChart {
 					var s = chart.series[si];
 					if (!s.zoom_show) continue;
 
-					Point128[] points = {};
-					switch (cursor_style.orientation) {
-					case Orientation.VERTICAL:
-						points = Math.sort_points (s, s.sort);
-						break;
-					case Orientation.HORIZONTAL:
-						points = Math.sort_points (s, s.sort);
-						break;
-					}
+					var points = Math.sort_points (s, s.sort);
 
 					for (var i = 0; i + 1 < points.length; ++i) {
 						switch (cursor_style.orientation) {
 						case Orientation.VERTICAL:
 							Float128 y = 0.0;
 							if (Math.vcross(s.get_scr_point(points[i]), s.get_scr_point(points[i+1]), rel2scr_x(c.x),
-							                chart.plarea.y, chart.plarea.y + chart.plarea.height, out y)) {
+							                chart.plarea.y0, chart.plarea.y1, out y)) {
 								var point = Point128(s.get_real_x(rel2scr_x(c.x)), s.get_real_y(y));
 								Point128 size; bool show_x, show_date, show_time, show_y;
 								cross_what_to_show(s, out show_x, out show_time, out show_date, out show_y);
@@ -155,7 +141,7 @@ namespace CairoChart {
 						case Orientation.HORIZONTAL:
 							Float128 x = 0.0;
 							if (Math.hcross(s.get_scr_point(points[i]), s.get_scr_point(points[i+1]),
-							                chart.plarea.x, chart.plarea.x + chart.plarea.width, rel2scr_y(c.y), out x)) {
+							                chart.plarea.x0, chart.plarea.x1, rel2scr_y(c.y), out x)) {
 								var point = Point128(s.get_real_x(x), s.get_real_y(rel2scr_y(c.y)));
 								Point128 size; bool show_x, show_date, show_time, show_y;
 								cross_what_to_show(s, out show_x, out show_time, out show_date, out show_y);
@@ -244,8 +230,8 @@ namespace CairoChart {
 			calc_cursors_value_positions();
 
 			for (var cci = 0, max_cci = cursors_crossings.length; cci < max_cci; ++cci) {
-				var low = Point128(chart.plarea.x + chart.plarea.width, chart.plarea.y + chart.plarea.height);  // low and high
-				var high = Point128(chart.plarea.x, chart.plarea.y); //              points of the cursor
+				var low = Point128(chart.plarea.x1, chart.plarea.y1);  // low and high
+				var high = Point128(chart.plarea.x0, chart.plarea.y0); //              points of the cursor
 				unowned CursorCross[] ccs = cursors_crossings[cci].crossings;
 				cursor_style.line_style.apply(chart);
 				for (var ci = 0, max_ci = ccs.length; ci < max_ci; ++ci) {
@@ -261,21 +247,21 @@ namespace CairoChart {
 
 					if (chart.joint_x) {
 						switch (s.axis_x.position) {
-						case Axis.Position.LOW: high.y = chart.plarea.y + chart.plarea.height + s.axis_x.font_spacing; break;
-						case Axis.Position.HIGH: low.y = chart.plarea.y - s.axis_x.font_spacing; break;
+						case Axis.Position.LOW: high.y = chart.plarea.y1 + s.axis_x.font_spacing; break;
+						case Axis.Position.HIGH: low.y = chart.plarea.y0 - s.axis_x.font_spacing; break;
 						case Axis.Position.BOTH:
-							high.y = chart.plarea.y + chart.plarea.height + s.axis_x.font_spacing;
-							low.y = chart.plarea.y - s.axis_x.font_spacing;
+							high.y = chart.plarea.y1 + s.axis_x.font_spacing;
+							low.y = chart.plarea.y0 - s.axis_x.font_spacing;
 							break;
 						}
 					}
 					if (chart.joint_y) {
 						switch (s.axis_y.position) {
-						case Axis.Position.LOW: low.x = chart.plarea.x - s.axis_y.font_spacing; break;
-						case Axis.Position.HIGH: high.x = chart.plarea.x + chart.plarea.width + s.axis_y.font_spacing; break;
+						case Axis.Position.LOW: low.x = chart.plarea.x0 - s.axis_y.font_spacing; break;
+						case Axis.Position.HIGH: high.x = chart.plarea.x1 + s.axis_y.font_spacing; break;
 						case Axis.Position.BOTH:
-							low.x = chart.plarea.x - s.axis_y.font_spacing;
-							high.x = chart.plarea.x + chart.plarea.width + s.axis_y.font_spacing;
+							low.x = chart.plarea.x0 - s.axis_y.font_spacing;
+							high.x = chart.plarea.x1 + s.axis_y.font_spacing;
 							break;
 						}
 					}
@@ -298,27 +284,21 @@ namespace CairoChart {
 						var x = s.get_real_x(rel2scr_x(c.x));
 						string text = "", time_text = "";
 						switch (s.axis_x.type) {
-						case Axis.Type.NUMBERS:
-							text = s.axis_x.format.printf((LongDouble)x);
-							break;
-						case Axis.Type.DATE_TIME:
-							s.axis_x.format_date_time(x, out text, out time_text);
-							break;
-						default:
-							break;
+						case Axis.Type.NUMBERS: text = s.axis_x.format.printf((LongDouble)x); break;
+						case Axis.Type.DATE_TIME: s.axis_x.format_date_time(x, out text, out time_text); break;
 						}
 						var text_t = new Text(text, s.axis_x.font_style, s.axis_x.color);
 						var sz = text_t.get_size(chart.ctx);
 						var time_text_t = new Text(time_text, s.axis_x.font_style, s.axis_x.color);
 						var print_y = 0.0;
 						switch (s.axis_x.position) {
-							case Axis.Position.LOW: print_y = chart.area.y + chart.area.height - s.axis_x.font_spacing
+							case Axis.Position.LOW: print_y = chart.area.y1 - s.axis_x.font_spacing
 								                    - (chart.legend.position == Legend.Position.BOTTOM ? chart.legend.height : 0);
 								break;
 							case Axis.Position.HIGH:
 								var title_height = chart.title.get_height(chart.ctx) + (chart.legend.position == Legend.Position.TOP ?
 								                   chart.title.vspacing * 2 : chart.title.vspacing);
-								print_y = chart.area.y + title_height + s.axis_x.font_spacing
+								print_y = chart.area.y0 + title_height + s.axis_x.font_spacing
 								          + (chart.legend.position == Legend.Position.TOP ? chart.legend.height : 0);
 								switch (s.axis_x.type) {
 								case Axis.Type.NUMBERS:
@@ -362,11 +342,11 @@ namespace CairoChart {
 						var print_x = 0.0;
 						switch (s.axis_y.position) {
 						case Axis.Position.LOW:
-							print_x = chart.area.x + s.axis_y.font_spacing
+							print_x = chart.area.x0 + s.axis_y.font_spacing
 							          + (chart.legend.position == Legend.Position.LEFT ? chart.legend.width : 0);
 							break;
 						case Axis.Position.HIGH:
-							print_x = chart.area.x + chart.area.width - text_t.get_width(chart.ctx) - s.axis_y.font_spacing
+							print_x = chart.area.x1 - text_t.get_width(chart.ctx) - s.axis_y.font_spacing
 							          - (chart.legend.position == Legend.Position.RIGHT ? chart.legend.width : 0);
 							break;
 						}

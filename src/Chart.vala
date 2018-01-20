@@ -8,25 +8,22 @@ namespace CairoChart {
 		/**
 		 * ``Chart`` Position.
 		 */
-		public Cairo.Rectangle area = Cairo.Rectangle();
+		public Area area = new Area();
 
 		/**
 		 * Current evaluated area.
 		 */
-		public Cairo.Rectangle evarea = Cairo.Rectangle()
-		                                { x = 0, y = 0, width = 1, height = 1 };
+		public Area evarea = new Area.with_abs(0, 0, 1, 1);
 
 		/**
 		 * Zoom area limits (relative coordinates: 0.0-1.0).
 		 */
-		public Cairo.Rectangle zoom = Cairo.Rectangle()
-		                              { x = 0, y = 0, width = 1, height = 1 };
+		public Area zoom = new Area.with_abs(0, 0, 1, 1);
 
 		/**
 		 * Plot area bounds.
 		 */
-		public Cairo.Rectangle plarea = Cairo.Rectangle()
-		                                { x = 0, y = 0, width = 1, height = 1 };
+		public Area plarea = new Area.with_abs(0, 0, 1, 1);
 
 		/**
 		 * Cairo ``Context`` of the Drawing Area.
@@ -109,21 +106,21 @@ namespace CairoChart {
 		 */
 		public Chart copy () {
 			var chart = new Chart ();
-			chart.area = this.area;
+			chart.area = this.area.copy();
 			chart.bg_color = this.bg_color;
 			chart.border_color = this.border_color;
 			chart.ctx = this.ctx;
 			chart.cursors = this.cursors.copy();
-			chart.evarea = this.evarea;
+			chart.evarea = this.evarea.copy();
 			chart.joint_color = this.joint_color;
 			chart.joint_x = this.joint_x;
 			chart.joint_y = this.joint_y;
 			chart.legend = this.legend.copy();
-			chart.plarea = this.plarea;
+			chart.plarea = this.plarea.copy();
 			chart.selection_style = this.selection_style;
 			chart.series = this.series;
 			chart.title = this.title.copy();
-			chart.zoom = this.zoom;
+			chart.zoom = this.zoom.copy();
 			chart.zoom_1st_idx = this.zoom_1st_idx;
 			return chart;
 		}
@@ -143,7 +140,7 @@ namespace CairoChart {
 		 */
 		public virtual bool draw () {
 
-			evarea = area;
+			evarea = area.copy();
 
 			draw_title ();
 			fix_evarea ();
@@ -177,26 +174,26 @@ namespace CairoChart {
 
 		/**
 		 * Draws selection with a {@link selection_style} line style.
-		 * @param rect selection square.
+		 * @param area selection area.
 		 */
-		public virtual void draw_selection (Cairo.Rectangle rect) {
+		public virtual void draw_selection (Area area) {
 			selection_style.apply(this);
-			ctx.rectangle (rect.x, rect.y, rect.width, rect.height);
+			ctx.rectangle (area.x0, area.y0, area.width, area.height);
 			ctx.stroke();
 		}
 
 		/**
 		 * Zooms the ``Chart``.
-		 * @param rect selected zoom area.
+		 * @param area selected zoom area.
 		 */
-		public virtual void zoom_in (Cairo.Rectangle rect) {
+		public virtual void zoom_in (Area area) {
 			foreach (var s in series) {
 				if (!s.zoom_show) continue;
-				var real_x0 = s.get_real_x (rect.x);
-				var real_x1 = s.get_real_x (rect.x + rect.width);
+				var real_x0 = s.get_real_x (area.x0);
+				var real_x1 = s.get_real_x (area.x1);
 				var real_width = real_x1 - real_x0;
-				var real_y0 = s.get_real_y (rect.y);
-				var real_y1 = s.get_real_y (rect.y + rect.height);
+				var real_y0 = s.get_real_y (area.y0);
+				var real_y1 = s.get_real_y (area.y1);
 				var real_height = real_y0 - real_y1;
 				// if selected square does not intersect with the series's square
 				if (   real_x1 <= s.axis_x.zoom_min || real_x0 >= s.axis_x.zoom_max
@@ -236,18 +233,18 @@ namespace CairoChart {
 					zoom_1st_idx = si;
 					break;
 				}
-			var new_zoom = zoom;
-			var rmpx = rect.x - plarea.x;
+			var new_zoom = zoom.copy();
+			var rmpx = area.x0 - plarea.x0;
 			var zdpw = zoom.width / plarea.width;
-			new_zoom.x += rmpx * zdpw;
-			var x_max = zoom.x + (rmpx + rect.width) * zdpw;
-			new_zoom.width = x_max - new_zoom.x;
-			var rmpy = rect.y - plarea.y;
+			new_zoom.x0 += rmpx * zdpw;
+			var x_max = zoom.x0 + (rmpx + area.width) * zdpw;
+			new_zoom.width = x_max - new_zoom.x0;
+			var rmpy = area.y0 - plarea.y0;
 			var zdph = zoom.height / plarea.height;
-			new_zoom.y += rmpy * zdph;
-			var y_max = zoom.y + (rmpy + rect.height) * zdph;
-			new_zoom.height = y_max - new_zoom.y;
-			zoom = new_zoom;
+			new_zoom.y0 += rmpy * zdph;
+			var y_max = zoom.y0 + (rmpy + area.height) * zdph;
+			new_zoom.height = y_max - new_zoom.y0;
+			zoom = new_zoom.copy();
 		}
 
 		/**
@@ -255,7 +252,7 @@ namespace CairoChart {
 		 */
 		public virtual void zoom_out () {
 			foreach (var s in series) s.unzoom();
-			zoom = Cairo.Rectangle() { x = 0, y = 0, width = 1, height = 1 };
+			zoom = new Area.with_abs (0, 0, 1, 1);
 			zoom_1st_idx = 0;
 		}
 
@@ -268,33 +265,35 @@ namespace CairoChart {
 
 			d.x /= -plarea.width; d.y /= -plarea.height;
 
-			var z = zoom;
+			var z = zoom.copy();
 
 			zoom_out();
 
 			d.x *= plarea.width; d.y *= plarea.height;
 
-			var x0 = plarea.x + plarea.width * z.x;
-			var x1 = plarea.x + plarea.width * (z.x + z.width);
-			var y0 = plarea.y + plarea.height * z.y;
-			var y1 = plarea.y + plarea.height * (z.y + z.height);
+			var x0 = plarea.x0 + plarea.width * z.x0;
+			var x1 = plarea.x0 + plarea.width * z.x1;
+			var y0 = plarea.y0 + plarea.height * z.y0;
+			var y1 = plarea.y0 + plarea.height * z.y1;
 
 			d.x *= z.width; d.y *= z.height;
 
-			var px1 = plarea.x + plarea.width;
-			var py1 = plarea.y + plarea.height;
+			var px1 = plarea.x1;
+			var py1 = plarea.y1;
 
-			if (x0 + d.x < plarea.x) d.x = plarea.x - x0;
+			if (x0 + d.x < plarea.x0) d.x = plarea.x0 - x0;
 			if (x1 + d.x > px1) d.x = px1 - x1;
-			if (y0 + d.y < plarea.y) d.y = plarea.y - y0;
+			if (y0 + d.y < plarea.y0) d.y = plarea.y0 - y0;
 			if (y1 + d.y > py1) d.y = py1 - y1;
 
-			zoom_in(Cairo.Rectangle() {
-				x = x0 + d.x,
-				y = y0 + d.y,
-				width = plarea.width * z.width,
-				height = plarea.height * z.height
-			});
+			zoom_in(
+				new Area.with_rel(
+					x0 + d.x,
+					y0 + d.y,
+					plarea.width * z.width,
+					plarea.height * z.height
+				)
+			);
 		}
 
 		protected virtual void fix_evarea () {
@@ -307,9 +306,9 @@ namespace CairoChart {
 		}
 
 		protected virtual void eval_plarea () {
-			plarea.x = evarea.x + legend.spacing;
+			plarea.x0 = evarea.x0 + legend.spacing;
 			plarea.width = evarea.width - 2 * legend.spacing;
-			plarea.y = evarea.y + legend.spacing;
+			plarea.y0 = evarea.y0 + legend.spacing;
 			plarea.height = evarea.height - 2 * legend.spacing;
 
 			// Check for joint axes
@@ -333,13 +332,13 @@ namespace CairoChart {
 		protected virtual void draw_plarea_border () {
 			color = border_color;
 			ctx.set_dash(null, 0);
-			ctx.rectangle(plarea.x, plarea.y, plarea.width, plarea.height);
+			ctx.rectangle(plarea.x0, plarea.y0, plarea.width, plarea.height);
 			ctx.stroke ();
 		}
 		protected virtual void draw_title () {
 			var sz = title.get_size(ctx);
 			var title_height = sz.height + title.vspacing * 2;
-			evarea.y += title_height;
+			evarea.y0 += title_height;
 			evarea.height -= title_height;
 			color = title.color;
 			ctx.move_to (area.width/2 - sz.width/2, sz.height + title.vspacing);
