@@ -23,7 +23,7 @@ namespace CairoChart {
 			get {
 				return high - low;
 			}
-			protected set {
+			set {
 				high = low + value;
 			}
 		}

@@ -33,7 +33,7 @@ namespace CairoChart {
 			get {
 				return x1 - x0;
 			}
-			protected set {
+			set {
 				x1 = x0 + value;
 			}
 		}
@@ -45,7 +45,7 @@ namespace CairoChart {
 			get {
 				return y1 - y0;
 			}
-			protected set {
+			set {
 				y1 = y0 + value;
 			}
 		}
