@@ -140,7 +140,7 @@ namespace CairoChart {
 				switch (process_type) {
 				case ProcessType.DRAW:
 					var x = legend_x0 + leg_width_sum + (leg_width_sum == 0.0 ? 0.0 : text_hspace);
-					var y = legend_y0 + leg_height_sum + max_font_heights[heights_idx];
+					var y = legend_y0 + leg_height_sum + max_font_heights[heights_idx] / 2.0 + s.title.height / 2.0;
 
 					// series title
 					chart.ctx.move_to (x + line_length, y);
