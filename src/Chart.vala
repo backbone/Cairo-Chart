@@ -312,6 +312,10 @@ namespace CairoChart {
 			plarea.width = evarea.width - 2 * legend.spacing;
 			plarea.y0 = evarea.y0 + legend.spacing;
 			plarea.height = evarea.height - 2 * legend.spacing;
+			/*plarea.x0 = evarea.x0 + (legend.show ? legend.spacing : 0);
+			plarea.width = evarea.width - 2 * (legend.show ? legend.spacing : 0);
+			plarea.y0 = evarea.y0 + (legend.show ? legend.spacing : 0);
+			plarea.height = evarea.height - 2 * (legend.show ? legend.spacing : 0);*/
 
 			// Check for joint axes
 			joint_x = joint_y = true;

@@ -42,6 +42,7 @@ namespace CairoChart {
 		}
 
 		public virtual void draw (Chart chart) {
+			if (!show) return;
 			process (chart, ProcessType.CALC);
 			process (chart, ProcessType.DRAW);
 		}
