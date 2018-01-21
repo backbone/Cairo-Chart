@@ -50,7 +50,7 @@ void plot_chart1 (Chart chart) {
 	s2.title.font.size = 16;
 	s2.title.font.slant = Cairo.FontSlant.ITALIC;
 	s2.title.font.weight = Cairo.FontWeight.BOLD;
-	s3.title.font.size = 16;
+	s3.title.font.size = 18;
 	s1.axis_x.title.font.size = 14;
 	s2.axis_x.title.font.size = 14;
 	s2.axis_x.title.font.slant = Cairo.FontSlant.ITALIC;
