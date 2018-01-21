@@ -15,7 +15,7 @@ namespace CairoChart {
 		public Axis axis_x = new Axis();
 		public Axis axis_y = new Axis();
 
-		public Area place = new Area();
+		public Place place = new Place();
 		public Text title = new Text ();
 		public Marker marker = new Marker ();
 

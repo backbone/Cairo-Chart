@@ -5,88 +5,35 @@ namespace CairoChart {
 	 */
 	public class Area {
 
-		double _x0 = 0;
-		double _x1 = 1;
-		double _y0 = 0;
-		double _y1 = 1;
-
-		/**
-		 * Zoomed Left bound.
-		 */
-		public double zx0 = 0;
-
-		/**
-		 * Zoomed Top bound.
-		 */
-		public double zx1 = 1;
-
-		/**
-		 * Zoomed Right bound.
-		 */
-		public double zy0 = 0;
-
-		/**
-		 * Zoomed Bottom bound.
-		 */
-		public double zy1 = 1;
-
 		/**
 		 * Left bound.
 		 */
-		public double x0 {
-			get {
-				return _x0;
-			}
-			set {
-				zx0 = _x0 = value;
-			}
-		}
+		public double x0 = 0;
 
 		/**
 		 * Top bound.
 		 */
-		public double y0 {
-			get {
-				return _y0;
-			}
-			set {
-				zy0 = _y0 = value;
-			}
-		}
+		public double x1 = 1;
 
 		/**
 		 * Right bound.
 		 */
-		public double x1 {
-			get {
-				return _x1;
-			}
-			set {
-				zx1 = _x1 = value;
-			}
-		}
+		public double y0 = 0;
 
 		/**
 		 * Bottom bound.
 		 */
-		public double y1 {
-			get {
-				return _y1;
-			}
-			set {
-				zy1 = _y1 = value;
-			}
-		}
+		public double y1 = 1;
 
 		/**
 		 * ``Area`` width.
 		 */
 		public double width {
 			get {
-				return _x1 - _x0;
+				return x1 - x0;
 			}
 			set {
-				zx1 = _x1 = _x0 + value;
+				x1 = x0 + value;
 			}
 		}
 
@@ -95,34 +42,10 @@ namespace CairoChart {
 		 */
 		public double height {
 			get {
-				return _y1 - _y0;
+				return y1 - y0;
 			}
 			set {
-				zy1 = _y1 = _y0 + value;
-			}
-		}
-
-		/**
-		 * ``Area`` zoomed width.
-		 */
-		public double zwidth {
-			get {
-				return zx1 - zx0;
-			}
-			set {
-				zx1 = zx0 + value;
-			}
-		}
-
-		/**
-		 * ``Area`` zoomed height.
-		 */
-		public double zheight {
-			get {
-				return zy1 - zy0;
-			}
-			set {
-				zy1 = zy0 + value;
+				y1 = y0 + value;
 			}
 		}
 
@@ -186,16 +109,6 @@ namespace CairoChart {
 		 */
 		public Area copy () {
 			return new Area.with_area(this);
-		}
-
-		/**
-		 * Unzooms ``Area``.
-		 */
-		public void unzoom () {
-			zx0 = x0;
-			zy0 = y0;
-			zx1 = x1;
-			zy1 = y1;
 		}
 	}
 }
