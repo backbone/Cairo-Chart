@@ -100,7 +100,7 @@ namespace CairoChart {
 		public virtual void calc_rec_sizes (Chart chart, out double max_rec_width, out double max_rec_height, bool horizontal = true) {
 			max_rec_width = max_rec_height = 0;
 			for (var i = 0; i < nrecords; ++i) {
-				Float128 x = (int64)(range.zmin + (range.zmax - range.zmin) / nrecords * i) + 1.0/3.0;
+				Float128 x = (int64)(range.zmin + range.zrange / nrecords * i) + 1.0/3.0;
 				switch (type) {
 				case Axis.Type.NUMBERS:
 					var text = new Text (format.printf((LongDouble)x) + (horizontal ? "_" : ""), font_style);

@@ -331,12 +331,12 @@ namespace CairoChart {
 			s.axis_x.calc_rec_sizes (chart, out max_rec_width, out max_rec_height, true);
 
 			// 2. Calculate maximal available number of records, take into account the space width.
-			long max_nrecs = (long) (chart.plarea.width * (s.place.zx1 - s.place.zx0) / max_rec_width);
+			long max_nrecs = (long) (chart.plarea.width * s.place.zwidth / max_rec_width);
 
 			// 3. Calculate grid step.
-			Float128 step = Math.calc_round_step ((s.axis_x.range.zmax - s.axis_x.range.zmin) / max_nrecs, s.axis_x.type == Axis.Type.DATE_TIME);
-			if (step > s.axis_x.range.zmax - s.axis_x.range.zmin)
-				step = s.axis_x.range.zmax - s.axis_x.range.zmin;
+			Float128 step = Math.calc_round_step (s.axis_x.range.zrange / max_nrecs, s.axis_x.type == Axis.Type.DATE_TIME);
+			if (step > s.axis_x.range.zrange)
+				step = s.axis_x.range.zrange;
 
 			// 4. Calculate x_min (s.axis_x.range.zmin / step, round, multiply on step, add step if < s.axis_x.range.zmin).
 			Float128 x_min = 0.0;
@@ -451,12 +451,12 @@ namespace CairoChart {
 			s.axis_y.calc_rec_sizes (chart, out max_rec_width, out max_rec_height, false);
 
 			// 2. Calculate maximal available number of records, take into account the space width.
-			long max_nrecs = (long) (chart.plarea.height * (s.place.zy1 - s.place.zy0) / max_rec_height);
+			long max_nrecs = (long) (chart.plarea.height * s.place.zheight / max_rec_height);
 
 			// 3. Calculate grid step.
-			Float128 step = Math.calc_round_step ((s.axis_y.range.zmax - s.axis_y.range.zmin) / max_nrecs);
-			if (step > s.axis_y.range.zmax - s.axis_y.range.zmin)
-				step = s.axis_y.range.zmax - s.axis_y.range.zmin;
+			Float128 step = Math.calc_round_step (s.axis_y.range.zrange / max_nrecs);
+			if (step > s.axis_y.range.zrange)
+				step = s.axis_y.range.zrange;
 
 			// 4. Calculate y_min (s.axis_y.range.zmin / step, round, multiply on step, add step if < s.axis_y.range.zmin).
 			Float128 y_min = 0.0;
@@ -518,21 +518,21 @@ namespace CairoChart {
 		public virtual double compact_rec_x_pos (Float128 x, Text text) {
 			var sz = text.get_size(chart.ctx);
 			return get_scr_x(x) - sz.width / 2.0
-			       - sz.width * (x - (axis_x.range.zmin + axis_x.range.zmax) / 2.0) / (axis_x.range.zmax - axis_x.range.zmin);
+			       - sz.width * (x - (axis_x.range.zmin + axis_x.range.zmax) / 2.0) / axis_x.range.zrange;
 		}
 
 		public virtual double compact_rec_y_pos (Float128 y, Text text) {
 			var sz = text.get_size(chart.ctx);
 			return get_scr_y(y) + sz.height / 2.0
-			       + sz.height * (y - (axis_y.range.zmin + axis_y.range.zmax) / 2.0) / (axis_y.range.zmax - axis_y.range.zmin);
+			       + sz.height * (y - (axis_y.range.zmin + axis_y.range.zmax) / 2.0) / axis_y.range.zrange;
 		}
 
 		public virtual double get_scr_x (Float128 x) {
-			return chart.plarea.x0 + chart.plarea.width * (place.zx0 + (x - axis_x.range.zmin) / (axis_x.range.zmax - axis_x.range.zmin) * (place.zx1 - place.zx0));
+			return chart.plarea.x0 + chart.plarea.width * (place.zx0 + (x - axis_x.range.zmin) / axis_x.range.zrange * place.zwidth);
 		}
 
 		public virtual double get_scr_y (Float128 y) {
-			return chart.plarea.y0 + chart.plarea.height * (1.0 - (place.zy0 + (y - axis_y.range.zmin) / (axis_y.range.zmax - axis_y.range.zmin) * (place.zy1 - place.zy0)));
+			return chart.plarea.y0 + chart.plarea.height * (1.0 - (place.zy0 + (y - axis_y.range.zmin) / axis_y.range.zrange * place.zheight));
 		}
 
 		public virtual Point get_scr_point (Point128 p) {
@@ -540,13 +540,11 @@ namespace CairoChart {
 		}
 
 		public virtual Float128 get_real_x (double scr_x) {
-			return axis_x.range.zmin + ((scr_x - chart.plarea.x0) / chart.plarea.width - place.zx0)
-			       * (axis_x.range.zmax - axis_x.range.zmin) / (place.zx1 - place.zx0);
+			return axis_x.range.zmin + ((scr_x - chart.plarea.x0) / chart.plarea.width - place.zx0) * axis_x.range.zrange / place.zwidth;
 		}
 
 		public virtual Float128 get_real_y (double scr_y) {
-			return axis_y.range.zmin + ((chart.plarea.y1 - scr_y) / chart.plarea.height - place.zy0)
-			       * (axis_y.range.zmax - axis_y.range.zmin) / (place.zy1 - place.zy0);
+			return axis_y.range.zmin + ((chart.plarea.y1 - scr_y) / chart.plarea.height - place.zy0) * axis_y.range.zrange / place.zheight;
 		}
 
 		public virtual Point128 get_real_point (Point p) {
