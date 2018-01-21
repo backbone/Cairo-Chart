@@ -43,7 +43,7 @@ namespace CairoChart {
 		/**
 		 * ``Chart`` Title.
 		 */
-		public Text title = new Text("Cairo Chart");
+		public Text title;
 
 		/**
 		 * Legend.
@@ -99,6 +99,8 @@ namespace CairoChart {
 		 */
 		public Chart () {
 			cursors = new Cursors (this);
+			title = new Text(this, "Cairo Chart");
+
 		}
 
 		/**
@@ -336,13 +338,13 @@ namespace CairoChart {
 			ctx.stroke ();
 		}
 		protected virtual void draw_title () {
-			var sz = title.get_size(ctx);
+			var sz = title.size;
 			var title_height = sz.height + title.vspacing * 2;
 			evarea.y0 += title_height;
 			evarea.height -= title_height;
 			color = title.color;
 			ctx.move_to (area.width/2 - sz.width/2, sz.height + title.vspacing);
-			title.show(ctx);
+			title.show();
 		}
 		protected virtual void draw_haxes () {
 			for (var si = series.length - 1, nskip = 0; si >=0; --si)

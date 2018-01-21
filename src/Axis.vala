@@ -4,7 +4,8 @@ namespace CairoChart {
 	// or specify series name near the axis
 	public class Axis {
 		public Range range = new Range();
-		public Text title = new Text ("");
+		Chart chart;
+		public Text title;
 		public enum Type {
 			NUMBERS = 0,
 			DATE_TIME
@@ -65,7 +66,7 @@ namespace CairoChart {
 		public double font_spacing = 5;
 
 		public virtual Axis copy () {
-			var axis = new Axis ();
+			var axis = new Axis (chart);
 			axis._date_format = this._date_format;
 			axis._dsec_signs = this._dsec_signs;
 			axis._format = this._format;
@@ -84,7 +85,10 @@ namespace CairoChart {
 			return axis;
 		}
 
-		public Axis () {}
+		public Axis (Chart chart) {
+			this.chart = chart;
+			title = new Text (chart, "");
+		}
 
 		public int nrecords = 128;
 
@@ -103,8 +107,8 @@ namespace CairoChart {
 				Float128 x = (int64)(range.zmin + range.zrange / nrecords * i) + 1.0/3.0;
 				switch (type) {
 				case Axis.Type.NUMBERS:
-					var text = new Text (format.printf((LongDouble)x) + (horizontal ? "_" : ""), font_style);
-					var sz = text.get_size(chart.ctx);
+					var text = new Text (chart, format.printf((LongDouble)x) + (horizontal ? "_" : ""), font_style);
+					var sz = text.size;
 					max_rec_width = double.max (max_rec_width, sz.width);
 					max_rec_height = double.max (max_rec_height, sz.height);
 					break;
@@ -114,14 +118,14 @@ namespace CairoChart {
 
 					var h = 0.0;
 					if (date_format != "") {
-						var text = new Text (date + (horizontal ? "_" : ""), font_style);
-						var sz = text.get_size(chart.ctx);
+						var text = new Text (chart, date + (horizontal ? "_" : ""), font_style);
+						var sz = text.size;
 						max_rec_width = double.max (max_rec_width, sz.width);
 						h = sz.height;
 					}
 					if (time_format != "") {
-						var text = new Text (time + (horizontal ? "_" : ""), font_style);
-						var sz = text.get_size(chart.ctx);
+						var text = new Text (chart, time + (horizontal ? "_" : ""), font_style);
+						var sz = text.size;
 						max_rec_width = double.max (max_rec_width, sz.width);
 						h += sz.height;
 					}

@@ -5,13 +5,13 @@ void plot_chart1 (Chart chart) {
 	var s2 = new Series (chart);
 	var s3 = new Series (chart);
 
-	s1.title = new Text("Series 1"); s1.color = Color (1, 0, 0);
+	s1.title = new Text(chart, "Series 1"); s1.color = Color (1, 0, 0);
 	s1.points = {Point128(0, 0), Point128(2, 1), Point128(1, 3)};
 	s1.axis_x.position = Axis.Position.HIGH;
 	s1.axis_x.format = "%.3Lf";
-	s2.title = new Text("Series 2"); s2.color = Color (0, 1, 0);
+	s2.title = new Text(chart, "Series 2"); s2.color = Color (0, 1, 0);
 	s2.points = {Point128(5, -3), Point128(25, -18), Point128(-11, 173)};
-	s3.title = new Text("Series 3"); s3.color = Color (0, 0, 1);
+	s3.title = new Text(chart, "Series 3"); s3.color = Color (0, 0, 1);
 	s3.points = {Point128(9, 17), Point128(2, 10), Point128(122, 31)};
 	s3.axis_y.position = Axis.Position.HIGH;
 
@@ -34,12 +34,12 @@ void plot_chart1 (Chart chart) {
 	s2.marker.type = Marker.Type.CIRCLE;
 	s3.marker.type = Marker.Type.PRICLE_TRIANGLE;
 
-	s1.axis_x.title = new Text("Series 1: Axis X.");
-	s1.axis_y.title = new Text("Series 1: Axis Y.");
-	s2.axis_x.title = new Text("Series 2: Axis X.");
-	s2.axis_y.title = new Text("Series 2: Axis Y.");
-	s3.axis_x.title = new Text("Series 3: Axis X.");
-	s3.axis_y.title = new Text("Series 3: Axis Y.");
+	s1.axis_x.title = new Text(chart, "Series 1: Axis X.");
+	s1.axis_y.title = new Text(chart, "Series 1: Axis Y.");
+	s2.axis_x.title = new Text(chart, "Series 2: Axis X.");
+	s2.axis_y.title = new Text(chart, "Series 2: Axis Y.");
+	s3.axis_x.title = new Text(chart, "Series 3: Axis X.");
+	s3.axis_y.title = new Text(chart, "Series 3: Axis Y.");
 
 	chart.series = { s1, s2, s3 };
 }
@@ -49,13 +49,13 @@ void plot_chart2 (Chart chart) {
 	var s2 = new Series (chart);
 	var s3 = new Series (chart);
 
-	s1.title = new Text("Series 1"); s1.color = Color (1, 0, 0);
+	s1.title = new Text(chart, "Series 1"); s1.color = Color (1, 0, 0);
 	s1.points = {Point128(-12, 0), Point128(2, 1), Point128(20, 3)};
 	s2.axis_y.position = Axis.Position.HIGH;
 	s1.axis_x.format = "%.3Lf";
-	s2.title = new Text("Series 2"); s2.color = Color (0, 1, 0);
+	s2.title = new Text(chart, "Series 2"); s2.color = Color (0, 1, 0);
 	s2.points = {Point128(5, -3), Point128(25, -18), Point128(-11, 173)};
-	s3.title = new Text("Series 3"); s3.color = Color (0, 0, 1);
+	s3.title = new Text(chart, "Series 3"); s3.color = Color (0, 0, 1);
 	s3.points = {Point128(9, 17), Point128(2, 10), Point128(-15, 31)};
 	s3.axis_y.position = Axis.Position.HIGH;
 
@@ -78,12 +78,12 @@ void plot_chart2 (Chart chart) {
 	s2.marker.type = Marker.Type.PRICLE_SQUARE;
 	s3.marker.type = Marker.Type.SQUARE;
 
-	s1.axis_x.title = new Text("All Series: Axis X.");
-	s1.axis_y.title = new Text("Series 1: Axis Y.");
-	s2.axis_x.title = new Text("All Series: Axis X.");
-	s2.axis_y.title = new Text("Series 2: Axis Y.");
-	s3.axis_x.title = new Text("All Series: Axis X.");
-	s3.axis_y.title = new Text("Series 3: Axis Y.");
+	s1.axis_x.title = new Text(chart, "All Series: Axis X.");
+	s1.axis_y.title = new Text(chart, "Series 1: Axis Y.");
+	s2.axis_x.title = new Text(chart, "All Series: Axis X.");
+	s2.axis_y.title = new Text(chart, "Series 2: Axis Y.");
+	s3.axis_x.title = new Text(chart, "All Series: Axis X.");
+	s3.axis_y.title = new Text(chart, "Series 3: Axis Y.");
 
 	//s1.axis_x.position = s2.axis_x.position = s3.axis_x.position = Axis.Position.HIGH;
 	//s1.axis_x.type = s2.axis_x.type = s3.axis_x.type = Axis.Type.DATE_TIME;
@@ -97,15 +97,15 @@ void plot_chart3 (Chart chart) {
 	var s2 = new Series (chart);
 	var s3 = new Series (chart);
 
-	s1.title = new Text("Series 1"); s1.color = Color (1, 0, 0);
+	s1.title = new Text(chart, "Series 1"); s1.color = Color (1, 0, 0);
 	s1.points = {Point128(0, 70), Point128(2, 155), Point128(1, -3)};
 	s1.axis_x.position = Axis.Position.HIGH;
 	s1.axis_y.position = Axis.Position.HIGH;
 	s1.axis_x.format = "%.3Lf";
-	s2.title = new Text("Series 2"); s2.color = Color (0, 1, 0);
+	s2.title = new Text(chart, "Series 2"); s2.color = Color (0, 1, 0);
 	s2.points = {Point128(5, -3), Point128(25, -18), Point128(-11, 173)};
 	s2.axis_y.position = Axis.Position.HIGH;
-	s3.title = new Text("Series 3"); s3.color = Color (0, 0, 1);
+	s3.title = new Text(chart, "Series 3"); s3.color = Color (0, 0, 1);
 	s3.points = {Point128(9, -17), Point128(2, 10), Point128(122, 31)};
 	s3.axis_y.position = Axis.Position.HIGH;
 
@@ -128,12 +128,12 @@ void plot_chart3 (Chart chart) {
 	s2.marker.type = Marker.Type.PRICLE_CIRCLE;
 	s3.marker.type = Marker.Type.TRIANGLE;
 
-	s1.axis_x.title = new Text("Series 1: Axis X.");
-	s1.axis_y.title = new Text("Series 1: Axis Y.");
-	s2.axis_x.title = new Text("Series 2: Axis X.");
-	s2.axis_y.title = new Text("Series 2: Axis Y.");
-	s3.axis_x.title = new Text("Series 3: Axis X.");
-	s3.axis_y.title = new Text("Series 3: Axis Y.");
+	s1.axis_x.title = new Text(chart, "Series 1: Axis X.");
+	s1.axis_y.title = new Text(chart, "Series 1: Axis Y.");
+	s2.axis_x.title = new Text(chart, "Series 2: Axis X.");
+	s2.axis_y.title = new Text(chart, "Series 2: Axis Y.");
+	s3.axis_x.title = new Text(chart, "Series 3: Axis X.");
+	s3.axis_y.title = new Text(chart, "Series 3: Axis Y.");
 
 	//s1.axis_y.position = s2.axis_y.position = s3.axis_y.position = Axis.Position.LOW;
 
@@ -154,17 +154,17 @@ void plot_chart4 (Chart chart) {
 	var now = new DateTime.now_local().to_unix();
 	var high = (uint64) (253000000000L);
 
-	s1.title = new Text("Series 1"); s1.color = Color (1, 0, 0);
+	s1.title = new Text(chart, "Series 1"); s1.color = Color (1, 0, 0);
 	s1.points = {Point128(now, 70), Point128(now - 100000, 155), Point128(now + 100000, 30)};
 	s1.axis_x.position = Axis.Position.HIGH;
 	s1.axis_y.position = Axis.Position.HIGH;
-	s2.title = new Text("Series 2"); s2.color = Color (0, 1, 0);
+	s2.title = new Text(chart, "Series 2"); s2.color = Color (0, 1, 0);
 	s2.points = {Point128(5, -3), Point128(25, -18), Point128(-11, 173)};
 	s2.axis_y.position = Axis.Position.HIGH;
-	s3.title = new Text("Series 3"); s3.color = Color (0, 0, 1);
+	s3.title = new Text(chart, "Series 3"); s3.color = Color (0, 0, 1);
 	s3.points = {Point128(high - 2 + 0.73, -17), Point128(high - 1 + 0.234, 10), Point128(high + 1 + 0.411, 31)};
 	s3.axis_y.position = Axis.Position.HIGH;
-	s4.title = new Text("Series 4"); s4.color = Color (0.5, 0.3, 0.9);
+	s4.title = new Text(chart, "Series 4"); s4.color = Color (0.5, 0.3, 0.9);
 	s4.points = {Point128(high + 0.005, -19.05), Point128(high + 0.0051, 28), Point128(high + 0.0052, 55), Point128(high + 0.0053, 44)};
 	s4.axis_y.position = Axis.Position.HIGH;
 
@@ -193,14 +193,14 @@ void plot_chart4 (Chart chart) {
 	s3.marker.type = Marker.Type.TRIANGLE;
 	s4.marker.type = Marker.Type.PRICLE_SQUARE;
 
-	s1.axis_x.title = new Text("Series 1: Axis X.");
-	s1.axis_y.title = new Text("Series 1: Axis Y.");
-	s2.axis_x.title = new Text("Series 2: Axis X.");
-	s2.axis_y.title = new Text("Series 2: Axis Y.");
-	s3.axis_x.title = new Text("Series 3: Axis X.");
-	s3.axis_y.title = new Text("Series 3: Axis Y.");
-	s4.axis_x.title = new Text("Series 4: Axis X.");
-	s4.axis_y.title = new Text("Series 4: Axis Y.");
+	s1.axis_x.title = new Text(chart, "Series 1: Axis X.");
+	s1.axis_y.title = new Text(chart, "Series 1: Axis Y.");
+	s2.axis_x.title = new Text(chart, "Series 2: Axis X.");
+	s2.axis_y.title = new Text(chart, "Series 2: Axis Y.");
+	s3.axis_x.title = new Text(chart, "Series 3: Axis X.");
+	s3.axis_y.title = new Text(chart, "Series 3: Axis Y.");
+	s4.axis_x.title = new Text(chart, "Series 4: Axis X.");
+	s4.axis_y.title = new Text(chart, "Series 4: Axis Y.");
 
 	chart.series = { s1, s2, s3, s4 };
 }
@@ -432,9 +432,9 @@ int main (string[] args) {
 		var str = chart.cursors.get_cursors_delta_str();
 		if (str != "") {
 			var text = "Δ = " + str;
-			var text_t = new Text(text);
-			var w = text_t.get_width(ctx);
-			var h = text_t.get_height(ctx);
+			var text_t = new Text(chart, text);
+			var w = text_t.width;
+			var h = text_t.height;
 			var x0 = chart.plarea.x1 - w - 5;
 			var y0 = chart.plarea.y0 + h + 5;
 			chart.color = chart.legend.bg_color;

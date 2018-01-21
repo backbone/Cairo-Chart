@@ -12,11 +12,11 @@ namespace CairoChart {
 		}
 		public Sort sort = Sort.BY_X;
 
-		public Axis axis_x = new Axis();
-		public Axis axis_y = new Axis();
+		public Axis axis_x;
+		public Axis axis_y;
 
 		public Place place = new Place();
-		public Text title = new Text ();
+		public Text title;
 		public Marker marker = null;
 
 		public Grid grid = new Grid ();
@@ -45,6 +45,9 @@ namespace CairoChart {
 
 		public Series (Chart chart) {
 			this.chart = chart;
+			title = new Text(chart);
+			axis_x = new Axis(chart);
+			axis_y = new Axis(chart);
 			this.marker = new Marker(chart);
 		}
 
@@ -124,8 +127,8 @@ namespace CairoChart {
 			double max_rec_width = 0; double max_rec_height = 0;
 			axis.calc_rec_sizes (chart, out max_rec_width, out max_rec_height, is_x);
 			var max_font_spacing = axis.font_spacing;
-			var max_axis_font_width = axis.title.text == "" ? 0 : axis.title.get_width(chart.ctx) + axis.font_spacing;
-			var max_axis_font_height = axis.title.text == "" ? 0 : axis.title.get_height(chart.ctx) + axis.font_spacing;
+			var max_axis_font_width = axis.title.text == "" ? 0 : axis.title.width + axis.font_spacing;
+			var max_axis_font_height = axis.title.text == "" ? 0 : axis.title.height + axis.font_spacing;
 
 			if (is_x)
 				s.join_relative_x_axes (si, true, ref max_rec_width, ref max_rec_height, ref max_font_spacing, ref max_axis_font_height, ref nskip);
@@ -200,7 +203,7 @@ namespace CairoChart {
 						max_rec_height = double.max (max_rec_height, tmp_max_rec_height);
 						max_font_spacing = double.max (max_font_spacing, s2.axis_x.font_spacing);
 						max_axis_font_height = double.max (max_axis_font_height, s2.axis_x.title.text == "" ? 0 :
-						                                   s2.axis_x.title.get_height(chart.ctx) + this.axis_x.font_spacing);
+						                                   s2.axis_x.title.height + this.axis_x.font_spacing);
 					}
 					++nskip;
 				} else {
@@ -237,7 +240,7 @@ namespace CairoChart {
 					max_rec_height = double.max (max_rec_height, tmp_max_rec_height);
 					max_font_spacing = double.max (max_font_spacing, s2.axis_y.font_spacing);
 					max_axis_font_width = double.max (max_axis_font_width, s2.axis_y.title.text == "" ? 0
-					                                   : s2.axis_y.title.get_width(chart.ctx) + this.axis_y.font_spacing);
+					                                   : s2.axis_y.title.width + this.axis_y.font_spacing);
 					++nskip;
 				} else {
 					break;
@@ -259,8 +262,8 @@ namespace CairoChart {
 				case Axis.Type.DATE_TIME: axis_x.format_date_time(x, out text, out time_text); break;
 				}
 				var scr_x = get_scr_x (x);
-				var text_t = new Text(text, axis_x.font_style, axis_x.color);
-				var sz = axis_x.title.get_size(ctx);
+				var text_t = new Text(chart, text, axis_x.font_style, axis_x.color);
+				var sz = axis_x.title.size;
 
 				switch (axis_x.position) {
 				case Axis.Position.LOW:
@@ -269,14 +272,14 @@ namespace CairoChart {
 					ctx.move_to (print_x, print_y);
 					switch (axis_x.type) {
 					case Axis.Type.NUMBERS:
-						text_t.show(ctx);
+						text_t.show();
 						break;
 					case Axis.Type.DATE_TIME:
-						if (axis_x.date_format != "") text_t.show(ctx);
-						var time_text_t = new Text(time_text, axis_x.font_style, axis_x.color);
+						if (axis_x.date_format != "") text_t.show();
+						var time_text_t = new Text(chart, time_text, axis_x.font_style, axis_x.color);
 						print_x = compact_rec_x_pos (x, time_text_t);
-						ctx.move_to (print_x, print_y - (axis_x.date_format == "" ? 0 : text_t.get_height(ctx) + axis_x.font_spacing));
-						if (axis_x.time_format != "") time_text_t.show(ctx);
+						ctx.move_to (print_x, print_y - (axis_x.date_format == "" ? 0 : text_t.height + axis_x.font_spacing));
+						if (axis_x.time_format != "") time_text_t.show();
 						break;
 					}
 					// 6. Draw grid lines to the place.zy0.
@@ -297,14 +300,14 @@ namespace CairoChart {
 
 					switch (axis_x.type) {
 					case Axis.Type.NUMBERS:
-						text_t.show(ctx);
+						text_t.show();
 						break;
 					case Axis.Type.DATE_TIME:
-						if (axis_x.date_format != "") text_t.show(ctx);
-						var time_text_t = new Text(time_text, axis_x.font_style, axis_x.color);
+						if (axis_x.date_format != "") text_t.show();
+						var time_text_t = new Text(chart, time_text, axis_x.font_style, axis_x.color);
 						print_x = compact_rec_x_pos (x, time_text_t);
-						ctx.move_to (print_x, print_y - (axis_x.date_format == "" ? 0 : text_t.get_height(ctx) + axis_x.font_spacing));
-						if (axis_x.time_format != "") time_text_t.show(ctx);
+						ctx.move_to (print_x, print_y - (axis_x.date_format == "" ? 0 : text_t.height + axis_x.font_spacing));
+						if (axis_x.time_format != "") time_text_t.show();
 						break;
 					}
 					// 6. Draw grid lines to the place.zy1.
@@ -360,7 +363,7 @@ namespace CairoChart {
 				}
 			}
 
-			var sz = s.axis_x.title.get_size(chart.ctx);
+			var sz = s.axis_x.title.size;
 
 			// 4.5. Draw Axis title
 			if (s.axis_x.title.text != "") {
@@ -373,7 +376,7 @@ namespace CairoChart {
 				chart.ctx.move_to(scr_x - sz.width / 2.0, scr_y);
 				chart.color = s.axis_x.color;
 				if (chart.joint_x) chart.color = chart.joint_color;
-				s.axis_x.title.show(chart.ctx);
+				s.axis_x.title.show();
 			}
 
 			s.draw_horizontal_records (step, max_rec_height, x_min);
@@ -402,16 +405,16 @@ namespace CairoChart {
 				else chart.color = axis_y.color;
 				var text = axis_y.format.printf((LongDouble)y);
 				var scr_y = get_scr_y (y);
-				var text_t = new Text(text, axis_y.font_style, axis_y.color);
-				var text_sz = text_t.get_size(ctx);
-				var sz = axis_y.title.get_size(ctx);
+				var text_t = new Text(chart, text, axis_y.font_style, axis_y.color);
+				var text_sz = text_t.size;
+				var sz = axis_y.title.size;
 
 				switch (axis_y.position) {
 				case Axis.Position.LOW:
 					ctx.move_to (chart.evarea.x0 + max_rec_width - text_sz.width + axis_y.font_spacing
 					                 + (axis_y.title.text == "" ? 0 : sz.width + axis_y.font_spacing),
 					                 compact_rec_y_pos (y, text_t));
-					text_t.show(ctx);
+					text_t.show();
 					// 6. Draw grid lines to the place.zx0.
 					var line_style = grid.line_style;
 					if (joint_y) line_style.color = Color(0, 0, 0, 0.5);
@@ -427,7 +430,7 @@ namespace CairoChart {
 					ctx.move_to (chart.evarea.x1 - text_sz.width - axis_y.font_spacing
 					                 - (axis_y.title.text == "" ? 0 : sz.width + axis_y.font_spacing),
 					                 compact_rec_y_pos (y, text_t));
-					text_t.show(ctx);
+					text_t.show();
 					// 6. Draw grid lines to the place.zx1.
 					var line_style = grid.line_style;
 					if (joint_y) line_style.color = Color(0, 0, 0, 0.5);
@@ -480,7 +483,7 @@ namespace CairoChart {
 				}
 			}
 
-			var sz = s.axis_y.title.get_size(chart.ctx);
+			var sz = s.axis_y.title.size;
 
 			// 4.5. Draw Axis title
 			if (s.axis_y.title.text != "") {
@@ -497,7 +500,7 @@ namespace CairoChart {
 				}
 				chart.color = s.axis_y.color;
 				if (chart.joint_y) chart.color = chart.joint_color;
-				s.axis_y.title.show(chart.ctx);
+				s.axis_y.title.show();
 			}
 
 			s.draw_vertical_records (step, max_rec_width, y_min);
@@ -517,13 +520,13 @@ namespace CairoChart {
 		}
 
 		public virtual double compact_rec_x_pos (Float128 x, Text text) {
-			var sz = text.get_size(chart.ctx);
+			var sz = text.size;
 			return get_scr_x(x) - sz.width / 2.0
 			       - sz.width * (x - (axis_x.range.zmin + axis_x.range.zmax) / 2.0) / axis_x.range.zrange;
 		}
 
 		public virtual double compact_rec_y_pos (Float128 y, Text text) {
-			var sz = text.get_size(chart.ctx);
+			var sz = text.size;
 			return get_scr_y(y) + sz.height / 2.0
 			       + sz.height * (y - (axis_y.range.zmin + axis_y.range.zmax) / 2.0) / axis_y.range.zrange;
 		}

@@ -209,15 +209,15 @@ namespace CairoChart {
 			size = Point128 ();
 			string date, time;
 			s.axis_x.format_date_time(p.x, out date, out time);
-			var date_t = new Text (date, s.axis_x.font_style, s.axis_x.color);
-			var time_t = new Text (time, s.axis_x.font_style, s.axis_x.color);
-			var x_t = new Text (s.axis_x.format.printf((LongDouble)p.x), s.axis_x.font_style, s.axis_x.color);
-			var y_t = new Text (s.axis_y.format.printf((LongDouble)p.y), s.axis_y.font_style, s.axis_y.color);
+			var date_t = new Text(chart, date, s.axis_x.font_style, s.axis_x.color);
+			var time_t = new Text(chart, time, s.axis_x.font_style, s.axis_x.color);
+			var x_t = new Text(chart, s.axis_x.format.printf((LongDouble)p.x), s.axis_x.font_style, s.axis_x.color);
+			var y_t = new Text(chart, s.axis_y.format.printf((LongDouble)p.y), s.axis_y.font_style, s.axis_y.color);
 			double h_x = 0.0, h_y = 0.0;
-			if (show_x) { var sz = x_t.get_size(chart.ctx); size.x = sz.width; h_x = sz.height; }
-			if (show_date) { var sz = date_t.get_size(chart.ctx); size.x = sz.width; h_x = sz.height; }
-			if (show_time) { var sz = time_t.get_size(chart.ctx); size.x = double.max(size.x, sz.width); h_x += sz.height; }
-			if (show_y) { var sz = y_t.get_size(chart.ctx); size.x += sz.width; h_y = sz.height; }
+			if (show_x) { var sz = x_t.size; size.x = sz.width; h_x = sz.height; }
+			if (show_date) { var sz = date_t.size; size.x = sz.width; h_x = sz.height; }
+			if (show_time) { var sz = time_t.size; size.x = double.max(size.x, sz.width); h_x += sz.height; }
+			if (show_y) { var sz = y_t.size; size.x += sz.width; h_y = sz.height; }
 			if ((show_x || show_date || show_time) && show_y) size.x += double.max(s.axis_x.font_spacing, s.axis_y.font_spacing);
 			if (show_date && show_time) h_x += s.axis_x.font_spacing;
 			size.y = double.max (h_x, h_y);
@@ -287,16 +287,16 @@ namespace CairoChart {
 						case Axis.Type.NUMBERS: text = s.axis_x.format.printf((LongDouble)x); break;
 						case Axis.Type.DATE_TIME: s.axis_x.format_date_time(x, out text, out time_text); break;
 						}
-						var text_t = new Text(text, s.axis_x.font_style, s.axis_x.color);
-						var sz = text_t.get_size(chart.ctx);
-						var time_text_t = new Text(time_text, s.axis_x.font_style, s.axis_x.color);
+						var text_t = new Text(chart, text, s.axis_x.font_style, s.axis_x.color);
+						var sz = text_t.size;
+						var time_text_t = new Text(chart, time_text, s.axis_x.font_style, s.axis_x.color);
 						var print_y = 0.0;
 						switch (s.axis_x.position) {
 							case Axis.Position.LOW: print_y = chart.area.y1 - s.axis_x.font_spacing
 								                    - (chart.legend.position == Legend.Position.BOTTOM ? chart.legend.height : 0);
 								break;
 							case Axis.Position.HIGH:
-								var title_height = chart.title.get_height(chart.ctx) + (chart.legend.position == Legend.Position.TOP ?
+								var title_height = chart.title.height + (chart.legend.position == Legend.Position.TOP ?
 								                   chart.title.vspacing * 2 : chart.title.vspacing);
 								print_y = chart.area.y0 + title_height + s.axis_x.font_spacing
 								          + (chart.legend.position == Legend.Position.TOP ? chart.legend.height : 0);
@@ -306,7 +306,7 @@ namespace CairoChart {
 									break;
 								case Axis.Type.DATE_TIME:
 									print_y += (s.axis_x.date_format == "" ? 0 : sz.height)
-									           + (s.axis_x.time_format == "" ? 0 : time_text_t.get_height(chart.ctx))
+									           + (s.axis_x.time_format == "" ? 0 : time_text_t.height)
 									           + (s.axis_x.date_format == "" || s.axis_x.time_format == "" ? 0 : s.axis_x.font_spacing);
 									break;
 								}
@@ -317,13 +317,13 @@ namespace CairoChart {
 
 						switch (s.axis_x.type) {
 						case Axis.Type.NUMBERS:
-							text_t.show(chart.ctx);
+							text_t.show();
 							break;
 						case Axis.Type.DATE_TIME:
-							if (s.axis_x.date_format != "") text_t.show(chart.ctx);
+							if (s.axis_x.date_format != "") text_t.show();
 							print_x = s.compact_rec_x_pos (x, time_text_t);
 							chart.ctx.move_to (print_x, print_y - (s.axis_x.date_format == "" ? 0 : sz.height + s.axis_x.font_spacing));
-							if (s.axis_x.time_format != "") time_text_t.show(chart.ctx);
+							if (s.axis_x.time_format != "") time_text_t.show();
 							break;
 						}
 					}
@@ -337,7 +337,7 @@ namespace CairoChart {
 					if (chart.joint_y) {
 						var s = chart.series[chart.zoom_1st_idx];
 						var y = s.get_real_y(rel2scr_y(c.y));
-						var text_t = new Text(s.axis_y.format.printf((LongDouble)y, s.axis_y.font_style));
+						var text_t = new Text(chart, s.axis_y.format.printf((LongDouble)y, s.axis_y.font_style));
 						var print_y = s.compact_rec_y_pos (y, text_t);
 						var print_x = 0.0;
 						switch (s.axis_y.position) {
@@ -346,12 +346,12 @@ namespace CairoChart {
 							          + (chart.legend.position == Legend.Position.LEFT ? chart.legend.width : 0);
 							break;
 						case Axis.Position.HIGH:
-							print_x = chart.area.x1 - text_t.get_width(chart.ctx) - s.axis_y.font_spacing
+							print_x = chart.area.x1 - text_t.width - s.axis_y.font_spacing
 							          - (chart.legend.position == Legend.Position.RIGHT ? chart.legend.width : 0);
 							break;
 						}
 						chart.ctx.move_to (print_x, print_y);
-						text_t.show(chart.ctx);
+						text_t.show();
 					}
 					break;
 				}
@@ -375,45 +375,45 @@ namespace CairoChart {
 
 					if (show_x) {
 						chart.color = s.axis_x.color;
-						var text_t = new Text(s.axis_x.format.printf((LongDouble)point.x), s.axis_x.font_style);
-						chart.ctx.move_to (svp.x - size.x / 2, svp.y + text_t.get_height(chart.ctx) / 2);
+						var text_t = new Text(chart, s.axis_x.format.printf((LongDouble)point.x), s.axis_x.font_style);
+						chart.ctx.move_to (svp.x - size.x / 2, svp.y + text_t.height / 2);
 						if (chart.joint_x) chart.color = chart.joint_color;
-						text_t.show(chart.ctx);
+						text_t.show();
 					}
 
 					if (show_time) {
 						chart.color = s.axis_x.color;
 						string date = "", time = "";
 						s.axis_x.format_date_time(point.x, out date, out time);
-						var text_t = new Text(time, s.axis_x.font_style);
-						var sz = text_t.get_size(chart.ctx);
+						var text_t = new Text(chart, time, s.axis_x.font_style);
+						var sz = text_t.size;
 						var y = svp.y + sz.height / 2;
 						if (show_date) y -= sz.height / 2 + s.axis_x.font_spacing / 2;
 						chart.ctx.move_to (svp.x - size.x / 2, y);
 						if (chart.joint_x) chart.color = chart.joint_color;
-						text_t.show(chart.ctx);
+						text_t.show();
 					}
 
 					if (show_date) {
 						chart.color = s.axis_x.color;
 						string date = "", time = "";
 						s.axis_x.format_date_time(point.x, out date, out time);
-						var text_t = new Text(date, s.axis_x.font_style);
-						var sz = text_t.get_size(chart.ctx);
+						var text_t = new Text(chart, date, s.axis_x.font_style);
+						var sz = text_t.size;
 						var y = svp.y + sz.height / 2;
 						if (show_time) y += sz.height / 2 + s.axis_x.font_spacing / 2;
 						chart.ctx.move_to (svp.x - size.x / 2, y);
 						if (chart.joint_x) chart.color = chart.joint_color;
-						text_t.show(chart.ctx);
+						text_t.show();
 					}
 
 					if (show_y) {
 						chart.color = s.axis_y.color;
-						var text_t = new Text(s.axis_y.format.printf((LongDouble)point.y), s.axis_y.font_style);
-						var sz = text_t.get_size(chart.ctx);
+						var text_t = new Text(chart, s.axis_y.format.printf((LongDouble)point.y), s.axis_y.font_style);
+						var sz = text_t.size;
 						chart.ctx.move_to (svp.x + size.x / 2 - sz.width, svp.y + sz.height / 2);
 						if (chart.joint_y) chart.color = chart.joint_color;
-						text_t.show(chart.ctx);
+						text_t.show();
 					}
 				}
 			}

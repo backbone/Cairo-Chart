@@ -52,7 +52,7 @@ namespace CairoChart {
 				switch (position) {
 				case Position.TOP:
 					x0 = (chart.area.width - width) / 2;
-					var title_height = chart.title.get_height(chart.ctx) + (chart.legend.position == Legend.Position.TOP ?
+					var title_height = chart.title.height + (chart.legend.position == Legend.Position.TOP ?
 					                   chart.title.vspacing * 2 : chart.title.vspacing);
 					y0 = title_height;
 				break;
@@ -115,7 +115,7 @@ namespace CairoChart {
 
 				if (!s.zoom_show) continue;
 
-				var title_sz = s.title.get_size(chart.ctx);
+				var title_sz = s.title.size;
 
 				// carry
 				switch (position) {
@@ -147,7 +147,7 @@ namespace CairoChart {
 					// series title
 					chart.ctx.move_to (x + line_length, y);
 					chart.color = s.title.color;
-					s.title.show(chart.ctx);
+					s.title.show();
 
 					// series line style
 					chart.ctx.move_to (x, y - title_sz.height / 2);
