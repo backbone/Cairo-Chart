@@ -17,18 +17,18 @@ void plot_chart1 (Chart chart) {
 
 	s1.axis_x.min = 0; s1.axis_x.max = 2;
 	s1.axis_y.min = 0; s1.axis_y.max = 3;
-	s1.place.x_min = 0.25; s1.place.x_max = 0.75;
-	s1.place.y_min = 0.3; s1.place.y_max = 0.9;
+	s1.place.x0 = 0.25; s1.place.x1 = 0.75;
+	s1.place.y0 = 0.3; s1.place.y1 = 0.9;
 
 	s2.axis_x.min = -15; s2.axis_x.max = 30;
 	s2.axis_y.min = -20; s2.axis_y.max = 200;
-	s2.place.x_min = 0.5; s2.place.x_max = 1;
-	s2.place.y_min = 0.0; s2.place.y_max = 0.5;
+	s2.place.x0 = 0.5; s2.place.x1 = 1;
+	s2.place.y0 = 0.0; s2.place.y1 = 0.5;
 
 	s3.axis_x.min = 0; s3.axis_x.max = 130;
 	s3.axis_y.min = 15; s3.axis_y.max = 35;
-	s3.place.x_min = 0; s3.place.x_max = 0.5;
-	s3.place.y_min = 0.5; s3.place.y_max = 1.0;
+	s3.place.x0 = 0; s3.place.x1 = 0.5;
+	s3.place.y0 = 0.5; s3.place.y1 = 1.0;
 
 	s1.marker.type = Marker.Type.SQUARE;
 	s2.marker.type = Marker.Type.CIRCLE;
@@ -61,18 +61,18 @@ void plot_chart2 (Chart chart) {
 
 	s1.axis_x.min = -15; s1.axis_x.max = 30;
 	s1.axis_y.min = 0; s1.axis_y.max = 3;
-	s1.place.x_min = 0.0; s1.place.x_max = 1.0;
-	s1.place.y_min = 0.3; s1.place.y_max = 0.9;
+	s1.place.x0 = 0.0; s1.place.x1 = 1.0;
+	s1.place.y0 = 0.3; s1.place.y1 = 0.9;
 
 	s2.axis_x.min = -15; s2.axis_x.max = 30;
 	s2.axis_y.min = -20; s2.axis_y.max = 200;
-	s2.place.x_min = 0.0; s2.place.x_max = 1.0;
-	s2.place.y_min = 0.0; s2.place.y_max = 0.5;
+	s2.place.x0 = 0.0; s2.place.x1 = 1.0;
+	s2.place.y0 = 0.0; s2.place.y1 = 0.5;
 
 	s3.axis_x.min = -15; s3.axis_x.max = 30;
 	s3.axis_y.min = 15; s3.axis_y.max = 35;
-	s3.place.x_min = 0.0; s3.place.x_max = 1.0;
-	s3.place.y_min = 0.5; s3.place.y_max = 1.0;
+	s3.place.x0 = 0.0; s3.place.x1 = 1.0;
+	s3.place.y0 = 0.5; s3.place.y1 = 1.0;
 
 	s1.marker.type = Marker.Type.PRICLE_CIRCLE;
 	s2.marker.type = Marker.Type.PRICLE_SQUARE;
@@ -111,18 +111,18 @@ void plot_chart3 (Chart chart) {
 
 	s1.axis_x.min = 0; s1.axis_x.max = 2;
 	s1.axis_y.min = -20; s1.axis_y.max = 200;
-	s1.place.x_min = 0.25; s1.place.x_max = 0.75;
-	s1.place.y_min = 0.0; s1.place.y_max = 1.0;
+	s1.place.x0 = 0.25; s1.place.x1 = 0.75;
+	s1.place.y0 = 0.0; s1.place.y1 = 1.0;
 
 	s2.axis_x.min = -15; s2.axis_x.max = 30;
 	s2.axis_y.min = -20; s2.axis_y.max = 200;
-	s2.place.x_min = 0.5; s2.place.x_max = 1;
-	s2.place.y_min = 0.0; s2.place.y_max = 1.0;
+	s2.place.x0 = 0.5; s2.place.x1 = 1;
+	s2.place.y0 = 0.0; s2.place.y1 = 1.0;
 
 	s3.axis_x.min = 0; s3.axis_x.max = 130;
 	s3.axis_y.min = -20; s3.axis_y.max = 200;
-	s3.place.x_min = 0; s3.place.x_max = 0.5;
-	s3.place.y_min = 0.0; s3.place.y_max = 1.0;
+	s3.place.x0 = 0; s3.place.x1 = 0.5;
+	s3.place.y0 = 0.0; s3.place.y1 = 1.0;
 
 	s1.marker.type = Marker.Type.SQUARE;
 	s2.marker.type = Marker.Type.PRICLE_CIRCLE;
@@ -170,23 +170,23 @@ void plot_chart4 (Chart chart) {
 
 	s1.axis_x.min = now - 100000; s1.axis_x.max = now + 100000;
 	s1.axis_y.min = -20; s1.axis_y.max = 200;
-	s1.place.x_min = 0.25; s1.place.x_max = 0.75;
-	s1.place.y_min = 0.0; s1.place.y_max = 1.0;
+	s1.place.x0 = 0.25; s1.place.x1 = 0.75;
+	s1.place.y0 = 0.0; s1.place.y1 = 1.0;
 
 	s2.axis_x.min = -15; s2.axis_x.max = 30;
 	s2.axis_y.min = -20; s2.axis_y.max = 200;
-	s2.place.x_min = 0.2; s2.place.x_max = 1;
-	s2.place.y_min = 0.0; s2.place.y_max = 1.0;
+	s2.place.x0 = 0.2; s2.place.x1 = 1;
+	s2.place.y0 = 0.0; s2.place.y1 = 1.0;
 
 	s3.axis_x.min = high - 2; s3.axis_x.max = high + 1;
 	s3.axis_y.min = -20; s3.axis_y.max = 200;
-	s3.place.x_min = 0; s3.place.x_max = 0.8;
-	s3.place.y_min = 0.0; s3.place.y_max = 1.0;
+	s3.place.x0 = 0; s3.place.x1 = 0.8;
+	s3.place.y0 = 0.0; s3.place.y1 = 1.0;
 
 	s4.axis_x.min = high + 0.0049; s4.axis_x.max = high + 0.0054;
 	s4.axis_y.min = -20; s4.axis_y.max = 200;
-	s4.place.x_min = 0.2; s4.place.x_max = 1.0;
-	s4.place.y_min = 0.0; s4.place.y_max = 1.0;
+	s4.place.x0 = 0.2; s4.place.x1 = 1.0;
+	s4.place.y0 = 0.0; s4.place.y1 = 1.0;
 
 	s1.marker.type = Marker.Type.SQUARE;
 	s2.marker.type = Marker.Type.PRICLE_CIRCLE;

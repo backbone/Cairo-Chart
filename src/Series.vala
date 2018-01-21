@@ -15,7 +15,7 @@ namespace CairoChart {
 		public Axis axis_x = new Axis();
 		public Axis axis_y = new Axis();
 
-		public Place place = new Place();
+		public Area place = new Area();
 		public Text title = new Text ();
 		public Marker marker = new Marker ();
 
@@ -94,8 +94,8 @@ namespace CairoChart {
 			if (   axis_x.position != s.axis_x.position
 			    || axis_x.zoom_min != s.axis_x.zoom_min
 			    || axis_x.zoom_max != s.axis_x.zoom_max
-			    || place.zoom_x_min != s.place.zoom_x_min
-			    || place.zoom_x_max != s.place.zoom_x_max
+			    || place.zx0 != s.place.zx0
+			    || place.zx1 != s.place.zx1
 			    || axis_x.type != s.axis_x.type
 			)
 				return false;
@@ -106,8 +106,8 @@ namespace CairoChart {
 			if (   axis_y.position != s.axis_y.position
 			    || axis_y.zoom_min != s.axis_y.zoom_min
 			    || axis_y.zoom_max != s.axis_y.zoom_max
-			    || place.zoom_y_min != s.place.zoom_y_min
-			    || place.zoom_y_max != s.place.zoom_y_max
+			    || place.zy0 != s.place.zy0
+			    || place.zy1 != s.place.zy1
 			    || axis_y.type != s.axis_y.type
 			)
 				return false;
@@ -184,7 +184,7 @@ namespace CairoChart {
 				for (int sk = si; sk > sj; --sk) {
 					var s3 = chart.series[sk];
 					if (!s3.zoom_show) continue;
-					if (Math.coord_cross(s2.place.zoom_x_min, s2.place.zoom_x_max, s3.place.zoom_x_min, s3.place.zoom_x_max)
+					if (Math.coord_cross(s2.place.zx0, s2.place.zx1, s3.place.zx0, s3.place.zx1)
 					    || s2.axis_x.position != s3.axis_x.position
 					    || s2.axis_x.type != s3.axis_x.type) {
 						has_intersection = true;
@@ -222,7 +222,7 @@ namespace CairoChart {
 				for (int sk = si; sk > sj; --sk) {
 					var s3 = chart.series[sk];
 					if (!s3.zoom_show) continue;
-					if (Math.coord_cross(s2.place.zoom_y_min, s2.place.zoom_y_max, s3.place.zoom_y_min, s3.place.zoom_y_max)
+					if (Math.coord_cross(s2.place.zy0, s2.place.zy1, s3.place.zy0, s3.place.zy1)
 					    || s2.axis_y.position != s3.axis_y.position
 					    || s2.axis_y.type != s3.axis_y.type) {
 						has_intersection = true;
@@ -278,7 +278,7 @@ namespace CairoChart {
 						if (axis_x.time_format != "") time_text_t.show(ctx);
 						break;
 					}
-					// 6. Draw grid lines to the place.zoom_y_min.
+					// 6. Draw grid lines to the place.zy0.
 					var line_style = grid.line_style;
 					if (joint_x) line_style.color = Color(0, 0, 0, 0.5);
 					line_style.apply(chart);
@@ -287,7 +287,7 @@ namespace CairoChart {
 					if (joint_x)
 						ctx.line_to (scr_x, chart.plarea.y0);
 					else
-						ctx.line_to (scr_x, double.min (y, chart.plarea.y0 + chart.plarea.height * (1.0 - place.zoom_y_max)));
+						ctx.line_to (scr_x, double.min (y, chart.plarea.y0 + chart.plarea.height * (1.0 - place.zy1)));
 					break;
 				case Axis.Position.HIGH:
 					var print_y = chart.evarea.y0 + max_rec_height + axis_x.font_spacing + (axis_x.title.text == "" ? 0 : sz.height + axis_x.font_spacing);
@@ -306,7 +306,7 @@ namespace CairoChart {
 						if (axis_x.time_format != "") time_text_t.show(ctx);
 						break;
 					}
-					// 6. Draw grid lines to the place.zoom_y_max.
+					// 6. Draw grid lines to the place.zy1.
 					var line_style = grid.line_style;
 					if (joint_x) line_style.color = Color(0, 0, 0, 0.5);
 					line_style.apply(chart);
@@ -315,7 +315,7 @@ namespace CairoChart {
 					if (joint_x)
 						ctx.line_to (scr_x, chart.plarea.y1);
 					else
-						ctx.line_to (scr_x, double.max (y, chart.plarea.y0 + chart.plarea.height * (1.0 - place.zoom_y_min)));
+						ctx.line_to (scr_x, double.max (y, chart.plarea.y0 + chart.plarea.height * (1.0 - place.zy0)));
 					break;
 				}
 			}
@@ -331,7 +331,7 @@ namespace CairoChart {
 			s.axis_x.calc_rec_sizes (chart, out max_rec_width, out max_rec_height, true);
 
 			// 2. Calculate maximal available number of records, take into account the space width.
-			long max_nrecs = (long) (chart.plarea.width * (s.place.zoom_x_max - s.place.zoom_x_min) / max_rec_width);
+			long max_nrecs = (long) (chart.plarea.width * (s.place.zx1 - s.place.zx0) / max_rec_width);
 
 			// 3. Calculate grid step.
 			Float128 step = Math.calc_round_step ((s.axis_x.zoom_max - s.axis_x.zoom_min) / max_nrecs, s.axis_x.type == Axis.Type.DATE_TIME);
@@ -363,7 +363,7 @@ namespace CairoChart {
 
 			// 4.5. Draw Axis title
 			if (s.axis_x.title.text != "") {
-				var scr_x = chart.plarea.x0 + chart.plarea.width * (s.place.zoom_x_min + s.place.zoom_x_max) / 2.0;
+				var scr_x = chart.plarea.x0 + chart.plarea.width * (s.place.zx0 + s.place.zx1) / 2.0;
 				double scr_y = 0.0;
 				switch (s.axis_x.position) {
 				case Axis.Position.LOW: scr_y = chart.evarea.y1 - s.axis_x.font_spacing; break;
@@ -411,7 +411,7 @@ namespace CairoChart {
 					                 + (axis_y.title.text == "" ? 0 : sz.width + axis_y.font_spacing),
 					                 compact_rec_y_pos (y, text_t));
 					text_t.show(ctx);
-					// 6. Draw grid lines to the place.zoom_x_min.
+					// 6. Draw grid lines to the place.zx0.
 					var line_style = grid.line_style;
 					if (joint_y) line_style.color = Color(0, 0, 0, 0.5);
 					line_style.apply(chart);
@@ -420,14 +420,14 @@ namespace CairoChart {
 					if (joint_y)
 						ctx.line_to (chart.plarea.x1, scr_y);
 					else
-						ctx.line_to (double.max (x, chart.plarea.x0 + chart.plarea.width * place.zoom_x_max), scr_y);
+						ctx.line_to (double.max (x, chart.plarea.x0 + chart.plarea.width * place.zx1), scr_y);
 					break;
 				case Axis.Position.HIGH:
 					ctx.move_to (chart.evarea.x1 - text_sz.width - axis_y.font_spacing
 					                 - (axis_y.title.text == "" ? 0 : sz.width + axis_y.font_spacing),
 					                 compact_rec_y_pos (y, text_t));
 					text_t.show(ctx);
-					// 6. Draw grid lines to the place.zoom_x_max.
+					// 6. Draw grid lines to the place.zx1.
 					var line_style = grid.line_style;
 					if (joint_y) line_style.color = Color(0, 0, 0, 0.5);
 					line_style.apply(chart);
@@ -436,7 +436,7 @@ namespace CairoChart {
 					if (joint_y)
 						ctx.line_to (chart.plarea.x0, scr_y);
 					else
-						ctx.line_to (double.min (x, chart.plarea.x0 + chart.plarea.width * place.zoom_x_min), scr_y);
+						ctx.line_to (double.min (x, chart.plarea.x0 + chart.plarea.width * place.zx0), scr_y);
 					break;
 				}
 			}
@@ -451,7 +451,7 @@ namespace CairoChart {
 			s.axis_y.calc_rec_sizes (chart, out max_rec_width, out max_rec_height, false);
 
 			// 2. Calculate maximal available number of records, take into account the space width.
-			long max_nrecs = (long) (chart.plarea.height * (s.place.zoom_y_max - s.place.zoom_y_min) / max_rec_height);
+			long max_nrecs = (long) (chart.plarea.height * (s.place.zy1 - s.place.zy0) / max_rec_height);
 
 			// 3. Calculate grid step.
 			Float128 step = Math.calc_round_step ((s.axis_y.zoom_max - s.axis_y.zoom_min) / max_nrecs);
@@ -483,7 +483,7 @@ namespace CairoChart {
 
 			// 4.5. Draw Axis title
 			if (s.axis_y.title.text != "") {
-				var scr_y = chart.plarea.y0 + chart.plarea.height * (1.0 - (s.place.zoom_y_min + s.place.zoom_y_max) / 2.0);
+				var scr_y = chart.plarea.y0 + chart.plarea.height * (1.0 - (s.place.zy0 + s.place.zy1) / 2.0);
 				switch (s.axis_y.position) {
 				case Axis.Position.LOW:
 					var scr_x = chart.evarea.x0 + s.axis_y.font_spacing + sz.width;
@@ -528,11 +528,11 @@ namespace CairoChart {
 		}
 
 		public virtual double get_scr_x (Float128 x) {
-			return chart.plarea.x0 + chart.plarea.width * (place.zoom_x_min + (x - axis_x.zoom_min) / (axis_x.zoom_max - axis_x.zoom_min) * (place.zoom_x_max - place.zoom_x_min));
+			return chart.plarea.x0 + chart.plarea.width * (place.zx0 + (x - axis_x.zoom_min) / (axis_x.zoom_max - axis_x.zoom_min) * (place.zx1 - place.zx0));
 		}
 
 		public virtual double get_scr_y (Float128 y) {
-			return chart.plarea.y0 + chart.plarea.height * (1.0 - (place.zoom_y_min + (y - axis_y.zoom_min) / (axis_y.zoom_max - axis_y.zoom_min) * (place.zoom_y_max - place.zoom_y_min)));
+			return chart.plarea.y0 + chart.plarea.height * (1.0 - (place.zy0 + (y - axis_y.zoom_min) / (axis_y.zoom_max - axis_y.zoom_min) * (place.zy1 - place.zy0)));
 		}
 
 		public virtual Point get_scr_point (Point128 p) {
@@ -540,13 +540,13 @@ namespace CairoChart {
 		}
 
 		public virtual Float128 get_real_x (double scr_x) {
-			return axis_x.zoom_min + ((scr_x - chart.plarea.x0) / chart.plarea.width - place.zoom_x_min)
-			       * (axis_x.zoom_max - axis_x.zoom_min) / (place.zoom_x_max - place.zoom_x_min);
+			return axis_x.zoom_min + ((scr_x - chart.plarea.x0) / chart.plarea.width - place.zx0)
+			       * (axis_x.zoom_max - axis_x.zoom_min) / (place.zx1 - place.zx0);
 		}
 
 		public virtual Float128 get_real_y (double scr_y) {
-			return axis_y.zoom_min + ((chart.plarea.y1 - scr_y) / chart.plarea.height - place.zoom_y_min)
-			       * (axis_y.zoom_max - axis_y.zoom_min) / (place.zoom_y_max - place.zoom_y_min);
+			return axis_y.zoom_min + ((chart.plarea.y1 - scr_y) / chart.plarea.height - place.zy0)
+			       * (axis_y.zoom_max - axis_y.zoom_min) / (place.zy1 - place.zy0);
 		}
 
 		public virtual Point128 get_real_point (Point p) {

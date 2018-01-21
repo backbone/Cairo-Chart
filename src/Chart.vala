@@ -203,27 +203,27 @@ namespace CairoChart {
 				}
 				if (real_x0 >= s.axis_x.zoom_min) {
 					s.axis_x.zoom_min = real_x0;
-					s.place.zoom_x_min = 0.0;
+					s.place.zx0 = 0.0;
 				} else {
-					s.place.zoom_x_min = (s.axis_x.zoom_min - real_x0) / real_width;
+					s.place.zx0 = (s.axis_x.zoom_min - real_x0) / real_width;
 				}
 				if (real_x1 <= s.axis_x.zoom_max) {
 					s.axis_x.zoom_max = real_x1;
-					s.place.zoom_x_max = 1.0;
+					s.place.zx1 = 1.0;
 				} else {
-					s.place.zoom_x_max = (s.axis_x.zoom_max - real_x0) / real_width;
+					s.place.zx1 = (s.axis_x.zoom_max - real_x0) / real_width;
 				}
 				if (real_y1 >= s.axis_y.zoom_min) {
 					s.axis_y.zoom_min = real_y1;
-					s.place.zoom_y_min = 0.0;
+					s.place.zy0 = 0.0;
 				} else {
-					s.place.zoom_y_min = (s.axis_y.zoom_min - real_y1) / real_height;
+					s.place.zy0 = (s.axis_y.zoom_min - real_y1) / real_height;
 				}
 				if (real_y0 <= s.axis_y.zoom_max) {
 					s.axis_y.zoom_max = real_y0;
-					s.place.zoom_y_max = 1.0;
+					s.place.zy1 = 1.0;
 				} else {
-					s.place.zoom_y_max = (s.axis_y.zoom_max - real_y1) / real_height;
+					s.place.zy1 = (s.axis_y.zoom_max - real_y1) / real_height;
 				}
 			}
 
