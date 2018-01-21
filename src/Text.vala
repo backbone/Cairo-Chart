@@ -19,7 +19,7 @@ namespace CairoChart {
 			}
 			set {
 				_text = value;
-				//_ext = null;// TODO: check necessity
+				_ext = null;
 			}
 		}
 
@@ -32,11 +32,10 @@ namespace CairoChart {
 			}
 			set {
 				_font = value;
-				// TODO: check necessity
-				//_font.notify.connect((s, p) => {
-				//	_ext = null;
-				//});
-				//_ext = null;// TODO: check necessity
+				_font.notify.connect((s, p) => {
+					_ext = null;
+				});
+				_ext = null;
 			}
 		}
 
@@ -185,10 +184,6 @@ namespace CairoChart {
 			this.text = text;
 			this.font = font;
 			this.color = color;
-			// TODO: check necessity
-			//_font.notify.connect((s, p) => {
-			//	_ext = null;
-			//});
 		}
 
 		/**
@@ -197,8 +192,8 @@ namespace CairoChart {
 		public virtual Text copy () {
 			var text = new Text (chart);
 			text.chart = this.chart;
-			text._text = this._text;
-			text._font = this._font;
+			text.text = this.text;
+			text.font = this.font;
 			text._ext = this._ext;
 			text.color = this.color;
 			return text;

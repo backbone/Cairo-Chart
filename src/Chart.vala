@@ -303,11 +303,8 @@ namespace CairoChart {
 			if (evarea.height < 0) evarea.height = 0;
 		}
 		protected virtual void rot_axes_titles () {
-			foreach (var s in series) {
-				//s.axis_y.title.font = new Font();//s.axis_y.title.font.copy();
+			foreach (var s in series)
 				s.axis_y.title.font.orient = Gtk.Orientation.VERTICAL;
-				s.axis_y.title.font.size = 50;
-			}
 		}
 
 		protected virtual void eval_plarea () {
