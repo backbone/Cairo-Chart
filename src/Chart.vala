@@ -13,17 +13,17 @@ namespace CairoChart {
 		/**
 		 * Current evaluated area.
 		 */
-		public Area evarea = new Area.with_abs(0, 0, 1, 1);
+		public Area evarea = new Area();
 
 		/**
 		 * Zoom area limits (relative coordinates: 0.0-1.0).
 		 */
-		public Area zoom = new Area.with_abs(0, 0, 1, 1);
+		public Area zoom = new Area();
 
 		/**
 		 * Plot area bounds.
 		 */
-		public Area plarea = new Area.with_abs(0, 0, 1, 1);
+		public Area plarea = new Area();
 
 		/**
 		 * Cairo ``Context`` of the Drawing Area.
