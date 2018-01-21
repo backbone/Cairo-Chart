@@ -45,21 +45,25 @@ void plot_chart1 (Chart chart) {
 	chart.series = { s1, s2, s3 };
 
 	chart.title.font.size = 24;
+	//chart.legend.show = false;
 	s1.title.font.size = 16;
 	s2.title.font.size = 16;
 	s3.title.font.size = 16;
 	s1.axis_x.title.font.size = 14;
 	s2.axis_x.title.font.size = 14;
-	s3.axis_x.title.font.size = 14;
+	s3.axis_x.title.font.size = 18;
 	s1.axis_y.title.font.size = 14;
 	s2.axis_y.title.font.size = 14;
-	s3.axis_y.title.font.size = 14;
+	s3.axis_y.title.font.size = 18;
 	s1.axis_x.font_style.size = 12;
 	s2.axis_x.font_style.size = 12;
 	s3.axis_x.font_style.size = 12;
 	s1.axis_y.font_style.size = 12;
 	s2.axis_y.font_style.size = 12;
-	s3.axis_y.font_style.size = 12;
+	s3.axis_y.font_style.size = 14;
+	s1.marker.size = 6;
+	s2.marker.size = 8;
+	s3.marker.size = 7;
 }
 
 void plot_chart2 (Chart chart) {
