@@ -5,17 +5,40 @@ namespace CairoChart {
 	 */
 	public class Text {
 
-		Chart chart = null;
+		Chart chart;
+		string _text;
+		Font _font;
+		Cairo.TextExtents? _ext;
 
 		/**
 		 * ``Text`` string.
 		 */
-		public string text = "";
+		public string text {
+			get {
+				return _text;
+			}
+			set {
+				_text = value;
+				//_ext = null;// TODO: check necessity
+			}
+		}
 
 		/**
 		 * ``Text`` font style.
 		 */
-		public Font style = Font ();
+		public Font font {
+			get {
+				return _font;
+			}
+			set {
+				_font = value;
+				// TODO: check necessity
+				//_font.notify.connect((s, p) => {
+				//	_ext = null;
+				//});
+				//_ext = null;// TODO: check necessity
+			}
+		}
 
 		/**
 		 * ``Text`` color.
@@ -48,13 +71,14 @@ namespace CairoChart {
 		/**
 		 * Cairo ``Text`` extents.
 		 */
-		public virtual Cairo.TextExtents ext {
+		virtual Cairo.TextExtents ext {
 			get {
-				chart.ctx.select_font_face (style.family, style.slant, style.weight);
-				chart.ctx.set_font_size (style.size);
-				Cairo.TextExtents ext;
-				chart.ctx.text_extents (text, out ext);
-				return ext;
+				if (_ext == null) {
+					chart.ctx.select_font_face (font.family, font.slant, font.weight);
+					chart.ctx.set_font_size (font.size);
+					chart.ctx.text_extents (text, out _ext);
+				}
+				return _ext;
 			}
 			protected set {
 			}
@@ -65,7 +89,7 @@ namespace CairoChart {
 		 */
 		public virtual double width {
 			get {
-				switch (style.orient) {
+				switch (font.orient) {
 				case Gtk.Orientation.HORIZONTAL: return ext.width;
 				case Gtk.Orientation.VERTICAL: return ext.height;
 				default: return 0.0;
@@ -80,7 +104,7 @@ namespace CairoChart {
 		 */
 		public virtual double height {
 			get {
-				switch (style.orient) {
+				switch (font.orient) {
 				case Gtk.Orientation.HORIZONTAL: return ext.height;
 				case Gtk.Orientation.VERTICAL: return ext.width;
 				default: return 0.0;
@@ -93,7 +117,7 @@ namespace CairoChart {
 		/**
 		 * ``Text`` size.
 		 */
-		public struct Size {
+		struct Size {
 			/**
 			 * ``Text`` width.
 			 */
@@ -108,11 +132,11 @@ namespace CairoChart {
 		/**
 		 * ``Text`` @{link Size}.
 		 */
-		public virtual Size size {
+		virtual Size size {
 			get {
 				var sz = Size();
 				var e = ext;
-				switch (style.orient) {
+				switch (font.orient) {
 				case Gtk.Orientation.HORIZONTAL:
 					sz.width = e.width + e.x_bearing;
 					sz.height = e.height;
@@ -132,11 +156,11 @@ namespace CairoChart {
 		 * Show ``Text``.
 		 */
 		public virtual void show () {
-			chart.ctx.select_font_face(style.family,
-			                           style.slant,
-			                           style.weight);
-			chart.ctx.set_font_size(style.size);
-			if (style.orient == Gtk.Orientation.VERTICAL) {
+			chart.ctx.select_font_face(font.family,
+			                           font.slant,
+			                           font.weight);
+			chart.ctx.set_font_size(font.size);
+			if (font.orient == Gtk.Orientation.VERTICAL) {
 				chart.ctx.rotate(- GLib.Math.PI / 2.0);
 				chart.ctx.show_text(text);
 				chart.ctx.rotate(GLib.Math.PI / 2.0);
@@ -149,18 +173,22 @@ namespace CairoChart {
 		 * Constructs a new ``Text``.
 		 * @param chart ``Chart`` instance.
 		 * @param text ``Text`` string.
-		 * @param style ``Text`` font style.
+		 * @param font ``Text`` font style.
 		 * @param color ``Text`` color.
 		 */
 		public Text (Chart chart,
 		             string text = "",
-		             Font style = Font(),
+		             Font font = new Font(),
 		             Color color = Color()
 		) {
 			this.chart = chart;
 			this.text = text;
-			this.style = style;
+			this.font = font;
 			this.color = color;
+			// TODO: check necessity
+			//_font.notify.connect((s, p) => {
+			//	_ext = null;
+			//});
 		}
 
 		/**
@@ -169,8 +197,9 @@ namespace CairoChart {
 		public virtual Text copy () {
 			var text = new Text (chart);
 			text.chart = this.chart;
-			text.text = this.text;
-			text.style = this.style;
+			text._text = this._text;
+			text._font = this._font;
+			text._ext = this._ext;
 			text.color = this.color;
 			return text;
 		}

@@ -214,10 +214,10 @@ namespace CairoChart {
 			var x_t = new Text(chart, s.axis_x.format.printf((LongDouble)p.x), s.axis_x.font_style, s.axis_x.color);
 			var y_t = new Text(chart, s.axis_y.format.printf((LongDouble)p.y), s.axis_y.font_style, s.axis_y.color);
 			double h_x = 0.0, h_y = 0.0;
-			if (show_x) { var sz = x_t.size; size.x = sz.width; h_x = sz.height; }
-			if (show_date) { var sz = date_t.size; size.x = sz.width; h_x = sz.height; }
-			if (show_time) { var sz = time_t.size; size.x = double.max(size.x, sz.width); h_x += sz.height; }
-			if (show_y) { var sz = y_t.size; size.x += sz.width; h_y = sz.height; }
+			if (show_x) { size.x = x_t.width; h_x = x_t.height; }
+			if (show_date) { size.x = date_t.width; h_x = date_t.height; }
+			if (show_time) { size.x = double.max(size.x, time_t.width); h_x += time_t.height; }
+			if (show_y) { size.x += y_t.width; h_y = y_t.height; }
 			if ((show_x || show_date || show_time) && show_y) size.x += double.max(s.axis_x.font_spacing, s.axis_y.font_spacing);
 			if (show_date && show_time) h_x += s.axis_x.font_spacing;
 			size.y = double.max (h_x, h_y);
@@ -288,7 +288,6 @@ namespace CairoChart {
 						case Axis.Type.DATE_TIME: s.axis_x.format_date_time(x, out text, out time_text); break;
 						}
 						var text_t = new Text(chart, text, s.axis_x.font_style, s.axis_x.color);
-						var sz = text_t.size;
 						var time_text_t = new Text(chart, time_text, s.axis_x.font_style, s.axis_x.color);
 						var print_y = 0.0;
 						switch (s.axis_x.position) {
@@ -302,10 +301,10 @@ namespace CairoChart {
 								          + (chart.legend.position == Legend.Position.TOP ? chart.legend.height : 0);
 								switch (s.axis_x.type) {
 								case Axis.Type.NUMBERS:
-									print_y += sz.height;
+									print_y += text_t.height;
 									break;
 								case Axis.Type.DATE_TIME:
-									print_y += (s.axis_x.date_format == "" ? 0 : sz.height)
+									print_y += (s.axis_x.date_format == "" ? 0 : text_t.height)
 									           + (s.axis_x.time_format == "" ? 0 : time_text_t.height)
 									           + (s.axis_x.date_format == "" || s.axis_x.time_format == "" ? 0 : s.axis_x.font_spacing);
 									break;
@@ -322,7 +321,7 @@ namespace CairoChart {
 						case Axis.Type.DATE_TIME:
 							if (s.axis_x.date_format != "") text_t.show();
 							print_x = s.compact_rec_x_pos (x, time_text_t);
-							chart.ctx.move_to (print_x, print_y - (s.axis_x.date_format == "" ? 0 : sz.height + s.axis_x.font_spacing));
+							chart.ctx.move_to (print_x, print_y - (s.axis_x.date_format == "" ? 0 : text_t.height + s.axis_x.font_spacing));
 							if (s.axis_x.time_format != "") time_text_t.show();
 							break;
 						}
@@ -386,9 +385,8 @@ namespace CairoChart {
 						string date = "", time = "";
 						s.axis_x.format_date_time(point.x, out date, out time);
 						var text_t = new Text(chart, time, s.axis_x.font_style);
-						var sz = text_t.size;
-						var y = svp.y + sz.height / 2;
-						if (show_date) y -= sz.height / 2 + s.axis_x.font_spacing / 2;
+						var y = svp.y + text_t.height / 2;
+						if (show_date) y -= text_t.height / 2 + s.axis_x.font_spacing / 2;
 						chart.ctx.move_to (svp.x - size.x / 2, y);
 						if (chart.joint_x) chart.color = chart.joint_color;
 						text_t.show();
@@ -399,9 +397,8 @@ namespace CairoChart {
 						string date = "", time = "";
 						s.axis_x.format_date_time(point.x, out date, out time);
 						var text_t = new Text(chart, date, s.axis_x.font_style);
-						var sz = text_t.size;
-						var y = svp.y + sz.height / 2;
-						if (show_time) y += sz.height / 2 + s.axis_x.font_spacing / 2;
+						var y = svp.y + text_t.height / 2;
+						if (show_time) y += text_t.height / 2 + s.axis_x.font_spacing / 2;
 						chart.ctx.move_to (svp.x - size.x / 2, y);
 						if (chart.joint_x) chart.color = chart.joint_color;
 						text_t.show();
@@ -410,8 +407,7 @@ namespace CairoChart {
 					if (show_y) {
 						chart.color = s.axis_y.color;
 						var text_t = new Text(chart, s.axis_y.format.printf((LongDouble)point.y), s.axis_y.font_style);
-						var sz = text_t.size;
-						chart.ctx.move_to (svp.x + size.x / 2 - sz.width, svp.y + sz.height / 2);
+						chart.ctx.move_to (svp.x + size.x / 2 - text_t.width, svp.y + text_t.height / 2);
 						if (chart.joint_y) chart.color = chart.joint_color;
 						text_t.show();
 					}

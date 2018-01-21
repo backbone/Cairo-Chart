@@ -303,8 +303,11 @@ namespace CairoChart {
 			if (evarea.height < 0) evarea.height = 0;
 		}
 		protected virtual void rot_axes_titles () {
-			foreach (var s in series)
-				s.axis_y.title.style.orient = Gtk.Orientation.VERTICAL;
+			foreach (var s in series) {
+				//s.axis_y.title.font = new Font();//s.axis_y.title.font.copy();
+				s.axis_y.title.font.orient = Gtk.Orientation.VERTICAL;
+				s.axis_y.title.font.size = 50;
+			}
 		}
 
 		protected virtual void eval_plarea () {
@@ -338,12 +341,11 @@ namespace CairoChart {
 			ctx.stroke ();
 		}
 		protected virtual void draw_title () {
-			var sz = title.size;
-			var title_height = sz.height + title.vspacing * 2;
+			var title_height = title.height + title.vspacing * 2;
 			evarea.y0 += title_height;
 			evarea.height -= title_height;
 			color = title.color;
-			ctx.move_to (area.width/2 - sz.width/2, sz.height + title.vspacing);
+			ctx.move_to (area.width/2 - title.width/2, title.height + title.vspacing);
 			title.show();
 		}
 		protected virtual void draw_haxes () {

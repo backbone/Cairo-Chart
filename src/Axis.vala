@@ -60,7 +60,7 @@ namespace CairoChart {
 			}
 			default = 2;
 		}
-		public Font font_style = Font ();
+		public Font font_style = new Font ();
 		public Color color = Color ();
 		public LineStyle line_style = LineStyle ();
 		public double font_spacing = 5;
@@ -108,9 +108,8 @@ namespace CairoChart {
 				switch (type) {
 				case Axis.Type.NUMBERS:
 					var text = new Text (chart, format.printf((LongDouble)x) + (horizontal ? "_" : ""), font_style);
-					var sz = text.size;
-					max_rec_width = double.max (max_rec_width, sz.width);
-					max_rec_height = double.max (max_rec_height, sz.height);
+					max_rec_width = double.max (max_rec_width, text.width);
+					max_rec_height = double.max (max_rec_height, text.height);
 					break;
 				case Axis.Type.DATE_TIME:
 					string date, time;
@@ -119,15 +118,13 @@ namespace CairoChart {
 					var h = 0.0;
 					if (date_format != "") {
 						var text = new Text (chart, date + (horizontal ? "_" : ""), font_style);
-						var sz = text.size;
-						max_rec_width = double.max (max_rec_width, sz.width);
-						h = sz.height;
+						max_rec_width = double.max (max_rec_width, text.width);
+						h = text.height;
 					}
 					if (time_format != "") {
 						var text = new Text (chart, time + (horizontal ? "_" : ""), font_style);
-						var sz = text.size;
-						max_rec_width = double.max (max_rec_width, sz.width);
-						h += sz.height;
+						max_rec_width = double.max (max_rec_width, text.width);
+						h += text.height;
 					}
 					max_rec_height = double.max (max_rec_height, h);
 					break;
