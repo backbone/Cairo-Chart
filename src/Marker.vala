@@ -1,9 +1,15 @@
 namespace CairoChart {
 
+	/**
+	 * {@link Series} Marker.
+	 */
 	public class Marker {
 
+		/**
+		 * ``Marker`` shape.
+		 */
 		public enum Type {
-			NONE = 0,	// default
+			NONE = 0,
 			SQUARE,
 			CIRCLE,
 			TRIANGLE,
@@ -12,9 +18,21 @@ namespace CairoChart {
 			PRICLE_TRIANGLE
 		}
 
+		/**
+		 * ``Marker`` shape.
+		 */
 		public Type type = Type.NONE;
+
+		/**
+		 * ``Marker`` size.
+		 */
 		public double size = 8.0;
 
+		/**
+		 * Constructs a new ``Marker``.
+		 * @param type ``Marker`` shape.
+		 * @param size ``Marker`` size.
+		 */
 		public Marker (Type type = Type.NONE,
 		               double size = 8.0
 		) {
@@ -22,10 +40,18 @@ namespace CairoChart {
 			this.size = size;
 		}
 
+		/**
+		 * Gets a copy of the ``Marker``.
+		 */
 		public virtual Marker copy () {
 			return new Marker (type, size);
 		}
 
+		/**
+		 * Draws the ``Marker`` at specific position.
+		 * @param x x-coordinate.
+		 * @param y y-coordinate.
+		 */
 		public virtual void draw_at_pos (Chart chart, double x, double y) {
 			chart.ctx.move_to (x, y);
 			switch (type) {
@@ -69,5 +95,3 @@ namespace CairoChart {
 		}
 	}
 }
-
-
