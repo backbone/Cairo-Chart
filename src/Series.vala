@@ -17,7 +17,7 @@ namespace CairoChart {
 
 		public Place place = new Place();
 		public Text title = new Text ();
-		public Marker marker = new Marker ();
+		public Marker marker = null;
 
 		public Grid grid = new Grid ();
 
@@ -45,6 +45,7 @@ namespace CairoChart {
 
 		public Series (Chart chart) {
 			this.chart = chart;
+			this.marker = new Marker(chart);
 		}
 
 		public virtual Series copy () {
@@ -86,7 +87,7 @@ namespace CairoChart {
 				var y = get_scr_y(points[i].y);
 				if (Math.point_in_rect (Point(x, y), chart.plarea.x0, chart.plarea.x1,
 				                                     chart.plarea.y0, chart.plarea.y1))
-					marker.draw_at_pos(chart, x, y);
+					marker.draw_at_pos(x, y);
 			}
 		}
 

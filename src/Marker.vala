@@ -5,6 +5,8 @@ namespace CairoChart {
 	 */
 	public class Marker {
 
+		Chart chart = null;
+
 		/**
 		 * ``Marker`` shape.
 		 */
@@ -33,9 +35,11 @@ namespace CairoChart {
 		 * @param type ``Marker`` shape.
 		 * @param size ``Marker`` size.
 		 */
-		public Marker (Type type = Type.NONE,
+		public Marker (Chart chart,
+		               Type type = Type.NONE,
 		               double size = 8.0
 		) {
+			this.chart = chart;
 			this.type = type;
 			this.size = size;
 		}
@@ -44,7 +48,7 @@ namespace CairoChart {
 		 * Gets a copy of the ``Marker``.
 		 */
 		public virtual Marker copy () {
-			return new Marker (type, size);
+			return new Marker (chart, type, size);
 		}
 
 		/**
@@ -52,7 +56,7 @@ namespace CairoChart {
 		 * @param x x-coordinate.
 		 * @param y y-coordinate.
 		 */
-		public virtual void draw_at_pos (Chart chart, double x, double y) {
+		public virtual void draw_at_pos (double x, double y) {
 			chart.ctx.move_to (x, y);
 			switch (type) {
 			case Type.SQUARE:
