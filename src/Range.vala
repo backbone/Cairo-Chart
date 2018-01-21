@@ -5,64 +5,64 @@ namespace CairoChart {
 	 */
 	public class Range {
 
-		double _low = 0;
-		double _high = 1;
+		Float128 _min = 0;
+		Float128 _max = 1;
 
 		/**
-		 * Zoomed low bound.
+		 * Zoomed min bound.
 		 */
-		double zlow = 0;
+		public Float128 zmin = 0;
 
 		/**
-		 * Zoomed high bound.
+		 * Zoomed max bound.
 		 */
-		double zhigh = 1;
+		public Float128 zmax = 1;
 
 		/**
 		 * Low bound.
 		 */
-		public double low {
+		public Float128 min {
 			get {
-				return _low;
+				return _min;
 			}
 			set {
-				zlow = _low = value;
+				zmin = _min = value;
 			}
 		}
 
 		/**
 		 * High bound.
 		 */
-		public double high {
+		public Float128 max {
 			get {
-				return _high;
+				return _max;
 			}
 			set {
-				zhigh = _high = value;
+				zmax = _max = value;
 			}
 		}
 
 		/**
 		 * ``Range`` value.
 		 */
-		public double range {
+		public Float128 range {
 			get {
-				return _high - _low;
+				return _max - _min;
 			}
 			set {
-				zhigh = _high = _low + value;
+				zmax = _max = _min + value;
 			}
 		}
 
 		/**
 		 * ``Range`` zoomed value.
 		 */
-		public double zrange {
+		public Float128 zrange {
 			get {
-				return zhigh - zlow;
+				return zmax - zmin;
 			}
 			set {
-				zhigh = zlow + value;
+				zmax = zmin + value;
 			}
 		}
 
@@ -75,23 +75,23 @@ namespace CairoChart {
 		 * Constructs a new ``Range`` with a ``Range`` instance.
 		 */
 		public Range.with_range (Range range) {
-			this.low = range.low;
-			this.high = range.high;
+			this.min = range.min;
+			this.max = range.max;
 		}
 
 		/**
 		 * Constructs a new ``Range`` with absolute coordinates.
 		 */
-		public Range.with_abs (double low, double high) {
-			this.low = low;
-			this.high = high;
+		public Range.with_abs (Float128 min, Float128 max) {
+			this.min = min;
+			this.max = max;
 		}
 
 		/**
 		 * Constructs a new ``Range`` with relative coordinates.
 		 */
-		public Range.with_rel (double low, double range) {
-			this.low = low;
+		public Range.with_rel (Float128 min, Float128 range) {
+			this.min = min;
 			this.range = range;
 		}
 
@@ -106,8 +106,8 @@ namespace CairoChart {
 		 * Unzooms ``Range``.
 		 */
 		public void unzoom () {
-			zlow = low;
-			zhigh = high;
+			zmin = min;
+			zmax = max;
 		}
 	}
 }

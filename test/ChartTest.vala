@@ -15,18 +15,18 @@ void plot_chart1 (Chart chart) {
 	s3.points = {Point128(9, 17), Point128(2, 10), Point128(122, 31)};
 	s3.axis_y.position = Axis.Position.HIGH;
 
-	s1.axis_x.min = 0; s1.axis_x.max = 2;
-	s1.axis_y.min = 0; s1.axis_y.max = 3;
+	s1.axis_x.range.min = 0; s1.axis_x.range.max = 2;
+	s1.axis_y.range.min = 0; s1.axis_y.range.max = 3;
 	s1.place.x0 = 0.25; s1.place.x1 = 0.75;
 	s1.place.y0 = 0.3; s1.place.y1 = 0.9;
 
-	s2.axis_x.min = -15; s2.axis_x.max = 30;
-	s2.axis_y.min = -20; s2.axis_y.max = 200;
+	s2.axis_x.range.min = -15; s2.axis_x.range.max = 30;
+	s2.axis_y.range.min = -20; s2.axis_y.range.max = 200;
 	s2.place.x0 = 0.5; s2.place.x1 = 1;
 	s2.place.y0 = 0.0; s2.place.y1 = 0.5;
 
-	s3.axis_x.min = 0; s3.axis_x.max = 130;
-	s3.axis_y.min = 15; s3.axis_y.max = 35;
+	s3.axis_x.range.min = 0; s3.axis_x.range.max = 130;
+	s3.axis_y.range.min = 15; s3.axis_y.range.max = 35;
 	s3.place.x0 = 0; s3.place.x1 = 0.5;
 	s3.place.y0 = 0.5; s3.place.y1 = 1.0;
 
@@ -59,18 +59,18 @@ void plot_chart2 (Chart chart) {
 	s3.points = {Point128(9, 17), Point128(2, 10), Point128(-15, 31)};
 	s3.axis_y.position = Axis.Position.HIGH;
 
-	s1.axis_x.min = -15; s1.axis_x.max = 30;
-	s1.axis_y.min = 0; s1.axis_y.max = 3;
+	s1.axis_x.range.min = -15; s1.axis_x.range.max = 30;
+	s1.axis_y.range.min = 0; s1.axis_y.range.max = 3;
 	s1.place.x0 = 0.0; s1.place.x1 = 1.0;
 	s1.place.y0 = 0.3; s1.place.y1 = 0.9;
 
-	s2.axis_x.min = -15; s2.axis_x.max = 30;
-	s2.axis_y.min = -20; s2.axis_y.max = 200;
+	s2.axis_x.range.min = -15; s2.axis_x.range.max = 30;
+	s2.axis_y.range.min = -20; s2.axis_y.range.max = 200;
 	s2.place.x0 = 0.0; s2.place.x1 = 1.0;
 	s2.place.y0 = 0.0; s2.place.y1 = 0.5;
 
-	s3.axis_x.min = -15; s3.axis_x.max = 30;
-	s3.axis_y.min = 15; s3.axis_y.max = 35;
+	s3.axis_x.range.min = -15; s3.axis_x.range.max = 30;
+	s3.axis_y.range.min = 15; s3.axis_y.range.max = 35;
 	s3.place.x0 = 0.0; s3.place.x1 = 1.0;
 	s3.place.y0 = 0.5; s3.place.y1 = 1.0;
 
@@ -87,7 +87,7 @@ void plot_chart2 (Chart chart) {
 
 	//s1.axis_x.position = s2.axis_x.position = s3.axis_x.position = Axis.Position.HIGH;
 	//s1.axis_x.type = s2.axis_x.type = s3.axis_x.type = Axis.Type.DATE_TIME;
-	//s1.axis_x.max = s2.axis_x.max = s3.axis_x.max = 5*24*3600;
+	//s1.axis_x.range.max = s2.axis_x.range.max = s3.axis_x.range.max = 5*24*3600;
 
 	chart.series = { s1, s2, s3 };
 }
@@ -109,18 +109,18 @@ void plot_chart3 (Chart chart) {
 	s3.points = {Point128(9, -17), Point128(2, 10), Point128(122, 31)};
 	s3.axis_y.position = Axis.Position.HIGH;
 
-	s1.axis_x.min = 0; s1.axis_x.max = 2;
-	s1.axis_y.min = -20; s1.axis_y.max = 200;
+	s1.axis_x.range.min = 0; s1.axis_x.range.max = 2;
+	s1.axis_y.range.min = -20; s1.axis_y.range.max = 200;
 	s1.place.x0 = 0.25; s1.place.x1 = 0.75;
 	s1.place.y0 = 0.0; s1.place.y1 = 1.0;
 
-	s2.axis_x.min = -15; s2.axis_x.max = 30;
-	s2.axis_y.min = -20; s2.axis_y.max = 200;
+	s2.axis_x.range.min = -15; s2.axis_x.range.max = 30;
+	s2.axis_y.range.min = -20; s2.axis_y.range.max = 200;
 	s2.place.x0 = 0.5; s2.place.x1 = 1;
 	s2.place.y0 = 0.0; s2.place.y1 = 1.0;
 
-	s3.axis_x.min = 0; s3.axis_x.max = 130;
-	s3.axis_y.min = -20; s3.axis_y.max = 200;
+	s3.axis_x.range.min = 0; s3.axis_x.range.max = 130;
+	s3.axis_y.range.min = -20; s3.axis_y.range.max = 200;
 	s3.place.x0 = 0; s3.place.x1 = 0.5;
 	s3.place.y0 = 0.0; s3.place.y1 = 1.0;
 
@@ -168,23 +168,23 @@ void plot_chart4 (Chart chart) {
 	s4.points = {Point128(high + 0.005, -19.05), Point128(high + 0.0051, 28), Point128(high + 0.0052, 55), Point128(high + 0.0053, 44)};
 	s4.axis_y.position = Axis.Position.HIGH;
 
-	s1.axis_x.min = now - 100000; s1.axis_x.max = now + 100000;
-	s1.axis_y.min = -20; s1.axis_y.max = 200;
+	s1.axis_x.range.min = now - 100000; s1.axis_x.range.max = now + 100000;
+	s1.axis_y.range.min = -20; s1.axis_y.range.max = 200;
 	s1.place.x0 = 0.25; s1.place.x1 = 0.75;
 	s1.place.y0 = 0.0; s1.place.y1 = 1.0;
 
-	s2.axis_x.min = -15; s2.axis_x.max = 30;
-	s2.axis_y.min = -20; s2.axis_y.max = 200;
+	s2.axis_x.range.min = -15; s2.axis_x.range.max = 30;
+	s2.axis_y.range.min = -20; s2.axis_y.range.max = 200;
 	s2.place.x0 = 0.2; s2.place.x1 = 1;
 	s2.place.y0 = 0.0; s2.place.y1 = 1.0;
 
-	s3.axis_x.min = high - 2; s3.axis_x.max = high + 1;
-	s3.axis_y.min = -20; s3.axis_y.max = 200;
+	s3.axis_x.range.min = high - 2; s3.axis_x.range.max = high + 1;
+	s3.axis_y.range.min = -20; s3.axis_y.range.max = 200;
 	s3.place.x0 = 0; s3.place.x1 = 0.8;
 	s3.place.y0 = 0.0; s3.place.y1 = 1.0;
 
-	s4.axis_x.min = high + 0.0049; s4.axis_x.max = high + 0.0054;
-	s4.axis_y.min = -20; s4.axis_y.max = 200;
+	s4.axis_x.range.min = high + 0.0049; s4.axis_x.range.max = high + 0.0054;
+	s4.axis_y.range.min = -20; s4.axis_y.range.max = 200;
 	s4.place.x0 = 0.2; s4.place.x1 = 1.0;
 	s4.place.y0 = 0.0; s4.place.y1 = 1.0;
 

@@ -196,34 +196,34 @@ namespace CairoChart {
 				var real_y1 = s.get_real_y (area.y1);
 				var real_height = real_y0 - real_y1;
 				// if selected square does not intersect with the series's square
-				if (   real_x1 <= s.axis_x.zoom_min || real_x0 >= s.axis_x.zoom_max
-				    || real_y0 <= s.axis_y.zoom_min || real_y1 >= s.axis_y.zoom_max) {
+				if (   real_x1 <= s.axis_x.range.zmin || real_x0 >= s.axis_x.range.zmax
+				    || real_y0 <= s.axis_y.range.zmin || real_y1 >= s.axis_y.range.zmax) {
 					s.zoom_show = false;
 					continue;
 				}
-				if (real_x0 >= s.axis_x.zoom_min) {
-					s.axis_x.zoom_min = real_x0;
+				if (real_x0 >= s.axis_x.range.zmin) {
+					s.axis_x.range.zmin = real_x0;
 					s.place.zx0 = 0.0;
 				} else {
-					s.place.zx0 = (s.axis_x.zoom_min - real_x0) / real_width;
+					s.place.zx0 = (s.axis_x.range.zmin - real_x0) / real_width;
 				}
-				if (real_x1 <= s.axis_x.zoom_max) {
-					s.axis_x.zoom_max = real_x1;
+				if (real_x1 <= s.axis_x.range.zmax) {
+					s.axis_x.range.zmax = real_x1;
 					s.place.zx1 = 1.0;
 				} else {
-					s.place.zx1 = (s.axis_x.zoom_max - real_x0) / real_width;
+					s.place.zx1 = (s.axis_x.range.zmax - real_x0) / real_width;
 				}
-				if (real_y1 >= s.axis_y.zoom_min) {
-					s.axis_y.zoom_min = real_y1;
+				if (real_y1 >= s.axis_y.range.zmin) {
+					s.axis_y.range.zmin = real_y1;
 					s.place.zy0 = 0.0;
 				} else {
-					s.place.zy0 = (s.axis_y.zoom_min - real_y1) / real_height;
+					s.place.zy0 = (s.axis_y.range.zmin - real_y1) / real_height;
 				}
-				if (real_y0 <= s.axis_y.zoom_max) {
-					s.axis_y.zoom_max = real_y0;
+				if (real_y0 <= s.axis_y.range.zmax) {
+					s.axis_y.range.zmax = real_y0;
 					s.place.zy1 = 1.0;
 				} else {
-					s.place.zy1 = (s.axis_y.zoom_max - real_y1) / real_height;
+					s.place.zy1 = (s.axis_y.range.zmax - real_y1) / real_height;
 				}
 			}
 

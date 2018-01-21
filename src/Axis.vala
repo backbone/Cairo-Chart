@@ -1,22 +1,9 @@
 namespace CairoChart {
-	// If one of axis:title or axis:min/max are different
+	// If one of axis:title or axis:range.min/range.max are different
 	// then draw separate axis for each/all series
 	// or specify series name near the axis
 	public class Axis {
-		Float128 _min = 0;
-		Float128 _max = 0;
-		public Float128 min {
-			get { return _min; }
-			set { _min = zoom_min = value; }
-			default = 0;
-		}
-		public Float128 max {
-			get { return _max; }
-			set { _max = zoom_max = value; }
-			default = 1;
-		}
-		public Float128 zoom_min = 0;
-		public Float128 zoom_max = 1;
+		public Range range = new Range();
 		public Text title = new Text ("");
 		public enum Type {
 			NUMBERS = 0,
@@ -87,8 +74,8 @@ namespace CairoChart {
 			axis.font_spacing = this.font_spacing;
 			axis.font_style = this.font_style;
 			axis.line_style = this.line_style;
-			axis.max = this.max;
-			axis.min = this.min;
+			axis.range.max = this.range.max;
+			axis.range.min = this.range.min;
 			axis.position = this.position;
 			axis.scale_type = this.scale_type;
 			axis.title = this.title.copy();
@@ -113,7 +100,7 @@ namespace CairoChart {
 		public virtual void calc_rec_sizes (Chart chart, out double max_rec_width, out double max_rec_height, bool horizontal = true) {
 			max_rec_width = max_rec_height = 0;
 			for (var i = 0; i < nrecords; ++i) {
-				Float128 x = (int64)(zoom_min + (zoom_max - zoom_min) / nrecords * i) + 1.0/3.0;
+				Float128 x = (int64)(range.zmin + (range.zmax - range.zmin) / nrecords * i) + 1.0/3.0;
 				switch (type) {
 				case Axis.Type.NUMBERS:
 					var text = new Text (format.printf((LongDouble)x) + (horizontal ? "_" : ""), font_style);
@@ -145,8 +132,7 @@ namespace CairoChart {
 		}
 
 		public virtual void unzoom () {
-			zoom_min = min;
-			zoom_max = max;
+			range.unzoom();
 		}
 	}
 }

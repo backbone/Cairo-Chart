@@ -92,8 +92,8 @@ namespace CairoChart {
 
 		public virtual bool equal_x_axis (Series s) {
 			if (   axis_x.position != s.axis_x.position
-			    || axis_x.zoom_min != s.axis_x.zoom_min
-			    || axis_x.zoom_max != s.axis_x.zoom_max
+			    || axis_x.range.zmin != s.axis_x.range.zmin
+			    || axis_x.range.zmax != s.axis_x.range.zmax
 			    || place.zx0 != s.place.zx0
 			    || place.zx1 != s.place.zx1
 			    || axis_x.type != s.axis_x.type
@@ -104,8 +104,8 @@ namespace CairoChart {
 
 		public virtual bool equal_y_axis (Series s) {
 			if (   axis_y.position != s.axis_y.position
-			    || axis_y.zoom_min != s.axis_y.zoom_min
-			    || axis_y.zoom_max != s.axis_y.zoom_max
+			    || axis_y.range.zmin != s.axis_y.range.zmin
+			    || axis_y.range.zmax != s.axis_y.range.zmax
 			    || place.zy0 != s.place.zy0
 			    || place.zy1 != s.place.zy1
 			    || axis_y.type != s.axis_y.type
@@ -249,7 +249,7 @@ namespace CairoChart {
 			var ctx = chart.ctx;
 			var joint_x = chart.joint_x;
 
-			for (Float128 x = x_min, x_max = axis_x.zoom_max; Math.point_belong (x, x_min, x_max); x += step) {
+			for (Float128 x = x_min, x_max = axis_x.range.zmax; Math.point_belong (x, x_min, x_max); x += step) {
 				if (joint_x) chart.color = chart.joint_color;
 				else chart.color = axis_x.color;
 				string text = "", time_text = "";
@@ -334,21 +334,21 @@ namespace CairoChart {
 			long max_nrecs = (long) (chart.plarea.width * (s.place.zx1 - s.place.zx0) / max_rec_width);
 
 			// 3. Calculate grid step.
-			Float128 step = Math.calc_round_step ((s.axis_x.zoom_max - s.axis_x.zoom_min) / max_nrecs, s.axis_x.type == Axis.Type.DATE_TIME);
-			if (step > s.axis_x.zoom_max - s.axis_x.zoom_min)
-				step = s.axis_x.zoom_max - s.axis_x.zoom_min;
+			Float128 step = Math.calc_round_step ((s.axis_x.range.zmax - s.axis_x.range.zmin) / max_nrecs, s.axis_x.type == Axis.Type.DATE_TIME);
+			if (step > s.axis_x.range.zmax - s.axis_x.range.zmin)
+				step = s.axis_x.range.zmax - s.axis_x.range.zmin;
 
-			// 4. Calculate x_min (s.axis_x.zoom_min / step, round, multiply on step, add step if < s.axis_x.zoom_min).
+			// 4. Calculate x_min (s.axis_x.range.zmin / step, round, multiply on step, add step if < s.axis_x.range.zmin).
 			Float128 x_min = 0.0;
 			if (step >= 1) {
-				int64 x_min_nsteps = (int64) (s.axis_x.zoom_min / step);
+				int64 x_min_nsteps = (int64) (s.axis_x.range.zmin / step);
 				x_min = x_min_nsteps * step;
 			} else {
-				int64 round_axis_x_min = (int64)s.axis_x.zoom_min;
-				int64 x_min_nsteps = (int64) ((s.axis_x.zoom_min - round_axis_x_min) / step);
+				int64 round_axis_x_min = (int64)s.axis_x.range.zmin;
+				int64 x_min_nsteps = (int64) ((s.axis_x.range.zmin - round_axis_x_min) / step);
 				x_min = round_axis_x_min + x_min_nsteps * step;
 			}
-			if (x_min < s.axis_x.zoom_min) x_min += step;
+			if (x_min < s.axis_x.range.zmin) x_min += step;
 
 			// 4.2. Cursor values for joint X axis
 			if (chart.joint_x && chart.cursors.cursor_style.orientation == Cursors.Orientation.VERTICAL && chart.cursors.cursors_crossings.length != 0) {
@@ -396,7 +396,7 @@ namespace CairoChart {
 			var ctx = chart.ctx;
 			var joint_y = chart.joint_y;
 
-			for (Float128 y = y_min, y_max = axis_y.zoom_max; Math.point_belong (y, y_min, y_max); y += step) {
+			for (Float128 y = y_min, y_max = axis_y.range.zmax; Math.point_belong (y, y_min, y_max); y += step) {
 				if (joint_y) chart.color = chart.joint_color;
 				else chart.color = axis_y.color;
 				var text = axis_y.format.printf((LongDouble)y);
@@ -454,21 +454,21 @@ namespace CairoChart {
 			long max_nrecs = (long) (chart.plarea.height * (s.place.zy1 - s.place.zy0) / max_rec_height);
 
 			// 3. Calculate grid step.
-			Float128 step = Math.calc_round_step ((s.axis_y.zoom_max - s.axis_y.zoom_min) / max_nrecs);
-			if (step > s.axis_y.zoom_max - s.axis_y.zoom_min)
-				step = s.axis_y.zoom_max - s.axis_y.zoom_min;
+			Float128 step = Math.calc_round_step ((s.axis_y.range.zmax - s.axis_y.range.zmin) / max_nrecs);
+			if (step > s.axis_y.range.zmax - s.axis_y.range.zmin)
+				step = s.axis_y.range.zmax - s.axis_y.range.zmin;
 
-			// 4. Calculate y_min (s.axis_y.zoom_min / step, round, multiply on step, add step if < s.axis_y.zoom_min).
+			// 4. Calculate y_min (s.axis_y.range.zmin / step, round, multiply on step, add step if < s.axis_y.range.zmin).
 			Float128 y_min = 0.0;
 			if (step >= 1) {
-				int64 y_min_nsteps = (int64) (s.axis_y.zoom_min / step);
+				int64 y_min_nsteps = (int64) (s.axis_y.range.zmin / step);
 				y_min = y_min_nsteps * step;
 			} else {
-				int64 round_axis_y_min = (int64)s.axis_y.zoom_min;
-				int64 y_min_nsteps = (int64) ((s.axis_y.zoom_min - round_axis_y_min) / step);
+				int64 round_axis_y_min = (int64)s.axis_y.range.zmin;
+				int64 y_min_nsteps = (int64) ((s.axis_y.range.zmin - round_axis_y_min) / step);
 				y_min = round_axis_y_min + y_min_nsteps * step;
 			}
-			if (y_min < s.axis_y.zoom_min) y_min += step;
+			if (y_min < s.axis_y.range.zmin) y_min += step;
 
 			// 4.2. Cursor values for joint Y axis
 			if (chart.joint_y && chart.cursors.cursor_style.orientation == Cursors.Orientation.HORIZONTAL && chart.cursors.cursors_crossings.length != 0) {
@@ -518,21 +518,21 @@ namespace CairoChart {
 		public virtual double compact_rec_x_pos (Float128 x, Text text) {
 			var sz = text.get_size(chart.ctx);
 			return get_scr_x(x) - sz.width / 2.0
-			       - sz.width * (x - (axis_x.zoom_min + axis_x.zoom_max) / 2.0) / (axis_x.zoom_max - axis_x.zoom_min);
+			       - sz.width * (x - (axis_x.range.zmin + axis_x.range.zmax) / 2.0) / (axis_x.range.zmax - axis_x.range.zmin);
 		}
 
 		public virtual double compact_rec_y_pos (Float128 y, Text text) {
 			var sz = text.get_size(chart.ctx);
 			return get_scr_y(y) + sz.height / 2.0
-			       + sz.height * (y - (axis_y.zoom_min + axis_y.zoom_max) / 2.0) / (axis_y.zoom_max - axis_y.zoom_min);
+			       + sz.height * (y - (axis_y.range.zmin + axis_y.range.zmax) / 2.0) / (axis_y.range.zmax - axis_y.range.zmin);
 		}
 
 		public virtual double get_scr_x (Float128 x) {
-			return chart.plarea.x0 + chart.plarea.width * (place.zx0 + (x - axis_x.zoom_min) / (axis_x.zoom_max - axis_x.zoom_min) * (place.zx1 - place.zx0));
+			return chart.plarea.x0 + chart.plarea.width * (place.zx0 + (x - axis_x.range.zmin) / (axis_x.range.zmax - axis_x.range.zmin) * (place.zx1 - place.zx0));
 		}
 
 		public virtual double get_scr_y (Float128 y) {
-			return chart.plarea.y0 + chart.plarea.height * (1.0 - (place.zy0 + (y - axis_y.zoom_min) / (axis_y.zoom_max - axis_y.zoom_min) * (place.zy1 - place.zy0)));
+			return chart.plarea.y0 + chart.plarea.height * (1.0 - (place.zy0 + (y - axis_y.range.zmin) / (axis_y.range.zmax - axis_y.range.zmin) * (place.zy1 - place.zy0)));
 		}
 
 		public virtual Point get_scr_point (Point128 p) {
@@ -540,13 +540,13 @@ namespace CairoChart {
 		}
 
 		public virtual Float128 get_real_x (double scr_x) {
-			return axis_x.zoom_min + ((scr_x - chart.plarea.x0) / chart.plarea.width - place.zx0)
-			       * (axis_x.zoom_max - axis_x.zoom_min) / (place.zx1 - place.zx0);
+			return axis_x.range.zmin + ((scr_x - chart.plarea.x0) / chart.plarea.width - place.zx0)
+			       * (axis_x.range.zmax - axis_x.range.zmin) / (place.zx1 - place.zx0);
 		}
 
 		public virtual Float128 get_real_y (double scr_y) {
-			return axis_y.zoom_min + ((chart.plarea.y1 - scr_y) / chart.plarea.height - place.zy0)
-			       * (axis_y.zoom_max - axis_y.zoom_min) / (place.zy1 - place.zy0);
+			return axis_y.range.zmin + ((chart.plarea.y1 - scr_y) / chart.plarea.height - place.zy0)
+			       * (axis_y.range.zmax - axis_y.range.zmin) / (place.zy1 - place.zy0);
 		}
 
 		public virtual Point128 get_real_point (Point p) {
