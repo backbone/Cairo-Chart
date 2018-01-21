@@ -340,7 +340,6 @@ namespace CairoChart {
 		protected virtual void draw_title () {
 			var title_height = title.height + title.vspacing * 2;
 			evarea.y0 += title_height;
-			evarea.height -= title_height;
 			color = title.color;
 			ctx.move_to (area.width/2 - title.width/2, title.height + title.vspacing);
 			title.show();
