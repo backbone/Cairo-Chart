@@ -110,8 +110,7 @@ namespace CairoChart {
 				return zx1 - zx0;
 			}
 			set {
-				if (zx0 <= zx0 + value <= _x1)
-					zx1 = zx0 + value;
+				zx1 = zx0 + value;
 			}
 		}
 
@@ -123,8 +122,7 @@ namespace CairoChart {
 				return zy1 - zy0;
 			}
 			set {
-				if (zy0 <= zy0 + value <= _y1)
-					zy1 = zy0 + value;
+				zy1 = zy0 + value;
 			}
 		}
 
@@ -132,6 +130,17 @@ namespace CairoChart {
 		 * Constructs a new ``Area``.
 		 */
 		public Area () { }
+
+		/**
+		 * Constructs a new ``Area`` by other ``Area``.
+		 * @param area ``Area`` instance.
+		 */
+		public Area.with_area (Area area) {
+			this.x0 = area.x0;
+			this.y0 = area.y0;
+			this.x1 = area.x1;
+			this.y1 = area.y1;
+		}
 
 		/**
 		 * Constructs a new ``Area`` with absolute coordinates.
@@ -159,17 +168,6 @@ namespace CairoChart {
 			this.y0 = y0;
 			this.width = width;
 			this.height = height;
-		}
-
-		/**
-		 * Constructs a new ``Area`` by other ``Area``.
-		 * @param area ``Area`` instance.
-		 */
-		public Area.with_area (Area area) {
-			this.x0 = area.x0;
-			this.y0 = area.y0;
-			this.x1 = area.x1;
-			this.y1 = area.y1;
 		}
 
 		/**

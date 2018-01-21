@@ -7,8 +7,16 @@ namespace CairoChart {
 
 		double _low = 0;
 		double _high = 1;
-		double _zlow = 0;
-		double _zhigh = 1;
+
+		/**
+		 * Zoomed low bound.
+		 */
+		double zlow = 0;
+
+		/**
+		 * Zoomed high bound.
+		 */
+		double zhigh = 1;
 
 		/**
 		 * Low bound.
@@ -18,7 +26,7 @@ namespace CairoChart {
 				return _low;
 			}
 			set {
-				_zlow = _low = value;
+				zlow = _low = value;
 			}
 		}
 
@@ -30,33 +38,7 @@ namespace CairoChart {
 				return _high;
 			}
 			set {
-				_zhigh = _high = value;
-			}
-		}
-
-		/**
-		 * Zoomed low bound.
-		 */
-		double zlow {
-			get {
-				return _zlow;
-			}
-			set {
-				if (_low <= value <= _high)
-					_zlow = value;
-			}
-		}
-
-		/**
-		 * Zoomed high bound.
-		 */
-		double zhigh {
-			get {
-				return _zhigh;
-			}
-			set {
-				if (_low <= value <= _high)
-					_zhigh = value;
+				zhigh = _high = value;
 			}
 		}
 
@@ -68,7 +50,7 @@ namespace CairoChart {
 				return _high - _low;
 			}
 			set {
-				_zhigh = _high = _low + value;
+				zhigh = _high = _low + value;
 			}
 		}
 
@@ -77,11 +59,10 @@ namespace CairoChart {
 		 */
 		public double zrange {
 			get {
-				return _zhigh - _zlow;
+				return zhigh - zlow;
 			}
 			set {
-				if (_zlow <= _zlow + value <= _high)
-					_zhigh = _zlow + value;
+				zhigh = zlow + value;
 			}
 		}
 
@@ -125,8 +106,8 @@ namespace CairoChart {
 		 * Unzooms ``Range``.
 		 */
 		public void unzoom () {
-			_zlow = low;
-			_zhigh = high;
+			zlow = low;
+			zhigh = high;
 		}
 	}
 }
