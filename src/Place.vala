@@ -149,11 +149,24 @@ namespace CairoChart {
 		 * @param x1 right bound.
 		 * @param y1 bottom bound.
 		 */
-		public Place.with_abs (double x0, double y0, double x1, double y1) {
+		public Place.with_abs (double x0, double y0,
+		                       double x1, double y1) {
 			this.x0 = x0;
 			this.y0 = y0;
 			this.x1 = x1;
 			this.y1 = y1;
+		}
+
+		/**
+		 * Constructs a new ``Place`` by 2 points.
+		 * @param p0 top left position.
+		 * @param p1 bottom right position.
+		 */
+		public Place.with_points (Point p0, Point p1) {
+			this.x0 = p0.x;
+			this.y0 = p0.y;
+			this.x1 = p1.x;
+			this.y1 = p1.y;
 		}
 
 		/**
@@ -163,7 +176,8 @@ namespace CairoChart {
 		 * @param width ``Place`` width.
 		 * @param height ``Place`` height.
 		 */
-		public Place.with_rel (double x0, double y0, double width, double height) {
+		public Place.with_rel (double x0,    double y0,
+		                       double width, double height) {
 			this.x0 = x0;
 			this.y0 = y0;
 			this.width = width;
