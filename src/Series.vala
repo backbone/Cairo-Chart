@@ -2,45 +2,102 @@ using Cairo;
 
 namespace CairoChart {
 
+	/**
+	 * ``Chart`` series.
+	 */
 	public class Series {
 
+		protected Chart chart { get; protected set; default = null; }
+
+		/**
+		 * 128-bit (X;Y) points.
+		 */
 		public Point128[] points = {};
+
+		/**
+		 * Sort style.
+		 */
 		public enum Sort {
+			/**
+			 * Sort by X.
+			 */
 			BY_X = 0,
+
+			/**
+			 * Sort by Y.
+			 */
 			BY_Y = 1,
+
+			/**
+			 * Do not sort points on draw().
+			 */
 			UNSORTED
 		}
+
+		/**
+		 * Sort style.
+		 */
 		public Sort sort = Sort.BY_X;
 
+		/**
+		 * X-axis.
+		 */
 		public Axis axis_x;
+
+		/**
+		 * Y-axis.
+		 */
 		public Axis axis_y;
 
+		/**
+		 * ``Place`` of the ``Series`` on the {@link Chart}.
+		 */
 		public Place place = new Place();
+
+		/**
+		 * Title of the ``Chart``.
+		 */
 		public Text title;
+
+		/**
+		 * ``Marker`` style.
+		 */
 		public Marker marker;
 
+		/**
+		 * Grid style.
+		 */
 		public Grid grid = new Grid ();
 
+		/**
+		 * ``Series`` line style.
+		 */
 		public LineStyle line_style = LineStyle ();
 
-		protected Color _color = Color (0, 0, 0, 1);
+		/**
+		 * ``Series`` color (set only).
+		 */
 		public Color color {
-			get { return _color; }
+			protected get { return Color(); }
 			set {
-				_color = value;
-				line_style.color = _color;
-				axis_x.color = _color;
-				axis_y.color = _color;
-				grid.style.color = _color;
+				line_style.color = value;
+				axis_x.color = value;
+				axis_y.color = value;
+				grid.style.color = value;
 				grid.style.color.alpha = 0.5;
 			}
 			default = Color (0, 0, 0, 1);
 		}
 
+		/**
+		 * Show the ``Series`` in zoomed area or not.
+		 */
 		public bool zoom_show = true;
 
-		protected Chart chart { get; protected set; default = null; }
-
+		/**
+		 * Constructs a new ``Series``.
+		 * @param chart ``Chart`` instance.
+		 */
 		public Series (Chart chart) {
 			this.chart = chart;
 			title = new Text(chart);
@@ -49,9 +106,11 @@ namespace CairoChart {
 			this.marker = new Marker(chart);
 		}
 
+		/**
+		 * Gets a copy of the ``Series``.
+		 */
 		public virtual Series copy () {
 			var series = new Series (chart);
-			series._color = this._color;
 			series.axis_x = this.axis_x.copy ();
 			series.axis_y = this.axis_y.copy ();
 			series.grid = this.grid.copy ();
@@ -65,6 +124,9 @@ namespace CairoChart {
 			return series;
 		}
 
+		/**
+		 * Draws the ``Series``.
+		 */
 		public virtual void draw () {
 			var points = Math.sort_points(this, sort);
 			line_style.apply(chart);
@@ -92,6 +154,9 @@ namespace CairoChart {
 			}
 		}
 
+		/**
+		 * TODO: -> Chart.vala
+		 */
 		public virtual void join_axes (bool is_x, int si, ref int nskip) {
 			var s = chart.series[si];
 			Axis axis = s.axis_x;
@@ -148,6 +213,9 @@ namespace CairoChart {
 			}
 		}
 
+		/**
+		 * TODO: -> Chart.vala
+		 */
 		public virtual void draw_horizontal_axis (int si, ref int nskip) {
 			var s = chart.series[si];
 			if (!s.zoom_show) return;
@@ -216,6 +284,9 @@ namespace CairoChart {
 			}
 		}
 
+		/**
+		 * TODO: -> Chart.vala
+		 */
 		public virtual void draw_vertical_axis (int si, ref int nskip) {
 			var s = chart.series[si];
 			if (!s.zoom_show) return;
@@ -287,40 +358,77 @@ namespace CairoChart {
 			}
 		}
 
+		/**
+		 * Gets compact placement X-position on the screen.
+		 * @param x real ``Series`` X-value.
+		 * @param text to place on the screen.
+		 */
 		public virtual double compact_rec_x_pos (Float128 x, Text text) {
 			return get_scr_x(x) - text.width / 2
 			       - text.width * (x - (axis_x.range.zmin + axis_x.range.zmax) / 2) / axis_x.range.zrange;
 		}
 
+		/**
+		 * Gets compact placement Y-position on the screen.
+		 * @param y real ``Series`` Y-value.
+		 * @param text to place on the screen.
+		 */
 		public virtual double compact_rec_y_pos (Float128 y, Text text) {
 			return get_scr_y(y) + text.height / 2
 			       + text.height * (y - (axis_y.range.zmin + axis_y.range.zmax) / 2) / axis_y.range.zrange;
 		}
 
+		/**
+		 * Gets screen X-position by real ``Series`` X-value.
+		 * @param x real ``Series`` X-value.
+		 */
 		public virtual double get_scr_x (Float128 x) {
 			return chart.plarea.x0 + chart.plarea.width * (place.zx0 + (x - axis_x.range.zmin) / axis_x.range.zrange * place.zwidth);
 		}
 
+		/**
+		 * Gets screen Y-position by real ``Series`` Y-value.
+		 * @param y real ``Series`` Y-value.
+		 */
 		public virtual double get_scr_y (Float128 y) {
 			return chart.plarea.y0 + chart.plarea.height * (1 - (place.zy0 + (y - axis_y.range.zmin) / axis_y.range.zrange * place.zheight));
 		}
 
+		/**
+		 * Gets screen point by real ``Series`` (X;Y) value.
+		 * @param p real ``Series`` (X;Y) value.
+		 */
 		public virtual Point get_scr_point (Point128 p) {
 			return Point (get_scr_x(p.x), get_scr_y(p.y));
 		}
 
+		/**
+		 * Gets real ``Series`` X-value by plot area screen X-position.
+		 * @param scr_x screen X-position.
+		 */
 		public virtual Float128 get_real_x (double scr_x) {
 			return axis_x.range.zmin + ((scr_x - chart.plarea.x0) / chart.plarea.width - place.zx0) * axis_x.range.zrange / place.zwidth;
 		}
 
+		/**
+		 * Gets real ``Series`` Y-value by plot area screen Y-position.
+		 * @param scr_y screen Y-position.
+		 */
 		public virtual Float128 get_real_y (double scr_y) {
 			return axis_y.range.zmin + ((chart.plarea.y1 - scr_y) / chart.plarea.height - place.zy0) * axis_y.range.zrange / place.zheight;
 		}
 
+		/**
+		 * Gets real ``Series`` (X;Y) value by plot area screen point.
+		 * @param p (X;Y) screen point.
+		 */
 		public virtual Point128 get_real_point (Point p) {
 			return Point128 (get_real_x(p.x), get_real_y(p.y));
 		}
 
+		/**
+		 * Zooms out the ``Series``.
+		 */
 		public virtual void zoom_out () {
 				zoom_show = true;
 				axis_x.zoom_out();
