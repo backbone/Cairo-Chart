@@ -188,6 +188,8 @@ namespace CairoChart {
 
 		/**
 		 * Prints date/time to strings with a current formats.
+		 * @param date returns formatted date string.
+		 * @param time returns formatted time string.
 		 */
 		public virtual void print_dt (Float128 x, out string date, out string time) {
 			date = time = "";

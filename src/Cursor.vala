@@ -10,39 +10,6 @@ namespace CairoChart {
 		protected Point active_cursor = Point(); // { get; protected set; default = Point128 (); }
 		protected bool is_cursor_active = false; // { get; protected set; default = false; }
 
-		/**
-		 *
-		 */
-		public Cursors.Style cursor_style = Cursors.Style();
-
-		/**
-		 *
-		 */
-		public Cursors.CursorCrossings[] crossings = {};
-
-		/**
-		 *
-		 */
-		public Cursors (Chart chart) {
-			this.chart = chart;
-		}
-
-		/**
-		 *
-		 */
-		public Cursors copy () {
-			var c = new Cursors (chart);
-			c.list = list.copy();
-			c.active_cursor = active_cursor;
-			c.is_cursor_active = is_cursor_active;
-			c.cursor_style = cursor_style;
-			c.crossings = crossings;
-			return c;
-		}
-
-		/**
-		 *
-		 */
 		protected enum Orientation {
 			VERTICAL = 0,
 			HORIZONTAL
@@ -77,41 +44,59 @@ namespace CairoChart {
 			}
 		}
 
-		protected struct CursorCross {
-			uint series_index;
-			Point128 point;
-			Point128 size;
-			bool show_x;
-			bool show_date;
-			bool show_time;
-			bool show_y;
-			Point scr_point;
-			Point scr_value_point;
-		}
-		protected struct CursorCrossings {
-			uint cursor_index;
-			CursorCross[] crossings;
+		/**
+		 * Cursor style.
+		 */
+		public Cursors.Style cursor_style = Cursors.Style();
+
+		/**
+		 * Crossings.
+		 */
+		public Cursors.CursorCrossings[] crossings = {};
+
+		/**
+		 * Constructs a new ``Chart``.
+		 * @param chart ``Chart`` instance.
+		 */
+		public Cursors (Chart chart) {
+			this.chart = chart;
 		}
 
+		/**
+		 * Gets a copy of the ``Cursors``.
+		 */
+		public Cursors copy () {
+			var c = new Cursors (chart);
+			c.list = list.copy();
+			c.active_cursor = active_cursor;
+			c.is_cursor_active = is_cursor_active;
+			c.cursor_style = cursor_style;
+			c.crossings = crossings;
+			return c;
+		}
+
+		/**
+		 * Sets active cursor.
+		 * @param p ``Cursor`` position.
+		 * @param remove select for removing or not.
+		 */
 		public virtual void set_active (Point p, bool remove = false) {
 			active_cursor.x = chart.zoom.x0 + (p.x - chart.plarea.x0) / chart.plarea.width * chart.zoom.width;
 			active_cursor.y = chart.zoom.y1 - (chart.plarea.y1 - p.y) / chart.plarea.height * chart.zoom.height;
 			is_cursor_active = ! remove;
 		}
 
+		/**
+		 * Adds active cursor.
+		 */
 		public virtual void add_active () {
 			list.append (active_cursor);
 			is_cursor_active = false;
 		}
 
-		protected virtual Float128 rel2scr_x(Float128 x) {
-			return chart.plarea.x0 + chart.plarea.width * (x - chart.zoom.x0) / chart.zoom.width;
-		}
-
-		protected virtual Float128 rel2scr_y(Float128 y) {
-			return chart.plarea.y0 + chart.plarea.height * (y - chart.zoom.y0) / chart.zoom.height;
-		}
-
+		/**
+		 * Removes active cursor.
+		 */
 		public virtual void remove_active () {
 			if (list.length() == 0) return;
 			var distance = 1024.0 * 1024;//width * width;
@@ -134,131 +119,9 @@ namespace CairoChart {
 			is_cursor_active = false;
 		}
 
-		protected List<Point?> get_all_cursors () {
-			var all_cursors = list.copy_deep ((src) => { return src; });
-			if (is_cursor_active)
-				all_cursors.append(active_cursor);
-			return all_cursors;
-		}
-
-		protected void get_crossings () {
-			var all_cursors = get_all_cursors();
-
-			CursorCrossings[] local_cursor_crossings = {};
-
-			for (var ci = 0, max_ci = all_cursors.length(); ci < max_ci; ++ci) {
-				var c = all_cursors.nth_data(ci);
-				switch (cursor_style.orientation) {
-				case Orientation.VERTICAL: if (c.x <= chart.zoom.x0 || c.x >= chart.zoom.x1) continue; break;
-				case Orientation.HORIZONTAL: if (c.y <= chart.zoom.y0 || c.y >= chart.zoom.y1) continue; break;
-				}
-
-				CursorCross[] crossings = {};
-				for (var si = 0, max_si = chart.series.length; si < max_si; ++si) {
-					var s = chart.series[si];
-					if (!s.zoom_show) continue;
-
-					var points = Math.sort_points (s, s.sort);
-
-					for (var i = 0; i + 1 < points.length; ++i) {
-						switch (cursor_style.orientation) {
-						case Orientation.VERTICAL:
-							Float128 y = 0;
-							if (Math.vcross(s.get_scr_point(points[i]), s.get_scr_point(points[i+1]), rel2scr_x(c.x),
-							                chart.plarea.y0, chart.plarea.y1, out y)) {
-								var point = Point128(s.get_real_x(rel2scr_x(c.x)), s.get_real_y(y));
-								Point128 size; bool show_x, show_date, show_time, show_y;
-								cross_what_to_show(s, out show_x, out show_time, out show_date, out show_y);
-								calc_cross_sizes (s, point, out size, show_x, show_time, show_date, show_y);
-								CursorCross cc = {si, point, size, show_x, show_date, show_time, show_y};
-								crossings += cc;
-							}
-							break;
-						case Orientation.HORIZONTAL:
-							Float128 x = 0;
-							if (Math.hcross(s.get_scr_point(points[i]), s.get_scr_point(points[i+1]),
-							                chart.plarea.x0, chart.plarea.x1, rel2scr_y(c.y), out x)) {
-								var point = Point128(s.get_real_x(x), s.get_real_y(rel2scr_y(c.y)));
-								Point128 size; bool show_x, show_date, show_time, show_y;
-								cross_what_to_show(s, out show_x, out show_time, out show_date, out show_y);
-								calc_cross_sizes (s, point, out size, show_x, show_time, show_date, show_y);
-								CursorCross cc = {si, point, size, show_x, show_date, show_time, show_y};
-								crossings += cc;
-							}
-							break;
-						}
-					}
-				}
-				if (crossings.length != 0) {
-					CursorCrossings ccs = {ci, crossings};
-					local_cursor_crossings += ccs;
-				}
-			}
-			crossings = local_cursor_crossings;
-		}
-
-		protected virtual void calc_cursors_value_positions () {
-			for (var ccsi = 0, max_ccsi = crossings.length; ccsi < max_ccsi; ++ccsi) {
-				for (var cci = 0, max_cci = crossings[ccsi].crossings.length; cci < max_cci; ++cci) {
-					// TODO: Ticket #142: find smart algorithm of cursors values placements
-					unowned CursorCross[] cr = crossings[ccsi].crossings;
-					cr[cci].scr_point = chart.series[cr[cci].series_index].get_scr_point (cr[cci].point);
-					var d_max = double.max (cr[cci].size.x / 1.5, cr[cci].size.y / 1.5);
-					cr[cci].scr_value_point = Point (cr[cci].scr_point.x + d_max, cr[cci].scr_point.y - d_max);
-				}
-			}
-		}
-
-		protected virtual void cross_what_to_show (Series s, out bool show_x, out bool show_time,
-		                                                     out bool show_date, out bool show_y) {
-			show_x = show_time = show_date = show_y = false;
-			switch (cursor_style.orientation) {
-			case Orientation.VERTICAL:
-				show_y = true;
-				if (!chart.joint_x)
-					switch (s.axis_x.dtype) {
-					case Axis.DType.NUMBERS: show_x = true; break;
-					case Axis.DType.DATE_TIME:
-						if (s.axis_x.date_format != "") show_date = true;
-						if (s.axis_x.time_format != "") show_time = true;
-						break;
-					}
-				break;
-			case Orientation.HORIZONTAL:
-				if (!chart.joint_y) show_y = true;
-				switch (s.axis_x.dtype) {
-				case Axis.DType.NUMBERS: show_x = true; break;
-				case Axis.DType.DATE_TIME:
-					if (s.axis_x.date_format != "") show_date = true;
-					if (s.axis_x.time_format != "") show_time = true;
-					break;
-				}
-				break;
-			}
-		}
-
-		protected virtual void calc_cross_sizes (Series s, Point128 p, out Point128 size,
-		                                         bool show_x = false, bool show_time = false,
-		                                         bool show_date = false, bool show_y = false) {
-			if (show_x == show_time == show_date == show_y == false)
-				cross_what_to_show(s, out show_x, out show_time, out show_date, out show_y);
-			size = Point128 ();
-			string date, time;
-			s.axis_x.print_dt(p.x, out date, out time);
-			var date_t = new Text(chart, date, s.axis_x.font, s.axis_x.color);
-			var time_t = new Text(chart, time, s.axis_x.font, s.axis_x.color);
-			var x_t = new Text(chart, s.axis_x.format.printf((LongDouble)p.x), s.axis_x.font, s.axis_x.color);
-			var y_t = new Text(chart, s.axis_y.format.printf((LongDouble)p.y), s.axis_y.font, s.axis_y.color);
-			var h_x = 0.0, h_y = 0.0;
-			if (show_x) { size.x = x_t.width; h_x = x_t.height; }
-			if (show_date) { size.x = date_t.width; h_x = date_t.height; }
-			if (show_time) { size.x = double.max(size.x, time_t.width); h_x += time_t.height; }
-			if (show_y) { size.x += y_t.width; h_y = y_t.height; }
-			if ((show_x || show_date || show_time) && show_y) size.x += double.max(s.axis_x.font.hspacing, s.axis_y.font.hspacing);
-			if (show_date && show_time) h_x += s.axis_x.font.hspacing;
-			size.y = double.max (h_x, h_y);
-		}
-
+		/**
+		 * Draws cursors.
+		 */
 		public virtual void draw () {
 			if (chart.series.length == 0) return;
 
@@ -453,6 +316,10 @@ namespace CairoChart {
 			}
 		}
 
+		/**
+		 * Gets delta between 2 cursors values.
+		 * @param delta returns delta value.
+		 */
 		public bool get_delta (out Float128 delta) {
 			delta = 0;
 			if (chart.series.length == 0) return false;
@@ -486,6 +353,9 @@ namespace CairoChart {
 			return false;
 		}
 
+		/**
+		 * Gets delta formatted string.
+		 */
 		public string get_delta_str () {
 			Float128 delta = 0;
 			if (!get_delta(out delta)) return "";
@@ -507,6 +377,156 @@ namespace CairoChart {
 				str = s.axis_y.format.printf((LongDouble)delta);
 			}
 			return str;
+		}
+
+		protected struct CursorCross {
+			uint series_index;
+			Point128 point;
+			Point128 size;
+			bool show_x;
+			bool show_date;
+			bool show_time;
+			bool show_y;
+			Point scr_point;
+			Point scr_value_point;
+		}
+
+		protected struct CursorCrossings {
+			uint cursor_index;
+			CursorCross[] crossings;
+		}
+
+		protected virtual Float128 rel2scr_x(Float128 x) {
+			return chart.plarea.x0 + chart.plarea.width * (x - chart.zoom.x0) / chart.zoom.width;
+		}
+
+		protected virtual Float128 rel2scr_y(Float128 y) {
+			return chart.plarea.y0 + chart.plarea.height * (y - chart.zoom.y0) / chart.zoom.height;
+		}
+
+		protected List<Point?> get_all_cursors () {
+			var all_cursors = list.copy_deep ((src) => { return src; });
+			if (is_cursor_active)
+				all_cursors.append(active_cursor);
+			return all_cursors;
+		}
+
+		protected void get_crossings () {
+			var all_cursors = get_all_cursors();
+
+			CursorCrossings[] local_cursor_crossings = {};
+
+			for (var ci = 0, max_ci = all_cursors.length(); ci < max_ci; ++ci) {
+				var c = all_cursors.nth_data(ci);
+				switch (cursor_style.orientation) {
+				case Orientation.VERTICAL: if (c.x <= chart.zoom.x0 || c.x >= chart.zoom.x1) continue; break;
+				case Orientation.HORIZONTAL: if (c.y <= chart.zoom.y0 || c.y >= chart.zoom.y1) continue; break;
+				}
+
+				CursorCross[] crossings = {};
+				for (var si = 0, max_si = chart.series.length; si < max_si; ++si) {
+					var s = chart.series[si];
+					if (!s.zoom_show) continue;
+
+					var points = Math.sort_points (s, s.sort);
+
+					for (var i = 0; i + 1 < points.length; ++i) {
+						switch (cursor_style.orientation) {
+						case Orientation.VERTICAL:
+							Float128 y = 0;
+							if (Math.vcross(s.get_scr_point(points[i]), s.get_scr_point(points[i+1]), rel2scr_x(c.x),
+							                chart.plarea.y0, chart.plarea.y1, out y)) {
+								var point = Point128(s.get_real_x(rel2scr_x(c.x)), s.get_real_y(y));
+								Point128 size; bool show_x, show_date, show_time, show_y;
+								cross_what_to_show(s, out show_x, out show_time, out show_date, out show_y);
+								calc_cross_sizes (s, point, out size, show_x, show_time, show_date, show_y);
+								CursorCross cc = {si, point, size, show_x, show_date, show_time, show_y};
+								crossings += cc;
+							}
+							break;
+						case Orientation.HORIZONTAL:
+							Float128 x = 0;
+							if (Math.hcross(s.get_scr_point(points[i]), s.get_scr_point(points[i+1]),
+							                chart.plarea.x0, chart.plarea.x1, rel2scr_y(c.y), out x)) {
+								var point = Point128(s.get_real_x(x), s.get_real_y(rel2scr_y(c.y)));
+								Point128 size; bool show_x, show_date, show_time, show_y;
+								cross_what_to_show(s, out show_x, out show_time, out show_date, out show_y);
+								calc_cross_sizes (s, point, out size, show_x, show_time, show_date, show_y);
+								CursorCross cc = {si, point, size, show_x, show_date, show_time, show_y};
+								crossings += cc;
+							}
+							break;
+						}
+					}
+				}
+				if (crossings.length != 0) {
+					CursorCrossings ccs = {ci, crossings};
+					local_cursor_crossings += ccs;
+				}
+			}
+			crossings = local_cursor_crossings;
+		}
+
+		protected virtual void calc_cursors_value_positions () {
+			for (var ccsi = 0, max_ccsi = crossings.length; ccsi < max_ccsi; ++ccsi) {
+				for (var cci = 0, max_cci = crossings[ccsi].crossings.length; cci < max_cci; ++cci) {
+					// TODO: Ticket #142: find smart algorithm of cursors values placements
+					unowned CursorCross[] cr = crossings[ccsi].crossings;
+					cr[cci].scr_point = chart.series[cr[cci].series_index].get_scr_point (cr[cci].point);
+					var d_max = double.max (cr[cci].size.x / 1.5, cr[cci].size.y / 1.5);
+					cr[cci].scr_value_point = Point (cr[cci].scr_point.x + d_max, cr[cci].scr_point.y - d_max);
+				}
+			}
+		}
+
+		protected virtual void cross_what_to_show (Series s, out bool show_x, out bool show_time,
+		                                                     out bool show_date, out bool show_y) {
+			show_x = show_time = show_date = show_y = false;
+			switch (cursor_style.orientation) {
+			case Orientation.VERTICAL:
+				show_y = true;
+				if (!chart.joint_x)
+					switch (s.axis_x.dtype) {
+					case Axis.DType.NUMBERS: show_x = true; break;
+					case Axis.DType.DATE_TIME:
+						if (s.axis_x.date_format != "") show_date = true;
+						if (s.axis_x.time_format != "") show_time = true;
+						break;
+					}
+				break;
+			case Orientation.HORIZONTAL:
+				if (!chart.joint_y) show_y = true;
+				switch (s.axis_x.dtype) {
+				case Axis.DType.NUMBERS: show_x = true; break;
+				case Axis.DType.DATE_TIME:
+					if (s.axis_x.date_format != "") show_date = true;
+					if (s.axis_x.time_format != "") show_time = true;
+					break;
+				}
+				break;
+			}
+		}
+
+		protected virtual void calc_cross_sizes (Series s, Point128 p, out Point128 size,
+		                                         bool show_x = false, bool show_time = false,
+		                                         bool show_date = false, bool show_y = false) {
+			if (show_x == show_time == show_date == show_y == false)
+				cross_what_to_show(s, out show_x, out show_time, out show_date, out show_y);
+			size = Point128 ();
+			string date, time;
+			s.axis_x.print_dt(p.x, out date, out time);
+			var date_t = new Text(chart, date, s.axis_x.font, s.axis_x.color);
+			var time_t = new Text(chart, time, s.axis_x.font, s.axis_x.color);
+			var x_t = new Text(chart, s.axis_x.format.printf((LongDouble)p.x), s.axis_x.font, s.axis_x.color);
+			var y_t = new Text(chart, s.axis_y.format.printf((LongDouble)p.y), s.axis_y.font, s.axis_y.color);
+			var h_x = 0.0, h_y = 0.0;
+			if (show_x) { size.x = x_t.width; h_x = x_t.height; }
+			if (show_date) { size.x = date_t.width; h_x = date_t.height; }
+			if (show_time) { size.x = double.max(size.x, time_t.width); h_x += time_t.height; }
+			if (show_y) { size.x += y_t.width; h_y = y_t.height; }
+			if ((show_x || show_date || show_time) && show_y) size.x += double.max(s.axis_x.font.hspacing, s.axis_y.font.hspacing);
+			if (show_date && show_time) h_x += s.axis_x.font.hspacing;
+			size.y = double.max (h_x, h_y);
 		}
 	}
 }
