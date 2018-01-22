@@ -88,7 +88,7 @@ namespace CairoChart {
 			process (ProcessType.DRAW);
 		}
 
-		public virtual void draw_rect (out double x0, out double y0) {
+		protected virtual void draw_rect (out double x0, out double y0) {
 			x0 = y0 = 0.0;
 			if (chart.ctx != null) {
 				switch (position) {
