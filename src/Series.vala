@@ -98,7 +98,7 @@ namespace CairoChart {
 			    || axis_x.range.zmax != s.axis_x.range.zmax
 			    || place.zx0 != s.place.zx0
 			    || place.zx1 != s.place.zx1
-			    || axis_x.type != s.axis_x.type
+			    || axis_x.dtype != s.axis_x.dtype
 			)
 				return false;
 			return true;
@@ -110,7 +110,7 @@ namespace CairoChart {
 			    || axis_y.range.zmax != s.axis_y.range.zmax
 			    || place.zy0 != s.place.zy0
 			    || place.zy1 != s.place.zy1
-			    || axis_y.type != s.axis_y.type
+			    || axis_y.dtype != s.axis_y.dtype
 			)
 				return false;
 			return true;
@@ -188,7 +188,7 @@ namespace CairoChart {
 					if (!s3.zoom_show) continue;
 					if (Math.coord_cross(s2.place.zx0, s2.place.zx1, s3.place.zx0, s3.place.zx1)
 					    || s2.axis_x.position != s3.axis_x.position
-					    || s2.axis_x.type != s3.axis_x.type) {
+					    || s2.axis_x.dtype != s3.axis_x.dtype) {
 						has_intersection = true;
 						break;
 					}
@@ -226,7 +226,7 @@ namespace CairoChart {
 					if (!s3.zoom_show) continue;
 					if (Math.coord_cross(s2.place.zy0, s2.place.zy1, s3.place.zy0, s3.place.zy1)
 					    || s2.axis_y.position != s3.axis_y.position
-					    || s2.axis_y.type != s3.axis_y.type) {
+					    || s2.axis_y.dtype != s3.axis_y.dtype) {
 						has_intersection = true;
 						break;
 					}
@@ -255,9 +255,9 @@ namespace CairoChart {
 				if (joint_x) chart.color = chart.joint_color;
 				else chart.color = axis_x.color;
 				string text = "", time_text = "";
-				switch (axis_x.type) {
-				case Axis.Type.NUMBERS: text = axis_x.format.printf((LongDouble)x); break;
-				case Axis.Type.DATE_TIME: axis_x.format_date_time(x, out text, out time_text); break;
+				switch (axis_x.dtype) {
+				case Axis.DType.NUMBERS: text = axis_x.format.printf((LongDouble)x); break;
+				case Axis.DType.DATE_TIME: axis_x.format_date_time(x, out text, out time_text); break;
 				}
 				var scr_x = get_scr_x (x);
 				var text_t = new Text(chart, text, axis_x.font_style, axis_x.color);
@@ -267,11 +267,11 @@ namespace CairoChart {
 					var print_y = chart.evarea.y1 - axis_x.font_spacing - (axis_x.title.text == "" ? 0 : axis_x.title.height + axis_x.font_spacing);
 					var print_x = compact_rec_x_pos (x, text_t);
 					ctx.move_to (print_x, print_y);
-					switch (axis_x.type) {
-					case Axis.Type.NUMBERS:
+					switch (axis_x.dtype) {
+					case Axis.DType.NUMBERS:
 						text_t.show();
 						break;
-					case Axis.Type.DATE_TIME:
+					case Axis.DType.DATE_TIME:
 						if (axis_x.date_format != "") text_t.show();
 						var time_text_t = new Text(chart, time_text, axis_x.font_style, axis_x.color);
 						print_x = compact_rec_x_pos (x, time_text_t);
@@ -295,11 +295,11 @@ namespace CairoChart {
 					var print_x = compact_rec_x_pos (x, text_t);
 					ctx.move_to (print_x, print_y);
 
-					switch (axis_x.type) {
-					case Axis.Type.NUMBERS:
+					switch (axis_x.dtype) {
+					case Axis.DType.NUMBERS:
 						text_t.show();
 						break;
-					case Axis.Type.DATE_TIME:
+					case Axis.DType.DATE_TIME:
 						if (axis_x.date_format != "") text_t.show();
 						var time_text_t = new Text(chart, time_text, axis_x.font_style, axis_x.color);
 						print_x = compact_rec_x_pos (x, time_text_t);
@@ -335,7 +335,7 @@ namespace CairoChart {
 			long max_nrecs = (long) (chart.plarea.width * s.place.zwidth / max_rec_width);
 
 			// 3. Calculate grid step.
-			Float128 step = Math.calc_round_step (s.axis_x.range.zrange / max_nrecs, s.axis_x.type == Axis.Type.DATE_TIME);
+			Float128 step = Math.calc_round_step (s.axis_x.range.zrange / max_nrecs, s.axis_x.dtype == Axis.DType.DATE_TIME);
 			if (step > s.axis_x.range.zrange)
 				step = s.axis_x.range.zrange;
 

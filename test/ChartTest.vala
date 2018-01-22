@@ -115,7 +115,7 @@ void plot_chart2 (Chart chart) {
 	s3.axis_y.title = new Text(chart, "Series 3: Axis Y.");
 
 	//s1.axis_x.position = s2.axis_x.position = s3.axis_x.position = Axis.Position.HIGH;
-	//s1.axis_x.type = s2.axis_x.type = s3.axis_x.type = Axis.Type.DATE_TIME;
+	//s1.axis_x.dtype = s2.axis_x.dtype = s3.axis_x.dtype = Axis.DType.DATE_TIME;
 	//s1.axis_x.range.max = s2.axis_x.range.max = s3.axis_x.range.max = 5*24*3600;
 
 	chart.series = { s1, s2, s3 };
@@ -175,9 +175,9 @@ void plot_chart4 (Chart chart) {
 	var s3 = new Series (chart);
 	var s4 = new Series (chart);
 
-	s1.axis_x.type = Axis.Type.DATE_TIME;
-	s3.axis_x.type = Axis.Type.DATE_TIME;
-	s4.axis_x.type = Axis.Type.DATE_TIME;
+	s1.axis_x.dtype = Axis.DType.DATE_TIME;
+	s3.axis_x.dtype = Axis.DType.DATE_TIME;
+	s4.axis_x.dtype = Axis.DType.DATE_TIME;
 	s4.axis_x.dsec_signs = 5;
 
 	var now = new DateTime.now_local().to_unix();

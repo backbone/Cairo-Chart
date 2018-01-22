@@ -1,12 +1,13 @@
 namespace CairoChart {
-	// If one of axis:title or axis:range.min/range.max are different
-	// then draw separate axis for each/all series
-	// or specify series name near the axis
+
+	/**
+	 *
+	 */
 	public class Axis {
 		public Range range = new Range();
 		Chart chart;
 		public Text title;
-		public enum Type {
+		public enum DType {
 			NUMBERS = 0,
 			DATE_TIME
 		}
@@ -15,7 +16,7 @@ namespace CairoChart {
 			// LOGARITHMIC, // TODO
 			// etc
 		}
-		public Type type;
+		public DType dtype;
 		public ScaleType scale_type;
 		public enum Position {
 			LOW = 0,
@@ -80,7 +81,7 @@ namespace CairoChart {
 			axis.position = this.position;
 			axis.scale_type = this.scale_type;
 			axis.title = this.title.copy();
-			axis.type = this.type;
+			axis.dtype = this.dtype;
 			axis.nrecords = this.nrecords;
 			return axis;
 		}
@@ -105,13 +106,13 @@ namespace CairoChart {
 			max_rec_width = max_rec_height = 0;
 			for (var i = 0; i < nrecords; ++i) {
 				Float128 x = (int64)(range.zmin + range.zrange / nrecords * i) + 1.0/3.0;
-				switch (type) {
-				case Axis.Type.NUMBERS:
+				switch (dtype) {
+				case Axis.DType.NUMBERS:
 					var text = new Text (chart, format.printf((LongDouble)x) + (horizontal ? "_" : ""), font_style);
 					max_rec_width = double.max (max_rec_width, text.width);
 					max_rec_height = double.max (max_rec_height, text.height);
 					break;
-				case Axis.Type.DATE_TIME:
+				case Axis.DType.DATE_TIME:
 					string date, time;
 					format_date_time(x, out date, out time);
 

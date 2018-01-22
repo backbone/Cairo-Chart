@@ -180,9 +180,9 @@ namespace CairoChart {
 			case Orientation.VERTICAL:
 				show_y = true;
 				if (!chart.joint_x)
-					switch (s.axis_x.type) {
-					case Axis.Type.NUMBERS: show_x = true; break;
-					case Axis.Type.DATE_TIME:
+					switch (s.axis_x.dtype) {
+					case Axis.DType.NUMBERS: show_x = true; break;
+					case Axis.DType.DATE_TIME:
 						if (s.axis_x.date_format != "") show_date = true;
 						if (s.axis_x.time_format != "") show_time = true;
 						break;
@@ -190,9 +190,9 @@ namespace CairoChart {
 				break;
 			case Orientation.HORIZONTAL:
 				if (!chart.joint_y) show_y = true;
-				switch (s.axis_x.type) {
-				case Axis.Type.NUMBERS: show_x = true; break;
-				case Axis.Type.DATE_TIME:
+				switch (s.axis_x.dtype) {
+				case Axis.DType.NUMBERS: show_x = true; break;
+				case Axis.DType.DATE_TIME:
 					if (s.axis_x.date_format != "") show_date = true;
 					if (s.axis_x.time_format != "") show_time = true;
 					break;
@@ -283,9 +283,9 @@ namespace CairoChart {
 						var s = chart.series[chart.zoom_1st_idx];
 						var x = s.get_real_x(rel2scr_x(c.x));
 						string text = "", time_text = "";
-						switch (s.axis_x.type) {
-						case Axis.Type.NUMBERS: text = s.axis_x.format.printf((LongDouble)x); break;
-						case Axis.Type.DATE_TIME: s.axis_x.format_date_time(x, out text, out time_text); break;
+						switch (s.axis_x.dtype) {
+						case Axis.DType.NUMBERS: text = s.axis_x.format.printf((LongDouble)x); break;
+						case Axis.DType.DATE_TIME: s.axis_x.format_date_time(x, out text, out time_text); break;
 						}
 						var text_t = new Text(chart, text, s.axis_x.font_style, s.axis_x.color);
 						var time_text_t = new Text(chart, time_text, s.axis_x.font_style, s.axis_x.color);
@@ -299,11 +299,11 @@ namespace CairoChart {
 								                   chart.title.vspacing * 2 : chart.title.vspacing);
 								print_y = chart.area.y0 + title_height + s.axis_x.font_spacing
 								          + (chart.legend.position == Legend.Position.TOP ? chart.legend.height : 0);
-								switch (s.axis_x.type) {
-								case Axis.Type.NUMBERS:
+								switch (s.axis_x.dtype) {
+								case Axis.DType.NUMBERS:
 									print_y += text_t.height;
 									break;
-								case Axis.Type.DATE_TIME:
+								case Axis.DType.DATE_TIME:
 									print_y += (s.axis_x.date_format == "" ? 0 : text_t.height)
 									           + (s.axis_x.time_format == "" ? 0 : time_text_t.height)
 									           + (s.axis_x.date_format == "" || s.axis_x.time_format == "" ? 0 : s.axis_x.font_spacing);
@@ -314,11 +314,11 @@ namespace CairoChart {
 						var print_x = s.compact_rec_x_pos (x, text_t);
 						chart.ctx.move_to (print_x, print_y);
 
-						switch (s.axis_x.type) {
-						case Axis.Type.NUMBERS:
+						switch (s.axis_x.dtype) {
+						case Axis.DType.NUMBERS:
 							text_t.show();
 							break;
-						case Axis.Type.DATE_TIME:
+						case Axis.DType.DATE_TIME:
 							if (s.axis_x.date_format != "") text_t.show();
 							print_x = s.compact_rec_x_pos (x, time_text_t);
 							chart.ctx.move_to (print_x, print_y - (s.axis_x.date_format == "" ? 0 : text_t.height + s.axis_x.font_spacing));
@@ -454,11 +454,11 @@ namespace CairoChart {
 			var str = "";
 			var s = chart.series[chart.zoom_1st_idx];
 			if (chart.joint_x)
-				switch (s.axis_x.type) {
-				case Axis.Type.NUMBERS:
+				switch (s.axis_x.dtype) {
+				case Axis.DType.NUMBERS:
 					str = s.axis_x.format.printf((LongDouble)delta);
 					break;
-				case Axis.Type.DATE_TIME:
+				case Axis.DType.DATE_TIME:
 					var date = "", time = "";
 					int64 days = (int64)(delta / 24 / 3600);
 					s.axis_x.format_date_time(delta, out date, out time);
