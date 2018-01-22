@@ -7,6 +7,10 @@ namespace CairoChart {
 
 		Chart chart;
 		public Text title;
+		string _format = "%.2Lf";
+		string _date_format = "%Y.%m.%d";
+		string _time_format = "%H:%M:%S";
+		int _dsec_signs = 2; // 2 signs = centiseconds
 
 		/**
 		 * ``Axis`` range/limits.
@@ -57,17 +61,31 @@ namespace CairoChart {
 		 * ``Axis`` position.
 		 */
 		public enum Position {
+			/**
+			 * Bottom/Left ``Axis``.
+			 */
 			LOW = 0,
+
+			/**
+			 * Top/Right ``Axis``.
+			 */
 			HIGH = 1,
+
+			/**
+			 * 2 ``Axes``.
+			 */
 			BOTH = 2
 		}
+
+		/**
+		 * Position.
+		 */
 		public Position position = Position.LOW;
 
-		string _format = "%.2Lf";
-		string _date_format = "%Y.%m.%d";
-		string _time_format = "%H:%M:%S";
-		int _dsec_signs = 2; // 2 signs = centiseconds
-		public string format {
+		/**
+		 * Float128 numbers print string format.
+		 */
+		public virtual string format {
 			get { return _format; }
 			set {
 				// TODO: check format
@@ -75,7 +93,11 @@ namespace CairoChart {
 			}
 			default = "%.2Lf";
 		}
-		public string date_format {
+
+		/**
+		 * Date print string format.
+		 */
+		public virtual string date_format {
 			get { return _date_format; }
 			set {
 				// TODO: check format
@@ -83,7 +105,11 @@ namespace CairoChart {
 			}
 			default = "%Y.%m.%d";
 		}
-		public string time_format {
+
+		/**
+		 * Time print string format.
+		 */
+		public virtual string time_format {
 			get { return _time_format; }
 			set {
 				// TODO: check format
@@ -91,7 +117,13 @@ namespace CairoChart {
 			}
 			default = "%H:%M:%S";
 		}
-		public int dsec_signs {
+
+		/**
+		 * Number of second's signs after point.
+		 *
+		 * 2 signs means centiseconds, 3 signs means milliseconds, etc...
+		 */
+		public virtual int dsec_signs {
 			get { return _dsec_signs; }
 			set {
 				// TODO: check format
