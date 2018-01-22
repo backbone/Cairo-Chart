@@ -131,9 +131,25 @@ namespace CairoChart {
 			}
 			default = 2;
 		}
+
+		/**
+		 * ``Axis`` Font style.
+		 */
 		public Font font = new Font ();
+
+		/**
+		 * ``Axis`` color.
+		 */
 		public Color color = Color ();
+
+		/**
+		 * ``Axis`` line style.
+		 */
 		public LineStyle line_style = LineStyle ();
+
+		/**
+		 * ``Axis`` font spacing.
+		 */
 		public double font_spacing = 5;
 
 		public Axis (Chart chart) {
