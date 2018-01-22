@@ -73,6 +73,7 @@ namespace CairoChart {
 
 		/**
 		 * Constructs a new ``Range`` with a ``Range`` instance.
+		 * @param range ``Range`` instance.
 		 */
 		public Range.with_range (Range range) {
 			this.min = range.min;
@@ -81,6 +82,8 @@ namespace CairoChart {
 
 		/**
 		 * Constructs a new ``Range`` with absolute coordinates.
+		 * @param min minimum/low limit.
+		 * @param max maximum/high limit.
 		 */
 		public Range.with_abs (Float128 min, Float128 max) {
 			this.min = min;
@@ -89,6 +92,8 @@ namespace CairoChart {
 
 		/**
 		 * Constructs a new ``Range`` with relative coordinates.
+		 * @param min minimum/low limit.
+		 * @param range length of the ``Range``.
 		 */
 		public Range.with_rel (Float128 min, Float128 range) {
 			this.min = min;

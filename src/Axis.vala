@@ -152,6 +152,9 @@ namespace CairoChart {
 		 */
 		public double font_spacing = 5;
 
+		/**
+		 * Constructs a new ``Axis``.
+		 */
 		public Axis (Chart chart) {
 			this.chart = chart;
 			title = new Text (chart, "");
