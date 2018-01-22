@@ -32,6 +32,7 @@ namespace CairoChart {
 
 		/**
 		 * Constructs a new ``Marker``.
+		 * @param chart ``Chart`` instance.
 		 * @param type ``Marker`` shape.
 		 * @param size ``Marker`` size.
 		 */
