@@ -17,7 +17,7 @@ namespace CairoChart {
 
 		public Place place = new Place();
 		public Text title;
-		public Marker marker = null;
+		public Marker marker;
 
 		public Grid grid = new Grid ();
 
@@ -203,13 +203,13 @@ namespace CairoChart {
 			}
 		}
 
-		public virtual void join_relative_x_axes (int si,
-		                                          bool calc_max_values,
-		                                          ref double max_rec_width,
-		                                          ref double max_rec_height,
-		                                          ref double max_font_spacing,
-		                                          ref double max_axis_font_height,
-		                                          ref int nskip) {
+		protected virtual void join_relative_x_axes (int si,
+		                                             bool calc_max_values,
+		                                             ref double max_rec_width,
+		                                             ref double max_rec_height,
+		                                             ref double max_font_spacing,
+		                                             ref double max_axis_font_height,
+		                                             ref int nskip) {
 			for (int sj = si - 1; sj >= 0; --sj) {
 				var s2 = chart.series[sj];
 				if (!s2.zoom_show) continue;
@@ -241,13 +241,13 @@ namespace CairoChart {
 			}
 		}
 
-		public virtual void join_relative_y_axes (int si,
-		                                          bool calc_max_values,
-		                                          ref double max_rec_width,
-		                                          ref double max_rec_height,
-		                                          ref double max_font_spacing,
-		                                          ref double max_axis_font_width,
-		                                          ref int nskip) {
+		protected virtual void join_relative_y_axes (int si,
+		                                             bool calc_max_values,
+		                                             ref double max_rec_width,
+		                                             ref double max_rec_height,
+		                                             ref double max_font_spacing,
+		                                             ref double max_axis_font_width,
+		                                             ref int nskip) {
 			for (int sj = si - 1; sj >= 0; --sj) {
 				var s2 = chart.series[sj];
 				if (!s2.zoom_show) continue;
