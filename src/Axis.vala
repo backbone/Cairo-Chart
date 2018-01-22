@@ -36,7 +36,7 @@ namespace CairoChart {
 		/**
 		 * ``Axis`` scale type.
 		 */
-		public enum ScaleType {
+		public enum Scale {
 			/**
 			 * Linear scale.
 			 */
@@ -51,7 +51,7 @@ namespace CairoChart {
 		/**
 		 * Scale type.
 		 */
-		public ScaleType scale_type;
+		public Scale scale;
 
 		/**
 		 * ``Axis`` position.
@@ -122,7 +122,7 @@ namespace CairoChart {
 			axis.range.max = this.range.max;
 			axis.range.min = this.range.min;
 			axis.position = this.position;
-			axis.scale_type = this.scale_type;
+			axis.scale = this.scale;
 			axis.title = this.title.copy();
 			axis.dtype = this.dtype;
 			axis.nrecords = this.nrecords;
