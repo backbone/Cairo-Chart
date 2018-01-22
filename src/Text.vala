@@ -45,29 +45,6 @@ namespace CairoChart {
 		public Color color = Color();
 
 		/**
-		 * Vertical spacing.
-		 */
-		public double vspacing = 4;
-
-		/**
-		 * Horizontal spacing.
-		 */
-		public double hspacing = 4;
-
-		/**
-		 * Both vertical & horizontal spacing (set only).
-		 */
-		public virtual double spacing {
-			protected get {
-				return 0;
-			}
-			set {
-				vspacing = hspacing = value;
-			}
-			default = 4;
-		}
-
-		/**
 		 * Cairo ``Text`` extents.
 		 */
 		protected virtual Cairo.TextExtents ext {
@@ -158,8 +135,6 @@ namespace CairoChart {
 			text.font = this.font;
 			text._ext = this._ext;
 			text.color = this.color;
-			text.hspacing = this.hspacing;
-			text.vspacing = this.vspacing;
 			return text;
 		}
 	}

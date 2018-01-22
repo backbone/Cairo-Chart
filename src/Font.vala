@@ -32,6 +32,29 @@ namespace CairoChart {
 		public virtual Gtk.Orientation orient { get; set; }
 
 		/**
+		 * Vertical spacing.
+		 */
+		public double vspacing = 4;
+
+		/**
+		 * Horizontal spacing.
+		 */
+		public double hspacing = 4;
+
+		/**
+		 * Both vertical & horizontal spacing (set only).
+		 */
+		public virtual double spacing {
+			protected get {
+				return 0;
+			}
+			set {
+				vspacing = hspacing = value;
+			}
+			default = 4;
+		}
+
+		/**
 		 * Constructs a new ``Font``.
 		 * @param family a font family name, encoded in UTF-8.
 		 * @param size the new font size, in user space units.
@@ -43,7 +66,9 @@ namespace CairoChart {
 		             double size = 10,
 		             Cairo.FontSlant slant = Cairo.FontSlant.NORMAL,
 		             Cairo.FontWeight weight = Cairo.FontWeight.NORMAL,
-		             Gtk.Orientation orient = Gtk.Orientation.HORIZONTAL
+		             Gtk.Orientation orient = Gtk.Orientation.HORIZONTAL,
+		             double vspacing = 4,
+		             double hspacing = 4
 		) {
 			this.family = family;
 			this.size = size;
@@ -56,7 +81,10 @@ namespace CairoChart {
 		 * Gets a copy of the ``Font``.
 		 */
 		public virtual Font copy () {
-			return new Font(family, size, slant, weight, orient);
+			var f = new Font(family, size, slant, weight, orient);
+			f.vspacing = vspacing;
+			f.hspacing = hspacing;
+			return f;
 		}
 	}
 }
