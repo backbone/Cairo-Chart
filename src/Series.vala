@@ -92,30 +92,6 @@ namespace CairoChart {
 			}
 		}
 
-		public virtual bool equal_x_axis (Series s) {
-			if (   axis_x.position != s.axis_x.position
-			    || axis_x.range.zmin != s.axis_x.range.zmin
-			    || axis_x.range.zmax != s.axis_x.range.zmax
-			    || place.zx0 != s.place.zx0
-			    || place.zx1 != s.place.zx1
-			    || axis_x.dtype != s.axis_x.dtype
-			)
-				return false;
-			return true;
-		}
-
-		public virtual bool equal_y_axis (Series s) {
-			if (   axis_y.position != s.axis_y.position
-			    || axis_y.range.zmin != s.axis_y.range.zmin
-			    || axis_y.range.zmax != s.axis_y.range.zmax
-			    || place.zy0 != s.place.zy0
-			    || place.zy1 != s.place.zy1
-			    || axis_y.dtype != s.axis_y.dtype
-			)
-				return false;
-			return true;
-		}
-
 		public virtual void join_axes (bool is_x, int si, ref int nskip) {
 			var s = chart.series[si];
 			Axis axis = s.axis_x;

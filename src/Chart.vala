@@ -307,6 +307,30 @@ namespace CairoChart {
 				s.axis_y.title.font.orient = Gtk.Orientation.VERTICAL;
 		}
 
+		protected virtual bool equal_x_axis (Series s1, Series s2) {
+			if (   s1.axis_x.position != s2.axis_x.position
+			    || s1.axis_x.range.zmin != s2.axis_x.range.zmin
+			    || s1.axis_x.range.zmax != s2.axis_x.range.zmax
+			    || s1.place.zx0 != s2.place.zx0
+			    || s1.place.zx1 != s2.place.zx1
+			    || s1.axis_x.dtype != s2.axis_x.dtype
+			)
+				return false;
+			return true;
+		}
+
+		protected virtual bool equal_y_axis (Series s1, Series s2) {
+			if (   s1.axis_y.position != s2.axis_y.position
+			    || s1.axis_y.range.zmin != s2.axis_y.range.zmin
+			    || s1.axis_y.range.zmax != s2.axis_y.range.zmax
+			    || s1.place.zy0 != s2.place.zy0
+			    || s1.place.zy1 != s2.place.zy1
+			    || s1.axis_y.dtype != s2.axis_y.dtype
+			)
+				return false;
+			return true;
+		}
+
 		protected virtual void eval_plarea () {
 			plarea = evarea.copy();
 			if (legend.show)
@@ -322,8 +346,8 @@ namespace CairoChart {
 			int nshow = 0;
 			foreach (var s in series) {
 				if (!s.zoom_show) continue;
-				if (!s.equal_x_axis(series[0])) joint_x = false;
-				if (!s.equal_y_axis(series[0])) joint_y = false;
+				if (!equal_x_axis(s, series[0])) joint_x = false;
+				if (!equal_y_axis(s, series[0])) joint_y = false;
 				++nshow;
 			}
 			if (nshow == 1) joint_x = joint_y = false;
