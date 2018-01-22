@@ -23,7 +23,7 @@ namespace CairoChart {
 		/**
 		 * ``Marker`` shape.
 		 */
-		public Type type = Type.NONE;
+		public Type type;
 
 		/**
 		 * ``Marker`` size.
