@@ -101,7 +101,7 @@ namespace CairoChart {
 			time = dt.format(time_format) + dsec_str;
 		}
 
-		public virtual void calc_rec_sizes (Chart chart, out double max_rec_width, out double max_rec_height, bool horizontal = true) {
+		public virtual void calc_rec_sizes (out double max_rec_width, out double max_rec_height, bool horizontal = true) {
 			max_rec_width = max_rec_height = 0;
 			for (var i = 0; i < nrecords; ++i) {
 				Float128 x = (int64)(range.zmin + range.zrange / nrecords * i) + 1.0/3.0;
