@@ -208,7 +208,7 @@ namespace CairoChart {
 				cross_what_to_show(s, out show_x, out show_time, out show_date, out show_y);
 			size = Point128 ();
 			string date, time;
-			s.axis_x.format_date_time(p.x, out date, out time);
+			s.axis_x.print_dt(p.x, out date, out time);
 			var date_t = new Text(chart, date, s.axis_x.font, s.axis_x.color);
 			var time_t = new Text(chart, time, s.axis_x.font, s.axis_x.color);
 			var x_t = new Text(chart, s.axis_x.format.printf((LongDouble)p.x), s.axis_x.font, s.axis_x.color);
@@ -285,7 +285,7 @@ namespace CairoChart {
 						string text = "", time_text = "";
 						switch (s.axis_x.dtype) {
 						case Axis.DType.NUMBERS: text = s.axis_x.format.printf((LongDouble)x); break;
-						case Axis.DType.DATE_TIME: s.axis_x.format_date_time(x, out text, out time_text); break;
+						case Axis.DType.DATE_TIME: s.axis_x.print_dt(x, out text, out time_text); break;
 						}
 						var text_t = new Text(chart, text, s.axis_x.font, s.axis_x.color);
 						var time_text_t = new Text(chart, time_text, s.axis_x.font, s.axis_x.color);
@@ -383,7 +383,7 @@ namespace CairoChart {
 					if (show_time) {
 						chart.color = s.axis_x.color;
 						string date = "", time = "";
-						s.axis_x.format_date_time(point.x, out date, out time);
+						s.axis_x.print_dt(point.x, out date, out time);
 						var text_t = new Text(chart, time, s.axis_x.font);
 						var y = svp.y + text_t.height / 2;
 						if (show_date) y -= text_t.height / 2 + s.axis_x.font.vspacing / 2;
@@ -395,7 +395,7 @@ namespace CairoChart {
 					if (show_date) {
 						chart.color = s.axis_x.color;
 						string date = "", time = "";
-						s.axis_x.format_date_time(point.x, out date, out time);
+						s.axis_x.print_dt(point.x, out date, out time);
 						var text_t = new Text(chart, date, s.axis_x.font);
 						var y = svp.y + text_t.height / 2;
 						if (show_time) y += text_t.height / 2 + s.axis_x.font.vspacing / 2;
@@ -461,7 +461,7 @@ namespace CairoChart {
 				case Axis.DType.DATE_TIME:
 					var date = "", time = "";
 					int64 days = (int64)(delta / 24 / 3600);
-					s.axis_x.format_date_time(delta, out date, out time);
+					s.axis_x.print_dt(delta, out date, out time);
 					str = days.to_string() + " + " + time;
 					break;
 				}

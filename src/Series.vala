@@ -257,7 +257,7 @@ namespace CairoChart {
 				string text = "", time_text = "";
 				switch (axis_x.dtype) {
 				case Axis.DType.NUMBERS: text = axis_x.format.printf((LongDouble)x); break;
-				case Axis.DType.DATE_TIME: axis_x.format_date_time(x, out text, out time_text); break;
+				case Axis.DType.DATE_TIME: axis_x.print_dt(x, out text, out time_text); break;
 				}
 				var scr_x = get_scr_x (x);
 				var text_t = new Text(chart, text, axis_x.font, axis_x.color);

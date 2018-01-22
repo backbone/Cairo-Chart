@@ -182,7 +182,10 @@ namespace CairoChart {
 			return axis;
 		}
 
-		public virtual void format_date_time (Float128 x, out string date, out string time) {
+		/**
+		 * Prints date/time to strings with a current formats.
+		 */
+		public virtual void print_dt (Float128 x, out string date, out string time) {
 			date = time = "";
 			var dt = new DateTime.from_unix_utc((int64)x);
 			date = dt.format(date_format);
@@ -191,6 +194,7 @@ namespace CairoChart {
 			time = dt.format(time_format) + dsec_str;
 		}
 
+		// TODO: move to Series.vala
 		public virtual void calc_rec_sizes (out double max_rec_width, out double max_rec_height, bool horizontal = true) {
 			max_rec_width = max_rec_height = 0;
 			for (var i = 0; i < nrecords; ++i) {
@@ -203,7 +207,7 @@ namespace CairoChart {
 					break;
 				case Axis.DType.DATE_TIME:
 					string date, time;
-					format_date_time(x, out date, out time);
+					print_dt(x, out date, out time);
 
 					var h = 0.0;
 					if (date_format != "") {
