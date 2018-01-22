@@ -6,11 +6,15 @@ namespace CairoChart {
 	public class Axis {
 
 		Chart chart;
-		public Text title;
 		string _format = "%.2Lf";
 		string _date_format = "%Y.%m.%d";
 		string _time_format = "%H:%M:%S";
 		int _dsec_signs = 2; // 2 signs = centiseconds
+
+		/**
+		 * ``Axis`` title.
+		 */
+		public Text title;
 
 		/**
 		 * ``Axis`` range/limits.
