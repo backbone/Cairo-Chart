@@ -157,11 +157,11 @@ void plot_chart3 (Chart chart) {
 	s3.marker.type = Marker.Type.TRIANGLE;
 
 	s1.axis_x.title = new Text(chart, "Series 1: Axis X.");
-	s1.axis_y.title = new Text(chart, "Series 1: Axis Y.");
+	s1.axis_y.title = new Text(chart, "All Series: Axis Y.");
 	s2.axis_x.title = new Text(chart, "Series 2: Axis X.");
-	s2.axis_y.title = new Text(chart, "Series 2: Axis Y.");
+	s2.axis_y.title = new Text(chart, "All Series: Axis Y.");
 	s3.axis_x.title = new Text(chart, "Series 3: Axis X.");
-	s3.axis_y.title = new Text(chart, "Series 3: Axis Y.");
+	s3.axis_y.title = new Text(chart, "All Series: Axis Y.");
 
 	//s1.axis_y.position = s2.axis_y.position = s3.axis_y.position = Axis.Position.LOW;
 
@@ -222,13 +222,13 @@ void plot_chart4 (Chart chart) {
 	s4.marker.type = Marker.Type.PRICLE_SQUARE;
 
 	s1.axis_x.title = new Text(chart, "Series 1: Axis X.");
-	s1.axis_y.title = new Text(chart, "Series 1: Axis Y.");
+	s1.axis_y.title = new Text(chart, "All Series: Axis Y.");
 	s2.axis_x.title = new Text(chart, "Series 2: Axis X.");
-	s2.axis_y.title = new Text(chart, "Series 2: Axis Y.");
+	s2.axis_y.title = new Text(chart, "All Series: Axis Y.");
 	s3.axis_x.title = new Text(chart, "Series 3: Axis X.");
-	s3.axis_y.title = new Text(chart, "Series 3: Axis Y.");
+	s3.axis_y.title = new Text(chart, "All Series: Axis Y.");
 	s4.axis_x.title = new Text(chart, "Series 4: Axis X.");
-	s4.axis_y.title = new Text(chart, "Series 4: Axis Y.");
+	s4.axis_y.title = new Text(chart, "All Series: Axis Y.");
 
 	chart.series = { s1, s2, s3, s4 };
 }
