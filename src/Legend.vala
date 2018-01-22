@@ -68,16 +68,6 @@ namespace CairoChart {
 		public double line_length = 30.0;
 
 		/**
-		 *
-		 */
-		public double text_hspace = 10.0;
-
-		/**
-		 *
-		 */
-		public double text_vspace = 2.0;
-
-		/**
 		 * Show legend?
 		 */
 		public bool show = true;
@@ -101,8 +91,6 @@ namespace CairoChart {
 			legend.spacing = this.spacing;
 			legend.height = this.height;
 			legend.line_length = this.line_length;
-			legend.text_hspace = this.text_hspace;
-			legend.text_vspace = this.text_vspace;
 			legend.width = this.width;
 			legend.show = this.show;
 			legend.max_font_heights = this.max_font_heights;
@@ -192,7 +180,7 @@ namespace CairoChart {
 				case Position.TOP:
 				case Position.BOTTOM:
 					var ser_title_width = s.title.width + line_length;
-					if (leg_width_sum + (leg_width_sum == 0 ? 0 : text_hspace) + ser_title_width > chart.area.width) { // carry
+					if (leg_width_sum + (leg_width_sum == 0 ? 0 : s.title.font.hspacing) + ser_title_width > chart.area.width) { // carry
 						leg_height_sum += max_font_h;
 						switch (process_type) {
 						case ProcessType.CALC:
@@ -211,8 +199,8 @@ namespace CairoChart {
 
 				switch (process_type) {
 				case ProcessType.DRAW:
-					var x = legend_x0 + leg_width_sum + (leg_width_sum == 0.0 ? 0.0 : text_hspace);
-					var y = legend_y0 + leg_height_sum + max_font_heights[heights_idx] / 2.0 + s.title.height / 2.0;
+					var x = legend_x0 + leg_width_sum + (leg_width_sum == 0 ? 0 : s.title.font.hspacing);
+					var y = legend_y0 + leg_height_sum + max_font_heights[heights_idx] / 2 + s.title.height / 2;
 
 					// series title
 					chart.ctx.move_to (x + line_length, y);
@@ -232,22 +220,22 @@ namespace CairoChart {
 				case Position.TOP:
 				case Position.BOTTOM:
 					var ser_title_width = s.title.width + line_length;
-					leg_width_sum += (leg_width_sum == 0 ? 0 : text_hspace) + ser_title_width;
-					max_font_h = double.max (max_font_h, s.title.height) + (leg_height_sum != 0 ? text_vspace : 0);
+					leg_width_sum += (leg_width_sum == 0 ? 0 : s.title.font.hspacing) + ser_title_width;
+					max_font_h = double.max (max_font_h, s.title.height) + (leg_height_sum != 0 ? s.title.font.vspacing : 0);
 				break;
 
 				case Position.LEFT:
 				case Position.RIGHT:
 					switch (process_type) {
 					case ProcessType.CALC:
-						max_font_heights += s.title.height + (leg_height_sum != 0 ? text_vspace : 0);
+						max_font_heights += s.title.height + (leg_height_sum != 0 ? s.title.font.vspacing : 0);
 						width = double.max (width, s.title.width + line_length);
 						break;
 					case ProcessType.DRAW:
 						heights_idx++;
 						break;
 					}
-					leg_height_sum += s.title.height + (leg_height_sum != 0 ? text_vspace : 0);
+					leg_height_sum += s.title.height + (leg_height_sum != 0 ? s.title.font.vspacing : 0);
 				break;
 				}
 			}
