@@ -116,37 +116,6 @@ namespace CairoChart {
 			return true;
 		}
 
-		protected virtual void calc_rec_sizes (Axis axis, out double max_rec_width, out double max_rec_height, bool horizontal = true) {
-			max_rec_width = max_rec_height = 0;
-			for (var i = 0; i < axis.nrecords; ++i) {
-				Float128 x = (int64)(axis.range.zmin + axis.range.zrange / axis.nrecords * i) + 1/3.0;
-				switch (axis.dtype) {
-				case Axis.DType.NUMBERS:
-					var text = new Text (chart, axis.format.printf((LongDouble)x) + (horizontal ? "_" : ""), axis.font);
-					max_rec_width = double.max (max_rec_width, text.width);
-					max_rec_height = double.max (max_rec_height, text.height);
-					break;
-				case Axis.DType.DATE_TIME:
-					string date, time;
-					axis.print_dt(x, out date, out time);
-
-					var h = 0.0;
-					if (axis.date_format != "") {
-						var text = new Text (chart, date + (horizontal ? "_" : ""), axis.font);
-						max_rec_width = double.max (max_rec_width, text.width);
-						h = text.height;
-					}
-					if (axis.time_format != "") {
-						var text = new Text (chart, time + (horizontal ? "_" : ""), axis.font);
-						max_rec_width = double.max (max_rec_width, text.width);
-						h += text.height;
-					}
-					max_rec_height = double.max (max_rec_height, h);
-					break;
-				}
-			}
-		}
-
 		public virtual void join_axes (bool is_x, int si, ref int nskip) {
 			var s = chart.series[si];
 			Axis axis = s.axis_x;
@@ -199,6 +168,217 @@ namespace CairoChart {
 				switch (s.axis_y.position) {
 				case Axis.Position.LOW: chart.plarea.x0 += tmp; break;
 				case Axis.Position.HIGH: chart.plarea.x1 -= tmp; break;
+				}
+			}
+		}
+
+		public virtual void draw_horizontal_axis (int si, ref int nskip) {
+			var s = chart.series[si];
+			if (!s.zoom_show) return;
+			if (chart.joint_x && si != chart.zoom_1st_idx) return;
+
+			// 1. Detect max record width/height by axis.nrecords equally selected points using format.
+			double max_rec_width, max_rec_height;
+			calc_rec_sizes (s.axis_x, out max_rec_width, out max_rec_height, true);
+
+			// 2. Calculate maximal available number of records, take into account the space width.
+			long max_nrecs = (long) (chart.plarea.width * s.place.zwidth / max_rec_width);
+
+			// 3. Calculate grid step.
+			Float128 step = Math.calc_round_step (s.axis_x.range.zrange / max_nrecs, s.axis_x.dtype == Axis.DType.DATE_TIME);
+			if (step > s.axis_x.range.zrange)
+				step = s.axis_x.range.zrange;
+
+			// 4. Calculate x_min (s.axis_x.range.zmin / step, round, multiply on step, add step if < s.axis_x.range.zmin).
+			Float128 x_min = 0;
+			if (step >= 1) {
+				int64 x_min_nsteps = (int64) (s.axis_x.range.zmin / step);
+				x_min = x_min_nsteps * step;
+			} else {
+				int64 round_axis_x_min = (int64)s.axis_x.range.zmin;
+				int64 x_min_nsteps = (int64) ((s.axis_x.range.zmin - round_axis_x_min) / step);
+				x_min = round_axis_x_min + x_min_nsteps * step;
+			}
+			if (x_min < s.axis_x.range.zmin) x_min += step;
+
+			// 4.2. Cursor values for joint X axis
+			if (chart.joint_x && chart.cursors.cursor_style.orientation == Cursors.Orientation.VERTICAL && chart.cursors.has_crossings) {
+				var tmp = max_rec_height + s.axis_x.font.vspacing;
+				switch (s.axis_x.position) {
+				case Axis.Position.LOW: chart.evarea.y1 -= tmp; break;
+				case Axis.Position.HIGH:  chart.evarea.y0 += tmp; break;
+				}
+			}
+
+			// 4.5. Draw Axis title
+			if (s.axis_x.title.text != "") {
+				var scr_x = chart.plarea.x0 + chart.plarea.width * (s.place.zx0 + s.place.zx1) / 2;
+				var scr_y = 0.0;
+				switch (s.axis_x.position) {
+				case Axis.Position.LOW: scr_y = chart.evarea.y1 - s.axis_x.font.vspacing; break;
+				case Axis.Position.HIGH: scr_y = chart.evarea.y0 + s.axis_x.font.vspacing + axis_x.title.height; break;
+				}
+				chart.ctx.move_to(scr_x - axis_x.title.width / 2, scr_y);
+				chart.color = s.axis_x.color;
+				if (chart.joint_x) chart.color = chart.joint_color;
+				s.axis_x.title.show();
+			}
+
+			s.draw_horizontal_records (step, max_rec_height, x_min);
+
+			chart.ctx.stroke ();
+
+			var tmp1 = 0.0, tmp2 = 0.0, tmp3 = 0.0, tmp4 = 0.0;
+			s.join_relative_x_axes (si, false, ref tmp1, ref tmp2, ref tmp3, ref tmp4, ref nskip);
+
+			if (nskip != 0) {--nskip; return;}
+
+			var tmp = max_rec_height + s.axis_x.font.vspacing + (s.axis_x.title.text == "" ? 0 : axis_x.title.height + s.axis_x.font.vspacing);
+			switch (s.axis_x.position) {
+			case Axis.Position.LOW: chart.evarea.y1 -= tmp; break;
+			case Axis.Position.HIGH: chart.evarea.y0 += tmp; break;
+			}
+		}
+
+		public virtual void draw_vertical_axis (int si, ref int nskip) {
+			var s = chart.series[si];
+			if (!s.zoom_show) return;
+			if (chart.joint_y && si != chart.zoom_1st_idx) return;
+			// 1. Detect max record width/height by axis.nrecords equally selected points using format.
+			double max_rec_width, max_rec_height;
+			calc_rec_sizes (s.axis_y, out max_rec_width, out max_rec_height, false);
+
+			// 2. Calculate maximal available number of records, take into account the space width.
+			long max_nrecs = (long) (chart.plarea.height * s.place.zheight / max_rec_height);
+
+			// 3. Calculate grid step.
+			Float128 step = Math.calc_round_step (s.axis_y.range.zrange / max_nrecs);
+			if (step > s.axis_y.range.zrange)
+				step = s.axis_y.range.zrange;
+
+			// 4. Calculate y_min (s.axis_y.range.zmin / step, round, multiply on step, add step if < s.axis_y.range.zmin).
+			Float128 y_min = 0;
+			if (step >= 1) {
+				int64 y_min_nsteps = (int64) (s.axis_y.range.zmin / step);
+				y_min = y_min_nsteps * step;
+			} else {
+				int64 round_axis_y_min = (int64)s.axis_y.range.zmin;
+				int64 y_min_nsteps = (int64) ((s.axis_y.range.zmin - round_axis_y_min) / step);
+				y_min = round_axis_y_min + y_min_nsteps * step;
+			}
+			if (y_min < s.axis_y.range.zmin) y_min += step;
+
+			// 4.2. Cursor values for joint Y axis
+			if (chart.joint_y && chart.cursors.cursor_style.orientation == Cursors.Orientation.HORIZONTAL && chart.cursors.has_crossings) {
+				var tmp = max_rec_width + s.axis_y.font.hspacing;
+				switch (s.axis_y.position) {
+				case Axis.Position.LOW: chart.evarea.x0 += tmp; break;
+				case Axis.Position.HIGH: chart.evarea.x1 -= tmp; break;
+				}
+			}
+
+			// 4.5. Draw Axis title
+			if (s.axis_y.title.text != "") {
+				var scr_y = chart.plarea.y0 + chart.plarea.height * (1 - (s.place.zy0 + s.place.zy1) / 2);
+				switch (s.axis_y.position) {
+				case Axis.Position.LOW:
+					var scr_x = chart.evarea.x0 + s.axis_y.font.hspacing + axis_y.title.width;
+					chart.ctx.move_to(scr_x, scr_y + axis_y.title.height / 2);
+					break;
+				case Axis.Position.HIGH:
+					var scr_x = chart.evarea.x1 - s.axis_y.font.hspacing;
+					chart.ctx.move_to(scr_x, scr_y + axis_y.title.height / 2);
+					break;
+				}
+				chart.color = s.axis_y.color;
+				if (chart.joint_y) chart.color = chart.joint_color;
+				s.axis_y.title.show();
+			}
+
+			s.draw_vertical_records (step, max_rec_width, y_min);
+
+			chart.ctx.stroke ();
+
+			var tmp1 = 0.0, tmp2 = 0.0, tmp3 = 0.0, tmp4 = 0.0;
+			s.join_relative_y_axes (si, false, ref tmp1, ref tmp2, ref tmp3, ref tmp4, ref nskip);
+
+			if (nskip != 0) {--nskip; return;}
+
+			var tmp = max_rec_width + s.axis_y.font.hspacing + (s.axis_y.title.text == "" ? 0 : axis_y.title.width + s.axis_y.font.hspacing);
+			switch (s.axis_y.position) {
+			case Axis.Position.LOW: chart.evarea.x0 += tmp; break;
+			case Axis.Position.HIGH: chart.evarea.x1 -= tmp; break;
+			}
+		}
+
+		public virtual double compact_rec_x_pos (Float128 x, Text text) {
+			return get_scr_x(x) - text.width / 2
+			       - text.width * (x - (axis_x.range.zmin + axis_x.range.zmax) / 2) / axis_x.range.zrange;
+		}
+
+		public virtual double compact_rec_y_pos (Float128 y, Text text) {
+			return get_scr_y(y) + text.height / 2
+			       + text.height * (y - (axis_y.range.zmin + axis_y.range.zmax) / 2) / axis_y.range.zrange;
+		}
+
+		public virtual double get_scr_x (Float128 x) {
+			return chart.plarea.x0 + chart.plarea.width * (place.zx0 + (x - axis_x.range.zmin) / axis_x.range.zrange * place.zwidth);
+		}
+
+		public virtual double get_scr_y (Float128 y) {
+			return chart.plarea.y0 + chart.plarea.height * (1 - (place.zy0 + (y - axis_y.range.zmin) / axis_y.range.zrange * place.zheight));
+		}
+
+		public virtual Point get_scr_point (Point128 p) {
+			return Point (get_scr_x(p.x), get_scr_y(p.y));
+		}
+
+		public virtual Float128 get_real_x (double scr_x) {
+			return axis_x.range.zmin + ((scr_x - chart.plarea.x0) / chart.plarea.width - place.zx0) * axis_x.range.zrange / place.zwidth;
+		}
+
+		public virtual Float128 get_real_y (double scr_y) {
+			return axis_y.range.zmin + ((chart.plarea.y1 - scr_y) / chart.plarea.height - place.zy0) * axis_y.range.zrange / place.zheight;
+		}
+
+		public virtual Point128 get_real_point (Point p) {
+			return Point128 (get_real_x(p.x), get_real_y(p.y));
+		}
+
+		public virtual void zoom_out () {
+				zoom_show = true;
+				axis_x.zoom_out();
+				axis_y.zoom_out();
+				place.zoom_out();
+		}
+
+		protected virtual void calc_rec_sizes (Axis axis, out double max_rec_width, out double max_rec_height, bool horizontal = true) {
+			max_rec_width = max_rec_height = 0;
+			for (var i = 0; i < axis.nrecords; ++i) {
+				Float128 x = (int64)(axis.range.zmin + axis.range.zrange / axis.nrecords * i) + 1/3.0;
+				switch (axis.dtype) {
+				case Axis.DType.NUMBERS:
+					var text = new Text (chart, axis.format.printf((LongDouble)x) + (horizontal ? "_" : ""), axis.font);
+					max_rec_width = double.max (max_rec_width, text.width);
+					max_rec_height = double.max (max_rec_height, text.height);
+					break;
+				case Axis.DType.DATE_TIME:
+					string date, time;
+					axis.print_dt(x, out date, out time);
+
+					var h = 0.0;
+					if (axis.date_format != "") {
+						var text = new Text (chart, date + (horizontal ? "_" : ""), axis.font);
+						max_rec_width = double.max (max_rec_width, text.width);
+						h = text.height;
+					}
+					if (axis.time_format != "") {
+						var text = new Text (chart, time + (horizontal ? "_" : ""), axis.font);
+						max_rec_width = double.max (max_rec_width, text.width);
+						h += text.height;
+					}
+					max_rec_height = double.max (max_rec_height, h);
+					break;
 				}
 			}
 		}
@@ -353,74 +533,6 @@ namespace CairoChart {
 			}
 		}
 
-		public virtual void draw_horizontal_axis (int si, ref int nskip) {
-			var s = chart.series[si];
-			if (!s.zoom_show) return;
-			if (chart.joint_x && si != chart.zoom_1st_idx) return;
-
-			// 1. Detect max record width/height by axis.nrecords equally selected points using format.
-			double max_rec_width, max_rec_height;
-			calc_rec_sizes (s.axis_x, out max_rec_width, out max_rec_height, true);
-
-			// 2. Calculate maximal available number of records, take into account the space width.
-			long max_nrecs = (long) (chart.plarea.width * s.place.zwidth / max_rec_width);
-
-			// 3. Calculate grid step.
-			Float128 step = Math.calc_round_step (s.axis_x.range.zrange / max_nrecs, s.axis_x.dtype == Axis.DType.DATE_TIME);
-			if (step > s.axis_x.range.zrange)
-				step = s.axis_x.range.zrange;
-
-			// 4. Calculate x_min (s.axis_x.range.zmin / step, round, multiply on step, add step if < s.axis_x.range.zmin).
-			Float128 x_min = 0;
-			if (step >= 1) {
-				int64 x_min_nsteps = (int64) (s.axis_x.range.zmin / step);
-				x_min = x_min_nsteps * step;
-			} else {
-				int64 round_axis_x_min = (int64)s.axis_x.range.zmin;
-				int64 x_min_nsteps = (int64) ((s.axis_x.range.zmin - round_axis_x_min) / step);
-				x_min = round_axis_x_min + x_min_nsteps * step;
-			}
-			if (x_min < s.axis_x.range.zmin) x_min += step;
-
-			// 4.2. Cursor values for joint X axis
-			if (chart.joint_x && chart.cursors.cursor_style.orientation == Cursors.Orientation.VERTICAL && chart.cursors.has_crossings) {
-				var tmp = max_rec_height + s.axis_x.font.vspacing;
-				switch (s.axis_x.position) {
-				case Axis.Position.LOW: chart.evarea.y1 -= tmp; break;
-				case Axis.Position.HIGH:  chart.evarea.y0 += tmp; break;
-				}
-			}
-
-			// 4.5. Draw Axis title
-			if (s.axis_x.title.text != "") {
-				var scr_x = chart.plarea.x0 + chart.plarea.width * (s.place.zx0 + s.place.zx1) / 2;
-				var scr_y = 0.0;
-				switch (s.axis_x.position) {
-				case Axis.Position.LOW: scr_y = chart.evarea.y1 - s.axis_x.font.vspacing; break;
-				case Axis.Position.HIGH: scr_y = chart.evarea.y0 + s.axis_x.font.vspacing + axis_x.title.height; break;
-				}
-				chart.ctx.move_to(scr_x - axis_x.title.width / 2, scr_y);
-				chart.color = s.axis_x.color;
-				if (chart.joint_x) chart.color = chart.joint_color;
-				s.axis_x.title.show();
-			}
-
-			s.draw_horizontal_records (step, max_rec_height, x_min);
-
-			chart.ctx.stroke ();
-
-			var tmp1 = 0.0, tmp2 = 0.0, tmp3 = 0.0, tmp4 = 0.0;
-			s.join_relative_x_axes (si, false, ref tmp1, ref tmp2, ref tmp3, ref tmp4, ref nskip);
-
-			if (nskip != 0) {--nskip; return;}
-
-			var tmp = max_rec_height + s.axis_x.font.vspacing + (s.axis_x.title.text == "" ? 0 : axis_x.title.height + s.axis_x.font.vspacing);
-			switch (s.axis_x.position) {
-			case Axis.Position.LOW: chart.evarea.y1 -= tmp; break;
-			case Axis.Position.HIGH: chart.evarea.y0 += tmp; break;
-			}
-		}
-
 		protected virtual void draw_vertical_records (Float128 step, double max_rec_width, Float128 y_min) {
 			// 5. Draw records, update cur_{x,y}_{min,max}.
 			var ctx = chart.ctx;
@@ -468,118 +580,6 @@ namespace CairoChart {
 					break;
 				}
 			}
-		}
-
-		public virtual void draw_vertical_axis (int si, ref int nskip) {
-			var s = chart.series[si];
-			if (!s.zoom_show) return;
-			if (chart.joint_y && si != chart.zoom_1st_idx) return;
-			// 1. Detect max record width/height by axis.nrecords equally selected points using format.
-			double max_rec_width, max_rec_height;
-			calc_rec_sizes (s.axis_y, out max_rec_width, out max_rec_height, false);
-
-			// 2. Calculate maximal available number of records, take into account the space width.
-			long max_nrecs = (long) (chart.plarea.height * s.place.zheight / max_rec_height);
-
-			// 3. Calculate grid step.
-			Float128 step = Math.calc_round_step (s.axis_y.range.zrange / max_nrecs);
-			if (step > s.axis_y.range.zrange)
-				step = s.axis_y.range.zrange;
-
-			// 4. Calculate y_min (s.axis_y.range.zmin / step, round, multiply on step, add step if < s.axis_y.range.zmin).
-			Float128 y_min = 0;
-			if (step >= 1) {
-				int64 y_min_nsteps = (int64) (s.axis_y.range.zmin / step);
-				y_min = y_min_nsteps * step;
-			} else {
-				int64 round_axis_y_min = (int64)s.axis_y.range.zmin;
-				int64 y_min_nsteps = (int64) ((s.axis_y.range.zmin - round_axis_y_min) / step);
-				y_min = round_axis_y_min + y_min_nsteps * step;
-			}
-			if (y_min < s.axis_y.range.zmin) y_min += step;
-
-			// 4.2. Cursor values for joint Y axis
-			if (chart.joint_y && chart.cursors.cursor_style.orientation == Cursors.Orientation.HORIZONTAL && chart.cursors.has_crossings) {
-				var tmp = max_rec_width + s.axis_y.font.hspacing;
-				switch (s.axis_y.position) {
-				case Axis.Position.LOW: chart.evarea.x0 += tmp; break;
-				case Axis.Position.HIGH: chart.evarea.x1 -= tmp; break;
-				}
-			}
-
-			// 4.5. Draw Axis title
-			if (s.axis_y.title.text != "") {
-				var scr_y = chart.plarea.y0 + chart.plarea.height * (1 - (s.place.zy0 + s.place.zy1) / 2);
-				switch (s.axis_y.position) {
-				case Axis.Position.LOW:
-					var scr_x = chart.evarea.x0 + s.axis_y.font.hspacing + axis_y.title.width;
-					chart.ctx.move_to(scr_x, scr_y + axis_y.title.height / 2);
-					break;
-				case Axis.Position.HIGH:
-					var scr_x = chart.evarea.x1 - s.axis_y.font.hspacing;
-					chart.ctx.move_to(scr_x, scr_y + axis_y.title.height / 2);
-					break;
-				}
-				chart.color = s.axis_y.color;
-				if (chart.joint_y) chart.color = chart.joint_color;
-				s.axis_y.title.show();
-			}
-
-			s.draw_vertical_records (step, max_rec_width, y_min);
-
-			chart.ctx.stroke ();
-
-			var tmp1 = 0.0, tmp2 = 0.0, tmp3 = 0.0, tmp4 = 0.0;
-			s.join_relative_y_axes (si, false, ref tmp1, ref tmp2, ref tmp3, ref tmp4, ref nskip);
-
-			if (nskip != 0) {--nskip; return;}
-
-			var tmp = max_rec_width + s.axis_y.font.hspacing + (s.axis_y.title.text == "" ? 0 : axis_y.title.width + s.axis_y.font.hspacing);
-			switch (s.axis_y.position) {
-			case Axis.Position.LOW: chart.evarea.x0 += tmp; break;
-			case Axis.Position.HIGH: chart.evarea.x1 -= tmp; break;
-			}
-		}
-
-		public virtual double compact_rec_x_pos (Float128 x, Text text) {
-			return get_scr_x(x) - text.width / 2
-			       - text.width * (x - (axis_x.range.zmin + axis_x.range.zmax) / 2) / axis_x.range.zrange;
-		}
-
-		public virtual double compact_rec_y_pos (Float128 y, Text text) {
-			return get_scr_y(y) + text.height / 2
-			       + text.height * (y - (axis_y.range.zmin + axis_y.range.zmax) / 2) / axis_y.range.zrange;
-		}
-
-		public virtual double get_scr_x (Float128 x) {
-			return chart.plarea.x0 + chart.plarea.width * (place.zx0 + (x - axis_x.range.zmin) / axis_x.range.zrange * place.zwidth);
-		}
-
-		public virtual double get_scr_y (Float128 y) {
-			return chart.plarea.y0 + chart.plarea.height * (1 - (place.zy0 + (y - axis_y.range.zmin) / axis_y.range.zrange * place.zheight));
-		}
-
-		public virtual Point get_scr_point (Point128 p) {
-			return Point (get_scr_x(p.x), get_scr_y(p.y));
-		}
-
-		public virtual Float128 get_real_x (double scr_x) {
-			return axis_x.range.zmin + ((scr_x - chart.plarea.x0) / chart.plarea.width - place.zx0) * axis_x.range.zrange / place.zwidth;
-		}
-
-		public virtual Float128 get_real_y (double scr_y) {
-			return axis_y.range.zmin + ((chart.plarea.y1 - scr_y) / chart.plarea.height - place.zy0) * axis_y.range.zrange / place.zheight;
-		}
-
-		public virtual Point128 get_real_point (Point p) {
-			return Point128 (get_real_x(p.x), get_real_y(p.y));
-		}
-
-		public virtual void zoom_out () {
-				zoom_show = true;
-				axis_x.zoom_out();
-				axis_y.zoom_out();
-				place.zoom_out();
 		}
 	}
 }
