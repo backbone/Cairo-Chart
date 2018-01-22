@@ -70,6 +70,7 @@ void plot_chart1 (Chart chart) {
 	s1.marker.size = 6;
 	s2.marker.size = 8;
 	s3.marker.size = 7;
+	s3.line_style.width = 2;
 }
 
 void plot_chart2 (Chart chart) {
