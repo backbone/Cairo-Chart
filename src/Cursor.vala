@@ -10,32 +10,42 @@ namespace CairoChart {
 		protected Point active_cursor = Point(); // { get; protected set; default = Point128 (); }
 		protected bool is_cursor_active = false; // { get; protected set; default = false; }
 
+		/**
+		 * ``Cursors`` lines orientation.
+		 */
 		protected enum Orientation {
-			VERTICAL = 0,
+			/**
+			 * Vertical cursors.
+			 */
+			VERTICAL,
+
+			/**
+			 * Horizontal cursors.
+			 */
 			HORIZONTAL
 		}
 
 		/**
-		 *
+		 * ``Cursors`` style.
 		 */
-		protected struct Style {
+		public struct Style {
 			/**
-			 *
+			 * ``Cursors`` lines orientation.
 			 */
 			public Orientation orientation;
 
 			/**
-			 *
+			 * Maximum distance between mouse and cursor to remove it.
 			 */
 			public double select_distance;
 
 			/**
-			 *
+			 * ``Cursors`` line style.
 			 */
 			public LineStyle line_style;
 
 			/**
-			 *
+			 * Constructs a new ``Style``.
 			 */
 			public Style () {
 				orientation = Orientation.VERTICAL;
