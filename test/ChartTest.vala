@@ -165,6 +165,7 @@ void plot_chart3 (Chart chart) {
 	s3.axis_y.title = new Text(chart, "All Series: Axis Y.");
 
 	//s1.axis_y.position = s2.axis_y.position = s3.axis_y.position = Axis.Position.LOW;
+	chart.cursors.style.orientation = Cursors.Orientation.HORIZONTAL;
 
 	chart.series = { s1, s2, s3 };
 }
@@ -230,6 +231,8 @@ void plot_chart4 (Chart chart) {
 	s3.axis_y.title = new Text(chart, "All Series: Axis Y.");
 	s4.axis_x.title = new Text(chart, "Series 4: Axis X.");
 	s4.axis_y.title = new Text(chart, "All Series: Axis Y.");
+
+	chart.cursors.style.orientation = Cursors.Orientation.HORIZONTAL;
 
 	chart.series = { s1, s2, s3, s4 };
 }
@@ -303,7 +306,7 @@ int main (string[] args) {
 			case Legend.Position.LEFT: radio_button3.set_active(true); break;
 			case Legend.Position.BOTTOM: radio_button4.set_active(true); break;
 			}
-			switch (chart.cursors.cursor_style.orientation) {
+			switch (chart.cursors.style.orientation) {
 			case Cursors.Orientation.VERTICAL: radio_button7.set_active(true); break;
 			case Cursors.Orientation.HORIZONTAL: radio_button8.set_active(true); break;
 			}
@@ -316,7 +319,7 @@ int main (string[] args) {
 			case Legend.Position.LEFT: radio_button3.set_active(true); break;
 			case Legend.Position.BOTTOM: radio_button4.set_active(true); break;
 			}
-			switch (chart.cursors.cursor_style.orientation) {
+			switch (chart.cursors.style.orientation) {
 			case Cursors.Orientation.VERTICAL: radio_button7.set_active(true); break;
 			case Cursors.Orientation.HORIZONTAL: radio_button8.set_active(true); break;
 			}
@@ -329,7 +332,7 @@ int main (string[] args) {
 			case Legend.Position.LEFT: radio_button3.set_active(true); break;
 			case Legend.Position.BOTTOM: radio_button4.set_active(true); break;
 			}
-			switch (chart.cursors.cursor_style.orientation) {
+			switch (chart.cursors.style.orientation) {
 			case Cursors.Orientation.VERTICAL: radio_button7.set_active(true); break;
 			case Cursors.Orientation.HORIZONTAL: radio_button8.set_active(true); break;
 			}
@@ -342,7 +345,7 @@ int main (string[] args) {
 			case Legend.Position.LEFT: radio_button4.set_active(true); break;
 			case Legend.Position.BOTTOM: radio_button4.set_active(true); break;
 			}
-			switch (chart.cursors.cursor_style.orientation) {
+			switch (chart.cursors.style.orientation) {
 			case Cursors.Orientation.VERTICAL: radio_button7.set_active(true); break;
 			case Cursors.Orientation.HORIZONTAL: radio_button8.set_active(true); break;
 			}
@@ -426,13 +429,13 @@ int main (string[] args) {
 
 	radio_button7.toggled.connect ((button) => {
 		if (button.get_active()) {
-			chart.cursors.cursor_style.orientation = Cursors.Orientation.VERTICAL;
+			chart.cursors.style.orientation = Cursors.Orientation.VERTICAL;
 			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 		}
 	});
 	radio_button8.toggled.connect ((button) => {
 		if (button.get_active()) {
-			chart.cursors.cursor_style.orientation = Cursors.Orientation.HORIZONTAL;
+			chart.cursors.style.orientation = Cursors.Orientation.HORIZONTAL;
 			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 		}
 	});

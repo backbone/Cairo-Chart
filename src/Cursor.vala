@@ -58,7 +58,7 @@ namespace CairoChart {
 		/**
 		 * Cursor style.
 		 */
-		public Cursors.Style cursor_style = Cursors.Style();
+		public Cursors.Style style = Cursors.Style();
 
 		/**
 		 * Has crossings.
@@ -81,7 +81,7 @@ namespace CairoChart {
 			c.list = list.copy();
 			c.active_cursor = active_cursor;
 			c.is_cursor_active = is_cursor_active;
-			c.cursor_style = cursor_style;
+			c.style = style;
 			c.crossings = crossings;
 			return c;
 		}
@@ -115,7 +115,7 @@ namespace CairoChart {
 			uint i = 0;
 			foreach (var c in list) {
 				double d = distance;
-				switch (cursor_style.orientation) {
+				switch (style.orientation) {
 				case Cursors.Orientation.VERTICAL: d = (rel2scr_x(c.x) - rel2scr_x(active_cursor.x)).abs(); break;
 				case Cursors.Orientation.HORIZONTAL: d = (rel2scr_y(c.y) - rel2scr_y(active_cursor.y)).abs(); break;
 				}
@@ -125,7 +125,7 @@ namespace CairoChart {
 				}
 				++i;
 			}
-			if (distance < cursor_style.select_distance)
+			if (distance < style.select_distance)
 				list.delete_link(list.nth(rm_indx));
 			is_cursor_active = false;
 		}
@@ -140,7 +140,7 @@ namespace CairoChart {
 
 			for (var ci = 0, max_ci = all_cursors.length(); ci < max_ci; ++ci) {
 				var c = all_cursors.nth_data(ci);
-				switch (cursor_style.orientation) {
+				switch (style.orientation) {
 				case Orientation.VERTICAL: if (c.x <= chart.zoom.x0 || c.x >= chart.zoom.x1) continue; break;
 				case Orientation.HORIZONTAL: if (c.y <= chart.zoom.y0 || c.y >= chart.zoom.y1) continue; break;
 				}
@@ -153,7 +153,7 @@ namespace CairoChart {
 					var points = Math.sort_points (s, s.sort);
 
 					for (var i = 0; i + 1 < points.length; ++i) {
-						switch (cursor_style.orientation) {
+						switch (style.orientation) {
 						case Orientation.VERTICAL:
 							Float128 y = 0;
 							if (Math.vcross(s.get_scr_point(points[i]), s.get_scr_point(points[i+1]), rel2scr_x(c.x),
@@ -202,7 +202,7 @@ namespace CairoChart {
 				var low = Point128(chart.plarea.x1, chart.plarea.y1);  // low and high
 				var high = Point128(chart.plarea.x0, chart.plarea.y0); //              points of the cursor
 				unowned CursorCross[] ccs = crossings[cci].crossings;
-				cursor_style.line_style.apply(chart);
+				style.line_style.apply(chart);
 				for (var ci = 0, max_ci = ccs.length; ci < max_ci; ++ci) {
 					var si = ccs[ci].series_index;
 					var s = chart.series[si];
@@ -241,7 +241,7 @@ namespace CairoChart {
 
 				var c = all_cursors.nth_data(crossings[cci].cursor_index);
 
-				switch (cursor_style.orientation) {
+				switch (style.orientation) {
 				case Orientation.VERTICAL:
 					if (low.y > high.y) continue;
 					chart.ctx.move_to (rel2scr_x(c.x), low.y);
@@ -392,7 +392,7 @@ namespace CairoChart {
 			delta = 0;
 			if (chart.series.length == 0) return false;
 			if (list.length() + (is_cursor_active ? 1 : 0) != 2) return false;
-			if (chart.joint_x && cursor_style.orientation == Orientation.VERTICAL) {
+			if (chart.joint_x && style.orientation == Orientation.VERTICAL) {
 				Float128 val1 = chart.series[chart.zoom_1st_idx].get_real_x(rel2scr_x(list.nth_data(0).x));
 				Float128 val2 = 0;
 				if (is_cursor_active)
@@ -405,7 +405,7 @@ namespace CairoChart {
 					delta = val1 - val2;
 				return true;
 			}
-			if (chart.joint_y && cursor_style.orientation == Orientation.HORIZONTAL) {
+			if (chart.joint_y && style.orientation == Orientation.HORIZONTAL) {
 				Float128 val1 = chart.series[chart.zoom_1st_idx].get_real_y(rel2scr_y(list.nth_data(0).y));
 				Float128 val2 = 0;
 				if (is_cursor_active)
@@ -494,7 +494,7 @@ namespace CairoChart {
 		protected virtual void cross_what_to_show (Series s, out bool show_x, out bool show_time,
 		                                                     out bool show_date, out bool show_y) {
 			show_x = show_time = show_date = show_y = false;
-			switch (cursor_style.orientation) {
+			switch (style.orientation) {
 			case Orientation.VERTICAL:
 				show_y = true;
 				if (!chart.joint_x)
