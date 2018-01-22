@@ -158,6 +158,8 @@ namespace CairoChart {
 			text.font = this.font;
 			text._ext = this._ext;
 			text.color = this.color;
+			text.hspacing = this.hspacing;
+			text.vspacing = this.vspacing;
 			return text;
 		}
 	}
