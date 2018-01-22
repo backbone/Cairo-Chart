@@ -24,7 +24,7 @@ namespace CairoChart {
 		public virtual Legend copy () {
 			var legend = new Legend ();
 			legend.position = this.position;
-			legend.font = this.font;
+			legend.font = this.font.copy();
 			legend.bg_color = this.bg_color;
 			legend.spacing = this.spacing;
 			legend.height = this.height;

@@ -218,8 +218,8 @@ namespace CairoChart {
 			if (show_date) { size.x = date_t.width; h_x = date_t.height; }
 			if (show_time) { size.x = double.max(size.x, time_t.width); h_x += time_t.height; }
 			if (show_y) { size.x += y_t.width; h_y = y_t.height; }
-			if ((show_x || show_date || show_time) && show_y) size.x += double.max(s.axis_x.font_spacing, s.axis_y.font_spacing);
-			if (show_date && show_time) h_x += s.axis_x.font_spacing;
+			if ((show_x || show_date || show_time) && show_y) size.x += double.max(s.axis_x.font.hspacing, s.axis_y.font.hspacing);
+			if (show_date && show_time) h_x += s.axis_x.font.hspacing;
 			size.y = double.max (h_x, h_y);
 		}
 
@@ -247,21 +247,21 @@ namespace CairoChart {
 
 					if (chart.joint_x) {
 						switch (s.axis_x.position) {
-						case Axis.Position.LOW: high.y = chart.plarea.y1 + s.axis_x.font_spacing; break;
-						case Axis.Position.HIGH: low.y = chart.plarea.y0 - s.axis_x.font_spacing; break;
+						case Axis.Position.LOW: high.y = chart.plarea.y1 + s.axis_x.font.vspacing; break;
+						case Axis.Position.HIGH: low.y = chart.plarea.y0 - s.axis_x.font.vspacing; break;
 						case Axis.Position.BOTH:
-							high.y = chart.plarea.y1 + s.axis_x.font_spacing;
-							low.y = chart.plarea.y0 - s.axis_x.font_spacing;
+							high.y = chart.plarea.y1 + s.axis_x.font.vspacing;
+							low.y = chart.plarea.y0 - s.axis_x.font.vspacing;
 							break;
 						}
 					}
 					if (chart.joint_y) {
 						switch (s.axis_y.position) {
-						case Axis.Position.LOW: low.x = chart.plarea.x0 - s.axis_y.font_spacing; break;
-						case Axis.Position.HIGH: high.x = chart.plarea.x1 + s.axis_y.font_spacing; break;
+						case Axis.Position.LOW: low.x = chart.plarea.x0 - s.axis_y.font.hspacing; break;
+						case Axis.Position.HIGH: high.x = chart.plarea.x1 + s.axis_y.font.hspacing; break;
 						case Axis.Position.BOTH:
-							low.x = chart.plarea.x0 - s.axis_y.font_spacing;
-							high.x = chart.plarea.x1 + s.axis_y.font_spacing;
+							low.x = chart.plarea.x0 - s.axis_y.font.hspacing;
+							high.x = chart.plarea.x1 + s.axis_y.font.hspacing;
 							break;
 						}
 					}
@@ -291,13 +291,13 @@ namespace CairoChart {
 						var time_text_t = new Text(chart, time_text, s.axis_x.font, s.axis_x.color);
 						var print_y = 0.0;
 						switch (s.axis_x.position) {
-							case Axis.Position.LOW: print_y = chart.area.y1 - s.axis_x.font_spacing
+							case Axis.Position.LOW: print_y = chart.area.y1 - s.axis_x.font.vspacing
 								                    - (chart.legend.position == Legend.Position.BOTTOM ? chart.legend.height : 0);
 								break;
 							case Axis.Position.HIGH:
 								var title_height = chart.title.height + (chart.legend.position == Legend.Position.TOP ?
 								                   chart.title.font.vspacing * 2 : chart.title.font.vspacing);
-								print_y = chart.area.y0 + title_height + s.axis_x.font_spacing
+								print_y = chart.area.y0 + title_height + s.axis_x.font.vspacing
 								          + (chart.legend.position == Legend.Position.TOP ? chart.legend.height : 0);
 								switch (s.axis_x.dtype) {
 								case Axis.DType.NUMBERS:
@@ -306,7 +306,7 @@ namespace CairoChart {
 								case Axis.DType.DATE_TIME:
 									print_y += (s.axis_x.date_format == "" ? 0 : text_t.height)
 									           + (s.axis_x.time_format == "" ? 0 : time_text_t.height)
-									           + (s.axis_x.date_format == "" || s.axis_x.time_format == "" ? 0 : s.axis_x.font_spacing);
+									           + (s.axis_x.date_format == "" || s.axis_x.time_format == "" ? 0 : s.axis_x.font.vspacing);
 									break;
 								}
 								break;
@@ -321,7 +321,7 @@ namespace CairoChart {
 						case Axis.DType.DATE_TIME:
 							if (s.axis_x.date_format != "") text_t.show();
 							print_x = s.compact_rec_x_pos (x, time_text_t);
-							chart.ctx.move_to (print_x, print_y - (s.axis_x.date_format == "" ? 0 : text_t.height + s.axis_x.font_spacing));
+							chart.ctx.move_to (print_x, print_y - (s.axis_x.date_format == "" ? 0 : text_t.height + s.axis_x.font.vspacing));
 							if (s.axis_x.time_format != "") time_text_t.show();
 							break;
 						}
@@ -341,11 +341,11 @@ namespace CairoChart {
 						var print_x = 0.0;
 						switch (s.axis_y.position) {
 						case Axis.Position.LOW:
-							print_x = chart.area.x0 + s.axis_y.font_spacing
+							print_x = chart.area.x0 + s.axis_y.font.hspacing
 							          + (chart.legend.position == Legend.Position.LEFT ? chart.legend.width : 0);
 							break;
 						case Axis.Position.HIGH:
-							print_x = chart.area.x1 - text_t.width - s.axis_y.font_spacing
+							print_x = chart.area.x1 - text_t.width - s.axis_y.font.hspacing
 							          - (chart.legend.position == Legend.Position.RIGHT ? chart.legend.width : 0);
 							break;
 						}
@@ -386,7 +386,7 @@ namespace CairoChart {
 						s.axis_x.format_date_time(point.x, out date, out time);
 						var text_t = new Text(chart, time, s.axis_x.font);
 						var y = svp.y + text_t.height / 2;
-						if (show_date) y -= text_t.height / 2 + s.axis_x.font_spacing / 2;
+						if (show_date) y -= text_t.height / 2 + s.axis_x.font.vspacing / 2;
 						chart.ctx.move_to (svp.x - size.x / 2, y);
 						if (chart.joint_x) chart.color = chart.joint_color;
 						text_t.show();
@@ -398,7 +398,7 @@ namespace CairoChart {
 						s.axis_x.format_date_time(point.x, out date, out time);
 						var text_t = new Text(chart, date, s.axis_x.font);
 						var y = svp.y + text_t.height / 2;
-						if (show_time) y += text_t.height / 2 + s.axis_x.font_spacing / 2;
+						if (show_time) y += text_t.height / 2 + s.axis_x.font.vspacing / 2;
 						chart.ctx.move_to (svp.x - size.x / 2, y);
 						if (chart.joint_x) chart.color = chart.joint_color;
 						text_t.show();

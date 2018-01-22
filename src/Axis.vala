@@ -148,11 +148,6 @@ namespace CairoChart {
 		public LineStyle line_style = LineStyle ();
 
 		/**
-		 * ``Axis`` font spacing.
-		 */
-		public double font_spacing = 5;
-
-		/**
 		 * Number of equally placed points to evaluate records sizes.
 		 */
 		public int nrecords = 128;
@@ -176,11 +171,9 @@ namespace CairoChart {
 			axis._format = this._format;
 			axis._time_format = this._time_format;
 			axis.color = this.color;
-			axis.font_spacing = this.font_spacing;
-			axis.font = this.font;
+			axis.font = this.font.copy();
 			axis.line_style = this.line_style;
-			axis.range.max = this.range.max;
-			axis.range.min = this.range.min;
+			axis.range = this.range.copy();
 			axis.position = this.position;
 			axis.scale = this.scale;
 			axis.title = this.title.copy();

@@ -132,7 +132,7 @@ namespace CairoChart {
 			var text = new Text (chart);
 			text.chart = this.chart;
 			text.text = this.text;
-			text.font = this.font;
+			text.font = this.font.copy();
 			text._ext = this._ext;
 			text.color = this.color;
 			return text;
