@@ -458,7 +458,7 @@ int main (string[] args) {
 			chart.draw_selection (new Area.with_abs(sel_x0, sel_y0, sel_x1, sel_y1));
 
 		// show delta
-		var str = chart.cursors.get_cursors_delta_str();
+		var str = chart.cursors.get_delta_str();
 		if (str != "") {
 			var text = "Δ = " + str;
 			var text_t = new Text(chart, text);
@@ -483,11 +483,11 @@ int main (string[] args) {
 		switch (event.button) {
 		case 1:  // start cursor position selection
 			if ((event.state & Gdk.ModifierType.SHIFT_MASK) != 0) { // remove cursor
-				chart.cursors.set_active_cursor (Point(event.x, event.y), true);
-				chart.cursors.remove_active_cursor();
+				chart.cursors.set_active (Point(event.x, event.y), true);
+				chart.cursors.remove_active();
 				mouse_state = MouseState.FREE;
 			} else { // add cursor
-				chart.cursors.set_active_cursor (Point(event.x, event.y));
+				chart.cursors.set_active (Point(event.x, event.y));
 				mouse_state = MouseState.CURSOR_SELECTION;
 			}
 			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
@@ -515,11 +515,11 @@ int main (string[] args) {
 		switch (event.button) {
 		case 1:  // start cursor position selection
 			if ((event.state & Gdk.ModifierType.SHIFT_MASK) != 0) { // remove cursor
-				//chart.remove_active_cursor ();
+				//chart.remove_active ();
 				//da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 				//mouse_state = MouseState.FREE;
 			} else { // add cursor
-				chart.cursors.add_active_cursor ();
+				chart.cursors.add_active ();
 				mouse_state = MouseState.FREE;
 			}
 			break;
@@ -561,7 +561,7 @@ int main (string[] args) {
 			break;
 
 		case MouseState.CURSOR_SELECTION:
-			chart.cursors.set_active_cursor (Point(event.x, event.y));
+			chart.cursors.set_active (Point(event.x, event.y));
 			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 			break;
 		}

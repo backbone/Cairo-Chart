@@ -152,7 +152,7 @@ namespace CairoChart {
 
 			rot_axes_titles ();
 
-			cursors.get_crossings();
+			//cursors.get_crossings();
 
 			eval_plarea ();
 

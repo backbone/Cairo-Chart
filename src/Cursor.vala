@@ -2,12 +2,12 @@ namespace CairoChart {
 
 	public class Cursors {
 
-		public List<Point?> list = new List<Point?> ();
-		public Point active_cursor = Point(); // { get; protected set; default = Point128 (); }
-		public bool is_cursor_active = false; // { get; protected set; default = false; }
+		protected List<Point?> list = new List<Point?> ();
+		protected Point active_cursor = Point(); // { get; protected set; default = Point128 (); }
+		protected bool is_cursor_active = false; // { get; protected set; default = false; }
 		public Cursors.Style cursor_style = Cursors.Style();
-		public Cursors.CursorCrossings[] cursors_crossings = {};
-		protected Chart chart = null;
+		public Cursors.CursorCrossings[] crossings = {};
+		Chart chart;
 
 		public Cursors (Chart chart) {
 			this.chart = chart;
@@ -19,16 +19,16 @@ namespace CairoChart {
 			c.active_cursor = active_cursor;
 			c.is_cursor_active = is_cursor_active;
 			c.cursor_style = cursor_style;
-			c.cursors_crossings = cursors_crossings;
+			c.crossings = crossings;
 			return c;
 		}
 
-		public enum Orientation {
+		protected enum Orientation {
 			VERTICAL = 0,  // default
 			HORIZONTAL
 		}
 
-		public struct Style {
+		protected struct Style {
 
 			public Orientation orientation;
 			public double select_distance;
@@ -57,26 +57,26 @@ namespace CairoChart {
 			CursorCross[] crossings;
 		}
 
-		public virtual void set_active_cursor (Point p, bool remove = false) {
+		public virtual void set_active (Point p, bool remove = false) {
 			active_cursor.x = chart.zoom.x0 + (p.x - chart.plarea.x0) / chart.plarea.width * chart.zoom.width;
 			active_cursor.y = chart.zoom.y1 - (chart.plarea.y1 - p.y) / chart.plarea.height * chart.zoom.height;
 			is_cursor_active = ! remove;
 		}
 
-		public virtual void add_active_cursor () {
+		public virtual void add_active () {
 			list.append (active_cursor);
 			is_cursor_active = false;
 		}
 
-		public virtual Float128 rel2scr_x(Float128 x) {
+		protected virtual Float128 rel2scr_x(Float128 x) {
 			return chart.plarea.x0 + chart.plarea.width * (x - chart.zoom.x0) / chart.zoom.width;
 		}
 
-		public virtual Float128 rel2scr_y(Float128 y) {
+		protected virtual Float128 rel2scr_y(Float128 y) {
 			return chart.plarea.y0 + chart.plarea.height * (y - chart.zoom.y0) / chart.zoom.height;
 		}
 
-		public virtual void remove_active_cursor () {
+		public virtual void remove_active () {
 			if (list.length() == 0) return;
 			var distance = 1024.0 * 1024;//width * width;
 			uint rm_indx = 0;
@@ -105,7 +105,7 @@ namespace CairoChart {
 			return all_cursors;
 		}
 
-		public void get_crossings () {
+		protected void get_crossings () {
 			var all_cursors = get_all_cursors();
 
 			CursorCrossings[] local_cursor_crossings = {};
@@ -158,14 +158,14 @@ namespace CairoChart {
 					local_cursor_crossings += ccs;
 				}
 			}
-			cursors_crossings = local_cursor_crossings;
+			crossings = local_cursor_crossings;
 		}
 
 		protected virtual void calc_cursors_value_positions () {
-			for (var ccsi = 0, max_ccsi = cursors_crossings.length; ccsi < max_ccsi; ++ccsi) {
-				for (var cci = 0, max_cci = cursors_crossings[ccsi].crossings.length; cci < max_cci; ++cci) {
+			for (var ccsi = 0, max_ccsi = crossings.length; ccsi < max_ccsi; ++ccsi) {
+				for (var cci = 0, max_cci = crossings[ccsi].crossings.length; cci < max_cci; ++cci) {
 					// TODO: Ticket #142: find smart algorithm of cursors values placements
-					unowned CursorCross[] cr = cursors_crossings[ccsi].crossings;
+					unowned CursorCross[] cr = crossings[ccsi].crossings;
 					cr[cci].scr_point = chart.series[cr[cci].series_index].get_scr_point (cr[cci].point);
 					var d_max = double.max (cr[cci].size.x / 1.5, cr[cci].size.y / 1.5);
 					cr[cci].scr_value_point = Point (cr[cci].scr_point.x + d_max, cr[cci].scr_point.y - d_max);
@@ -226,13 +226,15 @@ namespace CairoChart {
 		public virtual void draw () {
 			if (chart.series.length == 0) return;
 
+			get_crossings();
+
 			var all_cursors = get_all_cursors();
 			calc_cursors_value_positions();
 
-			for (var cci = 0, max_cci = cursors_crossings.length; cci < max_cci; ++cci) {
+			for (var cci = 0, max_cci = crossings.length; cci < max_cci; ++cci) {
 				var low = Point128(chart.plarea.x1, chart.plarea.y1);  // low and high
 				var high = Point128(chart.plarea.x0, chart.plarea.y0); //              points of the cursor
-				unowned CursorCross[] ccs = cursors_crossings[cci].crossings;
+				unowned CursorCross[] ccs = crossings[cci].crossings;
 				cursor_style.line_style.apply(chart);
 				for (var ci = 0, max_ci = ccs.length; ci < max_ci; ++ci) {
 					var si = ccs[ci].series_index;
@@ -270,7 +272,7 @@ namespace CairoChart {
 					chart.ctx.line_to (ccs[ci].scr_value_point.x, ccs[ci].scr_value_point.y);
 				}
 
-				var c = all_cursors.nth_data(cursors_crossings[cci].cursor_index);
+				var c = all_cursors.nth_data(crossings[cci].cursor_index);
 
 				switch (cursor_style.orientation) {
 				case Orientation.VERTICAL:
@@ -415,7 +417,7 @@ namespace CairoChart {
 			}
 		}
 
-		public bool get_cursors_delta (out Float128 delta) {
+		public bool get_delta (out Float128 delta) {
 			delta = 0;
 			if (chart.series.length == 0) return false;
 			if (list.length() + (is_cursor_active ? 1 : 0) != 2) return false;
@@ -448,9 +450,9 @@ namespace CairoChart {
 			return false;
 		}
 
-		public string get_cursors_delta_str () {
+		public string get_delta_str () {
 			Float128 delta = 0;
-			if (!get_cursors_delta(out delta)) return "";
+			if (!get_delta(out delta)) return "";
 			var str = "";
 			var s = chart.series[chart.zoom_1st_idx];
 			if (chart.joint_x)

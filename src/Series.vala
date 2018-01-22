@@ -165,7 +165,7 @@ namespace CairoChart {
 				s.join_relative_y_axes (si, true, ref max_rec_width, ref max_rec_height, ref max_font_spacing, ref max_axis_font_width, ref nskip);
 
 			// for 4.2. Cursor values for joint X axis
-			if (si == chart.zoom_1st_idx && chart.cursors.cursors_crossings.length != 0) {
+			if (si == chart.zoom_1st_idx && chart.cursors.crossings.length != 0) {
 				switch (chart.cursors.cursor_style.orientation) {
 				case Cursors.Orientation.VERTICAL:
 					if (is_x && chart.joint_x) {
@@ -383,7 +383,7 @@ namespace CairoChart {
 			if (x_min < s.axis_x.range.zmin) x_min += step;
 
 			// 4.2. Cursor values for joint X axis
-			if (chart.joint_x && chart.cursors.cursor_style.orientation == Cursors.Orientation.VERTICAL && chart.cursors.cursors_crossings.length != 0) {
+			if (chart.joint_x && chart.cursors.cursor_style.orientation == Cursors.Orientation.VERTICAL && chart.cursors.crossings.length != 0) {
 				var tmp = max_rec_height + s.axis_x.font.vspacing;
 				switch (s.axis_x.position) {
 				case Axis.Position.LOW: chart.evarea.y1 -= tmp; break;
@@ -499,7 +499,7 @@ namespace CairoChart {
 			if (y_min < s.axis_y.range.zmin) y_min += step;
 
 			// 4.2. Cursor values for joint Y axis
-			if (chart.joint_y && chart.cursors.cursor_style.orientation == Cursors.Orientation.HORIZONTAL && chart.cursors.cursors_crossings.length != 0) {
+			if (chart.joint_y && chart.cursors.cursor_style.orientation == Cursors.Orientation.HORIZONTAL && chart.cursors.crossings.length != 0) {
 				var tmp = max_rec_width + s.axis_y.font.hspacing;
 				switch (s.axis_y.position) {
 				case Axis.Position.LOW: chart.evarea.x0 += tmp; break;
