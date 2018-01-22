@@ -5,7 +5,7 @@ namespace CairoChart {
 	 */
 	public class Marker {
 
-		Chart chart = null;
+		Chart chart;
 
 		/**
 		 * ``Marker`` shape.
@@ -28,7 +28,7 @@ namespace CairoChart {
 		/**
 		 * ``Marker`` size.
 		 */
-		public double size = 8.0;
+		public double size;
 
 		/**
 		 * Constructs a new ``Marker``.

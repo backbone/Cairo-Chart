@@ -11,22 +11,16 @@ namespace CairoChart {
 		}*/
 
 		/**
-		 * Color of the ``Grid``.
-		 */
-		public Color color = Color (0, 0, 0, 0.1);
-
-		/**
 		 * Line style of the ``Grid``.
 		 */
-		public LineStyle line_style = LineStyle ();
+		public LineStyle style = LineStyle ();
 
 		/**
 		 * Gets a copy of the ``Grid``.
 		 */
 		public virtual Grid copy () {
 			var grid = new Grid ();
-			grid.color = this.color;
-			grid.line_style = this.line_style;
+			grid.style = this.style;
 			return grid;
 		}
 
@@ -34,7 +28,7 @@ namespace CairoChart {
 		 * Constructs a new ``Grid``.
 		 */
 		public Grid () {
-			line_style.dashes = {2, 3};
+			style.dashes = {2, 3};
 		}
 	}
 }

@@ -31,10 +31,8 @@ namespace CairoChart {
 				line_style.color = _color;
 				axis_x.color = _color;
 				axis_y.color = _color;
-				grid.color = _color;
-				grid.color.alpha = 0.5;
-				grid.line_style.color = _color;
-				grid.line_style.color.alpha = 0.5;
+				grid.style.color = _color;
+				grid.style.color.alpha = 0.5;
 			}
 			default = Color (0.0, 0.0, 0.0, 1.0);
 		}
@@ -282,9 +280,9 @@ namespace CairoChart {
 						break;
 					}
 					// 6. Draw grid lines to the place.zy0.
-					var line_style = grid.line_style;
-					if (joint_x) line_style.color = Color(0, 0, 0, 0.5);
-					line_style.apply(chart);
+					var grid_style = grid.style;
+					if (joint_x) grid_style.color = Color(0, 0, 0, 0.5);
+					grid_style.apply(chart);
 					double y = chart.evarea.y1 - max_rec_height - axis_x.font_spacing - (axis_x.title.text == "" ? 0 : axis_x.title.height + axis_x.font_spacing);
 					ctx.move_to (scr_x, y);
 					if (joint_x)
@@ -310,9 +308,9 @@ namespace CairoChart {
 						break;
 					}
 					// 6. Draw grid lines to the place.zy1.
-					var line_style = grid.line_style;
-					if (joint_x) line_style.color = Color(0, 0, 0, 0.5);
-					line_style.apply(chart);
+					var grid_style = grid.style;
+					if (joint_x) grid_style.color = Color(0, 0, 0, 0.5);
+					grid_style.apply(chart);
 					double y = chart.evarea.y0 + max_rec_height + axis_x.font_spacing + (axis_x.title.text == "" ? 0 : axis_x.title.height + axis_x.font_spacing);
 					ctx.move_to (scr_x, y);
 					if (joint_x)
@@ -411,9 +409,9 @@ namespace CairoChart {
 					                 compact_rec_y_pos (y, text_t));
 					text_t.show();
 					// 6. Draw grid lines to the place.zx0.
-					var line_style = grid.line_style;
-					if (joint_y) line_style.color = Color(0, 0, 0, 0.5);
-					line_style.apply(chart);
+					var grid_style = grid.style;
+					if (joint_y) grid_style.color = Color(0, 0, 0, 0.5);
+					grid_style.apply(chart);
 					double x = chart.evarea.x0 + max_rec_width + axis_y.font_spacing + (axis_y.title.text == "" ? 0 : axis_y.title.width + axis_y.font_spacing);
 					ctx.move_to (x, scr_y);
 					if (joint_y)
@@ -427,9 +425,9 @@ namespace CairoChart {
 					                 compact_rec_y_pos (y, text_t));
 					text_t.show();
 					// 6. Draw grid lines to the place.zx1.
-					var line_style = grid.line_style;
-					if (joint_y) line_style.color = Color(0, 0, 0, 0.5);
-					line_style.apply(chart);
+					var grid_style = grid.style;
+					if (joint_y) grid_style.color = Color(0, 0, 0, 0.5);
+					grid_style.apply(chart);
 					double x = chart.evarea.x1 - max_rec_width - axis_y.font_spacing - (axis_y.title.text == "" ? 0 : axis_y.title.width + axis_y.font_spacing);
 					ctx.move_to (x, scr_y);
 					if (joint_y)
