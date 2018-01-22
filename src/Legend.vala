@@ -47,12 +47,39 @@ namespace CairoChart {
 		 */
 		public LineStyle border_style = LineStyle ();
 
-		public double spacing = 50;
-		public double width = 0;
-		public double height = 0;
+		/**
+		 * Both vertical & horizontal spacing.
+		 */
+		public double spacing = 5;
+
+		/**
+		 * ``Legend`` width.
+		 */
+		public double width { get; protected set; }
+
+		/**
+		 * ``Legend`` height.
+		 */
+		public double height { get; protected set; }
+
+		/**
+		 * {@link Series} line length.
+		 */
 		public double line_length = 30.0;
+
+		/**
+		 *
+		 */
 		public double text_hspace = 10.0;
+
+		/**
+		 *
+		 */
 		public double text_vspace = 2.0;
+
+		/**
+		 * Show legend?
+		 */
 		public bool show = true;
 
 		/**
@@ -82,6 +109,9 @@ namespace CairoChart {
 			return legend;
 		}
 
+		/**
+		 * Draws the ``Legend``.
+		 */
 		public virtual void draw () {
 			if (!show) return;
 			process (ProcessType.CALC);
