@@ -6,6 +6,7 @@ namespace CairoChart {
 	public class Legend {
 
 		Chart chart;
+		double [] max_font_heights;
 
 		/**
 		 * ``Legend`` position.
@@ -150,7 +151,6 @@ namespace CairoChart {
 			DRAW
 		}
 
-		double [] max_font_heights;
 		protected virtual void process (ProcessType process_type) {
 			var legend_x0 = 0.0, legend_y0 = 0.0;
 			var heights_idx = 0;
