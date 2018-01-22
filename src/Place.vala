@@ -208,7 +208,7 @@ namespace CairoChart {
 		}
 
 		/**
-		 * Unzooms ``Place``.
+		 * Zooms out ``Place``.
 		 */
 		public virtual void zoom_out () {
 			zx0 = x0;

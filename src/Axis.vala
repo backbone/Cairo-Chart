@@ -222,6 +222,9 @@ namespace CairoChart {
 			}
 		}
 
+		/**
+		 * Zooms out ``Axis``.
+		 */
 		public virtual void zoom_out () {
 			range.zoom_out();
 		}
