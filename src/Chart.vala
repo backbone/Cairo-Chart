@@ -308,14 +308,15 @@ namespace CairoChart {
 		}
 
 		protected virtual void eval_plarea () {
-			plarea.x0 = evarea.x0 + legend.spacing;
-			plarea.width = evarea.width - 2 * legend.spacing;
-			plarea.y0 = evarea.y0 + legend.spacing;
-			plarea.height = evarea.height - 2 * legend.spacing;
-			/*plarea.x0 = evarea.x0 + (legend.show ? legend.spacing : 0);
-			plarea.width = evarea.width - 2 * (legend.show ? legend.spacing : 0);
-			plarea.y0 = evarea.y0 + (legend.show ? legend.spacing : 0);
-			plarea.height = evarea.height - 2 * (legend.show ? legend.spacing : 0);*/
+			plarea = evarea.copy();
+			legend.show = false;
+			if (legend.show)
+				switch(legend.position) {
+				case Legend.Position.TOP: plarea.y0 += legend.spacing; break;
+				case Legend.Position.BOTTOM: plarea.y1 -= legend.spacing; break;
+				case Legend.Position.LEFT: plarea.x0 += legend.spacing; break;
+				case Legend.Position.RIGHT: plarea.x1 -= legend.spacing; break;
+				}
 
 			// Check for joint axes
 			joint_x = joint_y = true;

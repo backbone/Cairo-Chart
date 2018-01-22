@@ -45,7 +45,7 @@ namespace CairoChart {
 		 */
 		public LineStyle border_style = LineStyle ();
 
-		public double spacing = 5;
+		public double spacing = 50;
 		public double width = 0;
 		public double height = 0;
 		public double line_length = 30.0;
