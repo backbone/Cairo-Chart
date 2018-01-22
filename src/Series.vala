@@ -88,7 +88,7 @@ namespace CairoChart {
 				var y = get_scr_y(points[i].y);
 				if (Math.point_in_rect (Point(x, y), chart.plarea.x0, chart.plarea.x1,
 				                                     chart.plarea.y0, chart.plarea.y1))
-					marker.draw_at_pos(x, y);
+					marker.draw_at_pos(Point(x, y));
 			}
 		}
 

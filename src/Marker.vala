@@ -53,24 +53,23 @@ namespace CairoChart {
 
 		/**
 		 * Draws the ``Marker`` at specific position.
-		 * @param x x-coordinate.
-		 * @param y y-coordinate.
+		 * @param p coordinates.
 		 */
-		public virtual void draw_at_pos (double x, double y) {
-			chart.ctx.move_to (x, y);
+		public virtual void draw_at_pos (Point p) {
+			chart.ctx.move_to (p.x, p.y);
 			switch (type) {
 			case Shape.SQUARE:
-				chart.ctx.rectangle (x - size / 2, y - size / 2, size, size);
+				chart.ctx.rectangle (p.x - size / 2, p.y - size / 2, size, size);
 				chart.ctx.fill();
 				break;
 
 			case Shape.CIRCLE:
-				chart.ctx.arc (x, y, size / 2, 0, 2 * GLib.Math.PI);
+				chart.ctx.arc (p.x, p.y, size / 2, 0, 2 * GLib.Math.PI);
 				chart.ctx.fill();
 				break;
 
 			case Shape.TRIANGLE:
-				chart.ctx.move_to (x - size / 2, y - size / 2);
+				chart.ctx.move_to (p.x - size / 2, p.y - size / 2);
 				chart.ctx.rel_line_to (size, 0);
 				chart.ctx.rel_line_to (-size / 2, size);
 				chart.ctx.rel_line_to (-size / 2, -size);
@@ -78,17 +77,17 @@ namespace CairoChart {
 				break;
 
 			case Shape.PRICLE_SQUARE:
-				chart.ctx.rectangle (x - size / 2, y - size / 2, size, size);
+				chart.ctx.rectangle (p.x - size / 2, p.y - size / 2, size, size);
 				chart.ctx.stroke();
 				break;
 
 			case Shape.PRICLE_CIRCLE:
-				chart.ctx.arc (x, y, size / 2, 0, 2 * GLib.Math.PI);
+				chart.ctx.arc (p.x, p.y, size / 2, 0, 2 * GLib.Math.PI);
 				chart.ctx.stroke();
 				break;
 
 			case Shape.PRICLE_TRIANGLE:
-				chart.ctx.move_to (x - size / 2, y - size / 2);
+				chart.ctx.move_to (p.x - size / 2, p.y - size / 2);
 				chart.ctx.rel_line_to (size, 0);
 				chart.ctx.rel_line_to (-size / 2, size);
 				chart.ctx.rel_line_to (-size / 2, -size);
