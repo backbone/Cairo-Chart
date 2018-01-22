@@ -33,7 +33,7 @@ namespace CairoChart {
 		/**
 		 * Left bound.
 		 */
-		public double x0 {
+		public virtual double x0 {
 			get {
 				return _x0;
 			}
@@ -45,7 +45,7 @@ namespace CairoChart {
 		/**
 		 * Top bound.
 		 */
-		public double y0 {
+		public virtual double y0 {
 			get {
 				return _y0;
 			}
@@ -57,7 +57,7 @@ namespace CairoChart {
 		/**
 		 * Right bound.
 		 */
-		public double x1 {
+		public virtual double x1 {
 			get {
 				return _x1;
 			}
@@ -69,7 +69,7 @@ namespace CairoChart {
 		/**
 		 * Bottom bound.
 		 */
-		public double y1 {
+		public virtual double y1 {
 			get {
 				return _y1;
 			}
@@ -81,7 +81,7 @@ namespace CairoChart {
 		/**
 		 * ``Place`` width.
 		 */
-		public double width {
+		public virtual double width {
 			get {
 				return _x1 - _x0;
 			}
@@ -93,7 +93,7 @@ namespace CairoChart {
 		/**
 		 * ``Place`` height.
 		 */
-		public double height {
+		public virtual double height {
 			get {
 				return _y1 - _y0;
 			}
@@ -105,7 +105,7 @@ namespace CairoChart {
 		/**
 		 * ``Place`` zoomed width.
 		 */
-		public double zwidth {
+		public virtual double zwidth {
 			get {
 				return zx1 - zx0;
 			}
@@ -117,7 +117,7 @@ namespace CairoChart {
 		/**
 		 * ``Place`` zoomed height.
 		 */
-		public double zheight {
+		public virtual double zheight {
 			get {
 				return zy1 - zy0;
 			}
@@ -184,14 +184,14 @@ namespace CairoChart {
 		/**
 		 * Gets a copy of the ``Chart``.
 		 */
-		public Place copy () {
+		public virtual Place copy () {
 			return new Place.with_place(this);
 		}
 
 		/**
 		 * Unzooms ``Place``.
 		 */
-		public void unzoom () {
+		public virtual void unzoom () {
 			zx0 = x0;
 			zy0 = y0;
 			zx1 = x1;
