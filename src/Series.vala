@@ -155,7 +155,10 @@ namespace CairoChart {
 		}
 
 		/**
-		 * TODO: -> Chart.vala
+		 * Joins equal axes.
+		 * @param is_x is this X-axis or not.
+		 * @param si series index.
+		 * @param nskip returns number of series to skip printing.
 		 */
 		public virtual void join_axes (bool is_x, int si, ref int nskip) {
 			Axis axis = axis_x;
@@ -213,7 +216,9 @@ namespace CairoChart {
 		}
 
 		/**
-		 * TODO: -> Chart.vala
+		 * Draws horizontal axis.
+		 * @param si series index.
+		 * @param nskip number of series to skip printing.
 		 */
 		public virtual void draw_horizontal_axis (int si, ref int nskip) {
 			if (!zoom_show) return;
@@ -283,7 +288,9 @@ namespace CairoChart {
 		}
 
 		/**
-		 * TODO: -> Chart.vala
+		 * Draws vertical axis.
+		 * @param si series index.
+		 * @param nskip number of series to skip printing.
 		 */
 		public virtual void draw_vertical_axis (int si, ref int nskip) {
 			if (!zoom_show) return;
