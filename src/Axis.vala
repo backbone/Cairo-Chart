@@ -153,13 +153,22 @@ namespace CairoChart {
 		public double font_spacing = 5;
 
 		/**
+		 * Number of equally placed points to evaluate records sizes.
+		 */
+		public int nrecords = 128;
+
+		/**
 		 * Constructs a new ``Axis``.
+		 * @param chart {@link Chart} instance.
 		 */
 		public Axis (Chart chart) {
 			this.chart = chart;
 			title = new Text (chart, "");
 		}
 
+		/**
+		 * Gets a copy of the ``Axis``.
+		 */
 		public virtual Axis copy () {
 			var axis = new Axis (chart);
 			axis._date_format = this._date_format;
@@ -179,8 +188,6 @@ namespace CairoChart {
 			axis.nrecords = this.nrecords;
 			return axis;
 		}
-
-		public int nrecords = 128;
 
 		public virtual void format_date_time (Float128 x, out string date, out string time) {
 			date = time = "";
