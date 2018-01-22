@@ -10,7 +10,7 @@ namespace CairoChart {
 		}
 
 		public Position position = Position.TOP;
-		public Font font_style = new Font();
+		public Font font = new Font();
 		public Color bg_color = Color(1, 1, 1);
 		public LineStyle border_style = LineStyle ();
 		public double spacing = 5;
@@ -24,7 +24,7 @@ namespace CairoChart {
 		public virtual Legend copy () {
 			var legend = new Legend ();
 			legend.position = this.position;
-			legend.font_style = this.font_style;
+			legend.font = this.font;
 			legend.bg_color = this.bg_color;
 			legend.spacing = this.spacing;
 			legend.height = this.height;

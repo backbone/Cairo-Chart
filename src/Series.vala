@@ -260,7 +260,7 @@ namespace CairoChart {
 				case Axis.DType.DATE_TIME: axis_x.format_date_time(x, out text, out time_text); break;
 				}
 				var scr_x = get_scr_x (x);
-				var text_t = new Text(chart, text, axis_x.font_style, axis_x.color);
+				var text_t = new Text(chart, text, axis_x.font, axis_x.color);
 
 				switch (axis_x.position) {
 				case Axis.Position.LOW:
@@ -273,7 +273,7 @@ namespace CairoChart {
 						break;
 					case Axis.DType.DATE_TIME:
 						if (axis_x.date_format != "") text_t.show();
-						var time_text_t = new Text(chart, time_text, axis_x.font_style, axis_x.color);
+						var time_text_t = new Text(chart, time_text, axis_x.font, axis_x.color);
 						print_x = compact_rec_x_pos (x, time_text_t);
 						ctx.move_to (print_x, print_y - (axis_x.date_format == "" ? 0 : text_t.height + axis_x.font_spacing));
 						if (axis_x.time_format != "") time_text_t.show();
@@ -301,7 +301,7 @@ namespace CairoChart {
 						break;
 					case Axis.DType.DATE_TIME:
 						if (axis_x.date_format != "") text_t.show();
-						var time_text_t = new Text(chart, time_text, axis_x.font_style, axis_x.color);
+						var time_text_t = new Text(chart, time_text, axis_x.font, axis_x.color);
 						print_x = compact_rec_x_pos (x, time_text_t);
 						ctx.move_to (print_x, print_y - (axis_x.date_format == "" ? 0 : text_t.height + axis_x.font_spacing));
 						if (axis_x.time_format != "") time_text_t.show();
@@ -400,7 +400,7 @@ namespace CairoChart {
 				else chart.color = axis_y.color;
 				var text = axis_y.format.printf((LongDouble)y);
 				var scr_y = get_scr_y (y);
-				var text_t = new Text(chart, text, axis_y.font_style, axis_y.color);
+				var text_t = new Text(chart, text, axis_y.font, axis_y.color);
 
 				switch (axis_y.position) {
 				case Axis.Position.LOW:

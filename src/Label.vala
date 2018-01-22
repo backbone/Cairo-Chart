@@ -8,7 +8,7 @@ namespace CairoChart {
 		/**
 		 * Font style.
 		 */
-		Font font_style;
+		Font font;
 
 		/**
 		 * Frame line style.

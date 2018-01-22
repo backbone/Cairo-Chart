@@ -131,7 +131,7 @@ namespace CairoChart {
 			}
 			default = 2;
 		}
-		public Font font_style = new Font ();
+		public Font font = new Font ();
 		public Color color = Color ();
 		public LineStyle line_style = LineStyle ();
 		public double font_spacing = 5;
@@ -149,7 +149,7 @@ namespace CairoChart {
 			axis._time_format = this._time_format;
 			axis.color = this.color;
 			axis.font_spacing = this.font_spacing;
-			axis.font_style = this.font_style;
+			axis.font = this.font;
 			axis.line_style = this.line_style;
 			axis.range.max = this.range.max;
 			axis.range.min = this.range.min;
@@ -178,7 +178,7 @@ namespace CairoChart {
 				Float128 x = (int64)(range.zmin + range.zrange / nrecords * i) + 1.0/3.0;
 				switch (dtype) {
 				case Axis.DType.NUMBERS:
-					var text = new Text (chart, format.printf((LongDouble)x) + (horizontal ? "_" : ""), font_style);
+					var text = new Text (chart, format.printf((LongDouble)x) + (horizontal ? "_" : ""), font);
 					max_rec_width = double.max (max_rec_width, text.width);
 					max_rec_height = double.max (max_rec_height, text.height);
 					break;
@@ -188,12 +188,12 @@ namespace CairoChart {
 
 					var h = 0.0;
 					if (date_format != "") {
-						var text = new Text (chart, date + (horizontal ? "_" : ""), font_style);
+						var text = new Text (chart, date + (horizontal ? "_" : ""), font);
 						max_rec_width = double.max (max_rec_width, text.width);
 						h = text.height;
 					}
 					if (time_format != "") {
-						var text = new Text (chart, time + (horizontal ? "_" : ""), font_style);
+						var text = new Text (chart, time + (horizontal ? "_" : ""), font);
 						max_rec_width = double.max (max_rec_width, text.width);
 						h += text.height;
 					}

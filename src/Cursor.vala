@@ -209,10 +209,10 @@ namespace CairoChart {
 			size = Point128 ();
 			string date, time;
 			s.axis_x.format_date_time(p.x, out date, out time);
-			var date_t = new Text(chart, date, s.axis_x.font_style, s.axis_x.color);
-			var time_t = new Text(chart, time, s.axis_x.font_style, s.axis_x.color);
-			var x_t = new Text(chart, s.axis_x.format.printf((LongDouble)p.x), s.axis_x.font_style, s.axis_x.color);
-			var y_t = new Text(chart, s.axis_y.format.printf((LongDouble)p.y), s.axis_y.font_style, s.axis_y.color);
+			var date_t = new Text(chart, date, s.axis_x.font, s.axis_x.color);
+			var time_t = new Text(chart, time, s.axis_x.font, s.axis_x.color);
+			var x_t = new Text(chart, s.axis_x.format.printf((LongDouble)p.x), s.axis_x.font, s.axis_x.color);
+			var y_t = new Text(chart, s.axis_y.format.printf((LongDouble)p.y), s.axis_y.font, s.axis_y.color);
 			double h_x = 0.0, h_y = 0.0;
 			if (show_x) { size.x = x_t.width; h_x = x_t.height; }
 			if (show_date) { size.x = date_t.width; h_x = date_t.height; }
@@ -287,8 +287,8 @@ namespace CairoChart {
 						case Axis.DType.NUMBERS: text = s.axis_x.format.printf((LongDouble)x); break;
 						case Axis.DType.DATE_TIME: s.axis_x.format_date_time(x, out text, out time_text); break;
 						}
-						var text_t = new Text(chart, text, s.axis_x.font_style, s.axis_x.color);
-						var time_text_t = new Text(chart, time_text, s.axis_x.font_style, s.axis_x.color);
+						var text_t = new Text(chart, text, s.axis_x.font, s.axis_x.color);
+						var time_text_t = new Text(chart, time_text, s.axis_x.font, s.axis_x.color);
 						var print_y = 0.0;
 						switch (s.axis_x.position) {
 							case Axis.Position.LOW: print_y = chart.area.y1 - s.axis_x.font_spacing
@@ -336,7 +336,7 @@ namespace CairoChart {
 					if (chart.joint_y) {
 						var s = chart.series[chart.zoom_1st_idx];
 						var y = s.get_real_y(rel2scr_y(c.y));
-						var text_t = new Text(chart, s.axis_y.format.printf((LongDouble)y, s.axis_y.font_style));
+						var text_t = new Text(chart, s.axis_y.format.printf((LongDouble)y, s.axis_y.font));
 						var print_y = s.compact_rec_y_pos (y, text_t);
 						var print_x = 0.0;
 						switch (s.axis_y.position) {
@@ -374,7 +374,7 @@ namespace CairoChart {
 
 					if (show_x) {
 						chart.color = s.axis_x.color;
-						var text_t = new Text(chart, s.axis_x.format.printf((LongDouble)point.x), s.axis_x.font_style);
+						var text_t = new Text(chart, s.axis_x.format.printf((LongDouble)point.x), s.axis_x.font);
 						chart.ctx.move_to (svp.x - size.x / 2, svp.y + text_t.height / 2);
 						if (chart.joint_x) chart.color = chart.joint_color;
 						text_t.show();
@@ -384,7 +384,7 @@ namespace CairoChart {
 						chart.color = s.axis_x.color;
 						string date = "", time = "";
 						s.axis_x.format_date_time(point.x, out date, out time);
-						var text_t = new Text(chart, time, s.axis_x.font_style);
+						var text_t = new Text(chart, time, s.axis_x.font);
 						var y = svp.y + text_t.height / 2;
 						if (show_date) y -= text_t.height / 2 + s.axis_x.font_spacing / 2;
 						chart.ctx.move_to (svp.x - size.x / 2, y);
@@ -396,7 +396,7 @@ namespace CairoChart {
 						chart.color = s.axis_x.color;
 						string date = "", time = "";
 						s.axis_x.format_date_time(point.x, out date, out time);
-						var text_t = new Text(chart, date, s.axis_x.font_style);
+						var text_t = new Text(chart, date, s.axis_x.font);
 						var y = svp.y + text_t.height / 2;
 						if (show_time) y += text_t.height / 2 + s.axis_x.font_spacing / 2;
 						chart.ctx.move_to (svp.x - size.x / 2, y);
@@ -406,7 +406,7 @@ namespace CairoChart {
 
 					if (show_y) {
 						chart.color = s.axis_y.color;
-						var text_t = new Text(chart, s.axis_y.format.printf((LongDouble)point.y), s.axis_y.font_style);
+						var text_t = new Text(chart, s.axis_y.format.printf((LongDouble)point.y), s.axis_y.font);
 						chart.ctx.move_to (svp.x + size.x / 2 - text_t.width, svp.y + text_t.height / 2);
 						if (chart.joint_y) chart.color = chart.joint_color;
 						text_t.show();
