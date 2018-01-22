@@ -9,27 +9,27 @@ namespace CairoChart {
 		/**
 		 * A font family name, encoded in UTF-8.
 		 */
-		public string family { get; set; }
+		public virtual string family { get; set; }
 
 		/**
 		 * The new font size, in user space units.
 		 */
-		public double size { get; set; }
+		public virtual double size { get; set; }
 
 		/**
 		 * The slant for the font.
 		 */
-		public Cairo.FontSlant slant { get; set; }
+		public virtual Cairo.FontSlant slant { get; set; }
 
 		/**
 		 * The weight for the font.
 		 */
-		public Cairo.FontWeight weight { get; set; }
+		public virtual Cairo.FontWeight weight { get; set; }
 
 		/**
 		 * Font/Text orientation.
 		 */
-		public Gtk.Orientation orient { get; set; }
+		public virtual Gtk.Orientation orient { get; set; }
 
 		/**
 		 * Constructs a new ``Font``.
@@ -55,7 +55,7 @@ namespace CairoChart {
 		/**
 		 * Gets a copy of the ``Font``.
 		 */
-		public Font copy () {
+		public virtual Font copy () {
 			return new Font(family, size, slant, weight, orient);
 		}
 	}
