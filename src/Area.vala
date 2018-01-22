@@ -80,6 +80,18 @@ namespace CairoChart {
 		}
 
 		/**
+		 * Constructs a new ``Area`` by 2 points.
+		 * @param p0 top left position.
+		 * @param p1 bottom right position.
+		 */
+		public Area.with_points (Point p0, Point p1) {
+			this.x0 = p0.x;
+			this.y0 = p0.y;
+			this.x1 = p1.x;
+			this.y1 = p1.y;
+		}
+
+		/**
 		 * Constructs a new ``Area`` with relative coordinates.
 		 * @param x0 left bound.
 		 * @param y0 top bound.
