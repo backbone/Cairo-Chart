@@ -58,17 +58,17 @@ namespace CairoChart {
 		/**
 		 * Index of the 1'st shown series in a zoomed area.
 		 */
-		public int zoom_1st_idx { get; protected set; default = 0; }
+		public virtual int zoom_1st_idx { get; protected set; default = 0; }
 
 		/**
 		 * Joint/common X axes or not.
 		 */
-		public bool joint_x { get; protected set; default = false; }
+		public virtual bool joint_x { get; protected set; default = false; }
 
 		/**
 		 * Joint/common Y axes or not.
 		 */
-		public bool joint_y { get; protected set; default = false; }
+		public virtual bool joint_y { get; protected set; default = false; }
 
 		/**
 		 * Joint/common {@link Axis} ``Color``.
@@ -83,13 +83,13 @@ namespace CairoChart {
 		/**
 		 * ``Chart`` cursors.
 		 */
-		public Cursors cursors { get; protected set; default = null; }
+		public virtual Cursors cursors { get; protected set; default = null; }
 
 		/**
 		 * Set paint color for further drawing.
 		 */
-		public Color color {
-			private get { return Color(); }
+		public virtual Color color {
+			protected get { return Color(); }
 			set { ctx.set_source_rgba (value.red, value.green, value.blue, value.alpha); }
 			default = Color();
 		}
@@ -106,7 +106,7 @@ namespace CairoChart {
 		/**
 		 * Gets a copy of the ``Chart``.
 		 */
-		public Chart copy () {
+		public virtual Chart copy () {
 			var chart = new Chart ();
 			chart.area = this.area.copy();
 			chart.bg_color = this.bg_color;

@@ -28,7 +28,7 @@ namespace CairoChart {
 		/**
 		 * ``Area`` width.
 		 */
-		public double width {
+		public virtual double width {
 			get {
 				return x1 - x0;
 			}
@@ -40,7 +40,7 @@ namespace CairoChart {
 		/**
 		 * ``Area`` height.
 		 */
-		public double height {
+		public virtual double height {
 			get {
 				return y1 - y0;
 			}
@@ -107,7 +107,7 @@ namespace CairoChart {
 		/**
 		 * Gets a copy of the ``Chart``.
 		 */
-		public Area copy () {
+		public virtual Area copy () {
 			return new Area.with_area(this);
 		}
 	}
