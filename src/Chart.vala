@@ -48,7 +48,7 @@ namespace CairoChart {
 		/**
 		 * Legend.
 		 */
-		public Legend legend = new Legend();
+		public Legend legend;
 
 		/**
 		 * ``Chart`` Series array.
@@ -100,7 +100,7 @@ namespace CairoChart {
 		public Chart () {
 			cursors = new Cursors (this);
 			title = new Text(this, "Cairo Chart");
-
+			legend = new Legend(this);
 		}
 
 		/**
@@ -147,7 +147,7 @@ namespace CairoChart {
 			draw_title ();
 			fix_evarea ();
 
-			legend.draw (this);
+			legend.draw ();
 			fix_evarea ();
 
 			rot_axes_titles ();

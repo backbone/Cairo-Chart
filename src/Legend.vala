@@ -5,6 +5,8 @@ namespace CairoChart {
 	 */
 	public class Legend {
 
+		Chart chart;
+
 		/**
 		 * ``Legend`` position.
 		 */
@@ -53,8 +55,20 @@ namespace CairoChart {
 		public double text_vspace = 2.0;
 		public bool show = true;
 
+		/**
+		 * Constructs a new ``Legend``.
+		 * @param chart ``Chart`` instance.
+		 */
+		public Legend (Chart chart) {
+			this.chart = chart;
+			border_style.color = Color (0, 0, 0, 0.3);
+		}
+
+		/**
+		 * Gets a copy of the ``Legend``.
+		 */
 		public virtual Legend copy () {
-			var legend = new Legend ();
+			var legend = new Legend (chart);
 			legend.position = this.position;
 			legend.bg_color = this.bg_color;
 			legend.spacing = this.spacing;
@@ -68,17 +82,13 @@ namespace CairoChart {
 			return legend;
 		}
 
-		public Legend () {
-			border_style.color = Color (0, 0, 0, 0.3);
-		}
-
-		public virtual void draw (Chart chart) {
+		public virtual void draw () {
 			if (!show) return;
-			process (chart, ProcessType.CALC);
-			process (chart, ProcessType.DRAW);
+			process (ProcessType.CALC);
+			process (ProcessType.DRAW);
 		}
 
-		public virtual void draw_rect (Chart chart, out double x0, out double y0) {
+		public virtual void draw_rect (out double x0, out double y0) {
 			x0 = y0 = 0.0;
 			if (chart.ctx != null) {
 				switch (position) {
@@ -123,7 +133,7 @@ namespace CairoChart {
 		}
 
 		double [] max_font_heights;
-		public virtual void process (Chart chart, ProcessType process_type) {
+		public virtual void process (ProcessType process_type) {
 			var legend_x0 = 0.0, legend_y0 = 0.0;
 			var heights_idx = 0;
 			var leg_width_sum = 0.0;
@@ -139,7 +149,7 @@ namespace CairoChart {
 				heights_idx = 0;
 				break;
 			case ProcessType.DRAW:
-				draw_rect(chart, out legend_x0, out legend_y0);
+				draw_rect(out legend_x0, out legend_y0);
 				break;
 			}
 
