@@ -71,9 +71,9 @@ namespace CairoChart {
 
 			case Type.TRIANGLE:
 				chart.ctx.move_to (x - size / 2, y - size / 2);
-				chart.ctx.line_to (x + size / 2, y - size / 2);
-				chart.ctx.line_to (x, y + size / 2);
-				chart.ctx.line_to (x - size / 2, y - size / 2);
+				chart.ctx.rel_line_to (size, 0);
+				chart.ctx.rel_line_to (-size / 2, size);
+				chart.ctx.rel_line_to (-size / 2, -size);
 				chart.ctx.fill();
 				break;
 
