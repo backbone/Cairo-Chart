@@ -21,7 +21,7 @@ namespace CairoChart {
 		/**
 		 * Low bound.
 		 */
-		public Float128 min {
+		public virtual Float128 min {
 			get {
 				return _min;
 			}
@@ -33,7 +33,7 @@ namespace CairoChart {
 		/**
 		 * High bound.
 		 */
-		public Float128 max {
+		public virtual Float128 max {
 			get {
 				return _max;
 			}
@@ -45,7 +45,7 @@ namespace CairoChart {
 		/**
 		 * ``Range`` value.
 		 */
-		public Float128 range {
+		public virtual Float128 range {
 			get {
 				return _max - _min;
 			}
@@ -57,7 +57,7 @@ namespace CairoChart {
 		/**
 		 * ``Range`` zoomed value.
 		 */
-		public Float128 zrange {
+		public virtual Float128 zrange {
 			get {
 				return zmax - zmin;
 			}
@@ -98,14 +98,14 @@ namespace CairoChart {
 		/**
 		 * Gets a copy of the ``Range``.
 		 */
-		public Range copy () {
+		public virtual Range copy () {
 			return new Range.with_range(this);
 		}
 
 		/**
 		 * Unzooms ``Range``.
 		 */
-		public void unzoom () {
+		public virtual void unzoom () {
 			zmin = min;
 			zmax = max;
 		}
