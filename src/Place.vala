@@ -199,7 +199,12 @@ namespace CairoChart {
 		 * Gets a copy of the ``Chart``.
 		 */
 		public virtual Place copy () {
-			return new Place.with_place(this);
+			var p = new Place.with_place(this);
+			p.zx0 = this.zx0;
+			p.zy0 = this.zy0;
+			p.zx1 = this.zx1;
+			p.zy1 = this.zy1;
+			return p;
 		}
 
 		/**
