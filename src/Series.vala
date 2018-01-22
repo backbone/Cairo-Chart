@@ -544,11 +544,11 @@ namespace CairoChart {
 			return Point128 (get_real_x(p.x), get_real_y(p.y));
 		}
 
-		public virtual void unzoom () {
+		public virtual void zoom_out () {
 				zoom_show = true;
-				axis_x.unzoom();
-				axis_y.unzoom();
-				place.unzoom();
+				axis_x.zoom_out();
+				axis_y.zoom_out();
+				place.zoom_out();
 		}
 	}
 }

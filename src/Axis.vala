@@ -1,23 +1,61 @@
 namespace CairoChart {
 
 	/**
-	 *
+	 * ``Chart`` axis.
 	 */
 	public class Axis {
-		public Range range = new Range();
+
 		Chart chart;
 		public Text title;
+
+		/**
+		 * ``Axis`` range/limits.
+		 */
+		public Range range = new Range();
+
+		/**
+		 * Data type.
+		 */
 		public enum DType {
+			/**
+			 * Float128 numbers.
+			 */
 			NUMBERS = 0,
+
+			/**
+			 * Date/Time.
+			 */
 			DATE_TIME
 		}
-		public enum ScaleType {
-			LINEAR = 0,		// default
-			// LOGARITHMIC, // TODO
-			// etc
-		}
+
+		/**
+		 * Data type.
+		 */
 		public DType dtype;
+
+		/**
+		 * ``Axis`` scale type.
+		 */
+		public enum ScaleType {
+			/**
+			 * Linear scale.
+			 */
+			LINEAR = 0,
+
+			/**
+			 * Logarithmic scale.
+			 */
+			// LOGARITHMIC,
+		}
+
+		/**
+		 * Scale type.
+		 */
 		public ScaleType scale_type;
+
+		/**
+		 * ``Axis`` position.
+		 */
 		public enum Position {
 			LOW = 0,
 			HIGH = 1,
@@ -66,6 +104,11 @@ namespace CairoChart {
 		public LineStyle line_style = LineStyle ();
 		public double font_spacing = 5;
 
+		public Axis (Chart chart) {
+			this.chart = chart;
+			title = new Text (chart, "");
+		}
+
 		public virtual Axis copy () {
 			var axis = new Axis (chart);
 			axis._date_format = this._date_format;
@@ -84,11 +127,6 @@ namespace CairoChart {
 			axis.dtype = this.dtype;
 			axis.nrecords = this.nrecords;
 			return axis;
-		}
-
-		public Axis (Chart chart) {
-			this.chart = chart;
-			title = new Text (chart, "");
 		}
 
 		public int nrecords = 128;
@@ -133,8 +171,8 @@ namespace CairoChart {
 			}
 		}
 
-		public virtual void unzoom () {
-			range.unzoom();
+		public virtual void zoom_out () {
+			range.zoom_out();
 		}
 	}
 }

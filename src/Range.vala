@@ -105,7 +105,7 @@ namespace CairoChart {
 		/**
 		 * Unzooms ``Range``.
 		 */
-		public virtual void unzoom () {
+		public virtual void zoom_out () {
 			zmin = min;
 			zmax = max;
 		}

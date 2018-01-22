@@ -253,7 +253,7 @@ namespace CairoChart {
 		 * Zooms out the ``Chart``.
 		 */
 		public virtual void zoom_out () {
-			foreach (var s in series) s.unzoom();
+			foreach (var s in series) s.zoom_out();
 			zoom = new Area.with_abs (0, 0, 1, 1);
 			zoom_1st_idx = 0;
 		}
