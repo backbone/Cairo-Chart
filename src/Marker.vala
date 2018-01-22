@@ -10,7 +10,7 @@ namespace CairoChart {
 		/**
 		 * ``Marker`` shape.
 		 */
-		public enum Type {
+		public enum Shape {
 			NONE = 0,
 			SQUARE,
 			CIRCLE,
@@ -23,7 +23,7 @@ namespace CairoChart {
 		/**
 		 * ``Marker`` shape.
 		 */
-		public Type type;
+		public Shape type;
 
 		/**
 		 * ``Marker`` size.
@@ -36,7 +36,7 @@ namespace CairoChart {
 		 * @param size ``Marker`` size.
 		 */
 		public Marker (Chart chart,
-		               Type type = Type.NONE,
+		               Shape type = Shape.NONE,
 		               double size = 8.0
 		) {
 			this.chart = chart;
@@ -59,17 +59,17 @@ namespace CairoChart {
 		public virtual void draw_at_pos (double x, double y) {
 			chart.ctx.move_to (x, y);
 			switch (type) {
-			case Type.SQUARE:
+			case Shape.SQUARE:
 				chart.ctx.rectangle (x - size / 2, y - size / 2, size, size);
 				chart.ctx.fill();
 				break;
 
-			case Type.CIRCLE:
+			case Shape.CIRCLE:
 				chart.ctx.arc (x, y, size / 2, 0, 2 * GLib.Math.PI);
 				chart.ctx.fill();
 				break;
 
-			case Type.TRIANGLE:
+			case Shape.TRIANGLE:
 				chart.ctx.move_to (x - size / 2, y - size / 2);
 				chart.ctx.rel_line_to (size, 0);
 				chart.ctx.rel_line_to (-size / 2, size);
@@ -77,17 +77,17 @@ namespace CairoChart {
 				chart.ctx.fill();
 				break;
 
-			case Type.PRICLE_SQUARE:
+			case Shape.PRICLE_SQUARE:
 				chart.ctx.rectangle (x - size / 2, y - size / 2, size, size);
 				chart.ctx.stroke();
 				break;
 
-			case Type.PRICLE_CIRCLE:
+			case Shape.PRICLE_CIRCLE:
 				chart.ctx.arc (x, y, size / 2, 0, 2 * GLib.Math.PI);
 				chart.ctx.stroke();
 				break;
 
-			case Type.PRICLE_TRIANGLE:
+			case Shape.PRICLE_TRIANGLE:
 				chart.ctx.move_to (x - size / 2, y - size / 2);
 				chart.ctx.rel_line_to (size, 0);
 				chart.ctx.rel_line_to (-size / 2, size);
