@@ -23,7 +23,7 @@ namespace CairoChart {
 
 		public LineStyle line_style = LineStyle ();
 
-		protected Color _color = Color (0.0, 0.0, 0.0, 1.0);
+		protected Color _color = Color (0, 0, 0, 1);
 		public Color color {
 			get { return _color; }
 			set {
@@ -34,7 +34,7 @@ namespace CairoChart {
 				grid.style.color = _color;
 				grid.style.color.alpha = 0.5;
 			}
-			default = Color (0.0, 0.0, 0.0, 1.0);
+			default = Color (0, 0, 0, 1);
 		}
 
 		public bool zoom_show = true;
@@ -119,7 +119,7 @@ namespace CairoChart {
 		protected virtual void calc_rec_sizes (Axis axis, out double max_rec_width, out double max_rec_height, bool horizontal = true) {
 			max_rec_width = max_rec_height = 0;
 			for (var i = 0; i < axis.nrecords; ++i) {
-				Float128 x = (int64)(axis.range.zmin + axis.range.zrange / axis.nrecords * i) + 1.0/3.0;
+				Float128 x = (int64)(axis.range.zmin + axis.range.zrange / axis.nrecords * i) + 1/3.0;
 				switch (axis.dtype) {
 				case Axis.DType.NUMBERS:
 					var text = new Text (chart, axis.format.printf((LongDouble)x) + (horizontal ? "_" : ""), axis.font);
@@ -153,7 +153,7 @@ namespace CairoChart {
 			if (!is_x) axis = s.axis_y;
 			if (!s.zoom_show) return;
 			if (nskip != 0) {--nskip; return;}
-			double max_rec_width = 0; double max_rec_height = 0;
+			var max_rec_width = 0.0, max_rec_height = 0.0;
 			calc_rec_sizes (axis, out max_rec_width, out max_rec_height, is_x);
 			var max_font_spacing = is_x ? axis.font.vspacing : axis.font.hspacing;
 			var max_axis_font_width = axis.title.text == "" ? 0 : axis.title.width + axis.font.hspacing;
@@ -226,7 +226,7 @@ namespace CairoChart {
 				}
 				if (!has_intersection) {
 					if (calc_max_values) {
-						double tmp_max_rec_width = 0; double tmp_max_rec_height = 0;
+						var tmp_max_rec_width = 0.0, tmp_max_rec_height = 0.0;
 						calc_rec_sizes (s2.axis_x, out tmp_max_rec_width, out tmp_max_rec_height, true);
 						max_rec_width = double.max (max_rec_width, tmp_max_rec_width);
 						max_rec_height = double.max (max_rec_height, tmp_max_rec_height);
@@ -263,7 +263,7 @@ namespace CairoChart {
 					}
 				}
 				if (!has_intersection) {
-					double tmp_max_rec_width = 0; double tmp_max_rec_height = 0;
+					var tmp_max_rec_width = 0.0, tmp_max_rec_height = 0.0;
 					calc_rec_sizes (s2.axis_y, out tmp_max_rec_width, out tmp_max_rec_height, false);
 					max_rec_width = double.max (max_rec_width, tmp_max_rec_width);
 					max_rec_height = double.max (max_rec_height, tmp_max_rec_height);
@@ -319,7 +319,7 @@ namespace CairoChart {
 					if (joint_x)
 						ctx.line_to (scr_x, chart.plarea.y0);
 					else
-						ctx.line_to (scr_x, double.min (y, chart.plarea.y0 + chart.plarea.height * (1.0 - place.zy1)));
+						ctx.line_to (scr_x, double.min (y, chart.plarea.y0 + chart.plarea.height * (1 - place.zy1)));
 					break;
 				case Axis.Position.HIGH:
 					var print_y = chart.evarea.y0 + max_rec_height + axis_x.font.vspacing + (axis_x.title.text == "" ? 0 : axis_x.title.height + axis_x.font.vspacing);
@@ -347,7 +347,7 @@ namespace CairoChart {
 					if (joint_x)
 						ctx.line_to (scr_x, chart.plarea.y1);
 					else
-						ctx.line_to (scr_x, double.max (y, chart.plarea.y0 + chart.plarea.height * (1.0 - place.zy0)));
+						ctx.line_to (scr_x, double.max (y, chart.plarea.y0 + chart.plarea.height * (1 - place.zy0)));
 					break;
 				}
 			}
@@ -371,7 +371,7 @@ namespace CairoChart {
 				step = s.axis_x.range.zrange;
 
 			// 4. Calculate x_min (s.axis_x.range.zmin / step, round, multiply on step, add step if < s.axis_x.range.zmin).
-			Float128 x_min = 0.0;
+			Float128 x_min = 0;
 			if (step >= 1) {
 				int64 x_min_nsteps = (int64) (s.axis_x.range.zmin / step);
 				x_min = x_min_nsteps * step;
@@ -393,13 +393,13 @@ namespace CairoChart {
 
 			// 4.5. Draw Axis title
 			if (s.axis_x.title.text != "") {
-				var scr_x = chart.plarea.x0 + chart.plarea.width * (s.place.zx0 + s.place.zx1) / 2.0;
-				double scr_y = 0.0;
+				var scr_x = chart.plarea.x0 + chart.plarea.width * (s.place.zx0 + s.place.zx1) / 2;
+				var scr_y = 0.0;
 				switch (s.axis_x.position) {
 				case Axis.Position.LOW: scr_y = chart.evarea.y1 - s.axis_x.font.vspacing; break;
 				case Axis.Position.HIGH: scr_y = chart.evarea.y0 + s.axis_x.font.vspacing + axis_x.title.height; break;
 				}
-				chart.ctx.move_to(scr_x - axis_x.title.width / 2.0, scr_y);
+				chart.ctx.move_to(scr_x - axis_x.title.width / 2, scr_y);
 				chart.color = s.axis_x.color;
 				if (chart.joint_x) chart.color = chart.joint_color;
 				s.axis_x.title.show();
@@ -409,7 +409,7 @@ namespace CairoChart {
 
 			chart.ctx.stroke ();
 
-			double tmp1 = 0, tmp2 = 0, tmp3 = 0, tmp4 = 0;
+			var tmp1 = 0.0, tmp2 = 0.0, tmp3 = 0.0, tmp4 = 0.0;
 			s.join_relative_x_axes (si, false, ref tmp1, ref tmp2, ref tmp3, ref tmp4, ref nskip);
 
 			if (nskip != 0) {--nskip; return;}
@@ -487,7 +487,7 @@ namespace CairoChart {
 				step = s.axis_y.range.zrange;
 
 			// 4. Calculate y_min (s.axis_y.range.zmin / step, round, multiply on step, add step if < s.axis_y.range.zmin).
-			Float128 y_min = 0.0;
+			Float128 y_min = 0;
 			if (step >= 1) {
 				int64 y_min_nsteps = (int64) (s.axis_y.range.zmin / step);
 				y_min = y_min_nsteps * step;
@@ -509,15 +509,15 @@ namespace CairoChart {
 
 			// 4.5. Draw Axis title
 			if (s.axis_y.title.text != "") {
-				var scr_y = chart.plarea.y0 + chart.plarea.height * (1.0 - (s.place.zy0 + s.place.zy1) / 2.0);
+				var scr_y = chart.plarea.y0 + chart.plarea.height * (1 - (s.place.zy0 + s.place.zy1) / 2);
 				switch (s.axis_y.position) {
 				case Axis.Position.LOW:
 					var scr_x = chart.evarea.x0 + s.axis_y.font.hspacing + axis_y.title.width;
-					chart.ctx.move_to(scr_x, scr_y + axis_y.title.height / 2.0);
+					chart.ctx.move_to(scr_x, scr_y + axis_y.title.height / 2);
 					break;
 				case Axis.Position.HIGH:
 					var scr_x = chart.evarea.x1 - s.axis_y.font.hspacing;
-					chart.ctx.move_to(scr_x, scr_y + axis_y.title.height / 2.0);
+					chart.ctx.move_to(scr_x, scr_y + axis_y.title.height / 2);
 					break;
 				}
 				chart.color = s.axis_y.color;
@@ -529,7 +529,7 @@ namespace CairoChart {
 
 			chart.ctx.stroke ();
 
-			double tmp1 = 0, tmp2 = 0, tmp3 = 0, tmp4 = 0;
+			var tmp1 = 0.0, tmp2 = 0.0, tmp3 = 0.0, tmp4 = 0.0;
 			s.join_relative_y_axes (si, false, ref tmp1, ref tmp2, ref tmp3, ref tmp4, ref nskip);
 
 			if (nskip != 0) {--nskip; return;}
@@ -542,13 +542,13 @@ namespace CairoChart {
 		}
 
 		public virtual double compact_rec_x_pos (Float128 x, Text text) {
-			return get_scr_x(x) - text.width / 2.0
-			       - text.width * (x - (axis_x.range.zmin + axis_x.range.zmax) / 2.0) / axis_x.range.zrange;
+			return get_scr_x(x) - text.width / 2
+			       - text.width * (x - (axis_x.range.zmin + axis_x.range.zmax) / 2) / axis_x.range.zrange;
 		}
 
 		public virtual double compact_rec_y_pos (Float128 y, Text text) {
-			return get_scr_y(y) + text.height / 2.0
-			       + text.height * (y - (axis_y.range.zmin + axis_y.range.zmax) / 2.0) / axis_y.range.zrange;
+			return get_scr_y(y) + text.height / 2
+			       + text.height * (y - (axis_y.range.zmin + axis_y.range.zmax) / 2) / axis_y.range.zrange;
 		}
 
 		public virtual double get_scr_x (Float128 x) {
@@ -556,7 +556,7 @@ namespace CairoChart {
 		}
 
 		public virtual double get_scr_y (Float128 y) {
-			return chart.plarea.y0 + chart.plarea.height * (1.0 - (place.zy0 + (y - axis_y.range.zmin) / axis_y.range.zrange * place.zheight));
+			return chart.plarea.y0 + chart.plarea.height * (1 - (place.zy0 + (y - axis_y.range.zmin) / axis_y.range.zrange * place.zheight));
 		}
 
 		public virtual Point get_scr_point (Point128 p) {

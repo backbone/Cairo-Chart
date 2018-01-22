@@ -65,7 +65,7 @@ namespace CairoChart {
 		/**
 		 * {@link Series} line length.
 		 */
-		public double line_length = 30.0;
+		public double line_length = 30;
 
 		/**
 		 * Show legend?
@@ -107,7 +107,7 @@ namespace CairoChart {
 		}
 
 		protected virtual void draw_rect (out double x0, out double y0) {
-			x0 = y0 = 0.0;
+			x0 = y0 = 0;
 			if (chart.ctx != null) {
 				switch (position) {
 				case Position.TOP:
@@ -156,13 +156,13 @@ namespace CairoChart {
 			var heights_idx = 0;
 			var leg_width_sum = 0.0;
 			var leg_height_sum = 0.0;
-			double max_font_h = 0.0;
+			var max_font_h = 0.0;
 
 			// prepare
 			switch (process_type) {
 			case ProcessType.CALC:
-				width = 0.0;
-				height = 0.0;
+				width = 0;
+				height = 0;
 				max_font_heights = {};
 				heights_idx = 0;
 				break;
@@ -191,7 +191,7 @@ namespace CairoChart {
 							heights_idx++;
 							break;
 						}
-						leg_width_sum = 0.0;
+						leg_width_sum = 0;
 						max_font_h = 0;
 					}
 					break;

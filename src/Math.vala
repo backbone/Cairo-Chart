@@ -3,9 +3,9 @@ namespace CairoChart {
 	namespace Math {
 
 		internal Float128 calc_round_step (Float128 aver_step, bool date_time = false) {
-			Float128 step = 1.0;
+			Float128 step = 1;
 
-			if (aver_step > 1.0) {
+			if (aver_step > 1) {
 				if (date_time) while (step < aver_step) step *= 60;
 				if (date_time) while (step < aver_step) step *= 60;
 				if (date_time) while (step < aver_step) step *= 24;

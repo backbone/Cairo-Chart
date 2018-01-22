@@ -68,7 +68,7 @@ namespace CairoChart {
 				switch (font.orient) {
 				case Gtk.Orientation.HORIZONTAL: return ext.width + ext.x_bearing;
 				case Gtk.Orientation.VERTICAL: return ext.height;
-				default: return 0.0;
+				default: return 0;
 				}
 			}
 			protected set {
@@ -83,7 +83,7 @@ namespace CairoChart {
 				switch (font.orient) {
 				case Gtk.Orientation.HORIZONTAL: return ext.height; // + ext.x_bearing ?
 				case Gtk.Orientation.VERTICAL: return ext.width;    // +- ext.y_bearing ?
-				default: return 0.0;
+				default: return 0;
 				}
 			}
 			protected set {
@@ -99,9 +99,9 @@ namespace CairoChart {
 			                           font.weight);
 			chart.ctx.set_font_size(font.size);
 			if (font.orient == Gtk.Orientation.VERTICAL) {
-				chart.ctx.rotate(- GLib.Math.PI / 2.0);
+				chart.ctx.rotate(- GLib.Math.PI / 2);
 				chart.ctx.show_text(text);
-				chart.ctx.rotate(GLib.Math.PI / 2.0);
+				chart.ctx.rotate(GLib.Math.PI / 2);
 			} else {
 				chart.ctx.show_text(text);
 			}

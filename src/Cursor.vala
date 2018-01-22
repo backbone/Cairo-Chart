@@ -78,7 +78,7 @@ namespace CairoChart {
 
 		public virtual void remove_active_cursor () {
 			if (list.length() == 0) return;
-			var distance = 1024.0 * 1024.0;//width * width;
+			var distance = 1024.0 * 1024;//width * width;
 			uint rm_indx = 0;
 			uint i = 0;
 			foreach (var c in list) {
@@ -127,7 +127,7 @@ namespace CairoChart {
 					for (var i = 0; i + 1 < points.length; ++i) {
 						switch (cursor_style.orientation) {
 						case Orientation.VERTICAL:
-							Float128 y = 0.0;
+							Float128 y = 0;
 							if (Math.vcross(s.get_scr_point(points[i]), s.get_scr_point(points[i+1]), rel2scr_x(c.x),
 							                chart.plarea.y0, chart.plarea.y1, out y)) {
 								var point = Point128(s.get_real_x(rel2scr_x(c.x)), s.get_real_y(y));
@@ -139,7 +139,7 @@ namespace CairoChart {
 							}
 							break;
 						case Orientation.HORIZONTAL:
-							Float128 x = 0.0;
+							Float128 x = 0;
 							if (Math.hcross(s.get_scr_point(points[i]), s.get_scr_point(points[i+1]),
 							                chart.plarea.x0, chart.plarea.x1, rel2scr_y(c.y), out x)) {
 								var point = Point128(s.get_real_x(x), s.get_real_y(rel2scr_y(c.y)));
@@ -213,7 +213,7 @@ namespace CairoChart {
 			var time_t = new Text(chart, time, s.axis_x.font, s.axis_x.color);
 			var x_t = new Text(chart, s.axis_x.format.printf((LongDouble)p.x), s.axis_x.font, s.axis_x.color);
 			var y_t = new Text(chart, s.axis_y.format.printf((LongDouble)p.y), s.axis_y.font, s.axis_y.color);
-			double h_x = 0.0, h_y = 0.0;
+			var h_x = 0.0, h_y = 0.0;
 			if (show_x) { size.x = x_t.width; h_x = x_t.height; }
 			if (show_date) { size.x = date_t.width; h_x = date_t.height; }
 			if (show_time) { size.x = double.max(size.x, time_t.width); h_x += time_t.height; }
@@ -416,7 +416,7 @@ namespace CairoChart {
 		}
 
 		public bool get_cursors_delta (out Float128 delta) {
-			delta = 0.0;
+			delta = 0;
 			if (chart.series.length == 0) return false;
 			if (list.length() + (is_cursor_active ? 1 : 0) != 2) return false;
 			if (chart.joint_x && cursor_style.orientation == Orientation.VERTICAL) {
@@ -449,7 +449,7 @@ namespace CairoChart {
 		}
 
 		public string get_cursors_delta_str () {
-			Float128 delta = 0.0;
+			Float128 delta = 0;
 			if (!get_cursors_delta(out delta)) return "";
 			var str = "";
 			var s = chart.series[chart.zoom_1st_idx];

@@ -21,7 +21,7 @@ namespace CairoChart {
 		public Area evarea = new Area.with_abs(0, 0, 1, 1);
 
 		/**
-		 * Zoom area limits (relative coordinates: 0.0-1.0).
+		 * Zoom area limits (relative coordinates: 0-1).
 		 */
 		public Area zoom = new Area.with_abs(0, 0, 1, 1);
 
@@ -205,25 +205,25 @@ namespace CairoChart {
 				}
 				if (real_x0 >= s.axis_x.range.zmin) {
 					s.axis_x.range.zmin = real_x0;
-					s.place.zx0 = 0.0;
+					s.place.zx0 = 0;
 				} else {
 					s.place.zx0 = (s.axis_x.range.zmin - real_x0) / real_width;
 				}
 				if (real_x1 <= s.axis_x.range.zmax) {
 					s.axis_x.range.zmax = real_x1;
-					s.place.zx1 = 1.0;
+					s.place.zx1 = 1;
 				} else {
 					s.place.zx1 = (s.axis_x.range.zmax - real_x0) / real_width;
 				}
 				if (real_y1 >= s.axis_y.range.zmin) {
 					s.axis_y.range.zmin = real_y1;
-					s.place.zy0 = 0.0;
+					s.place.zy0 = 0;
 				} else {
 					s.place.zy0 = (s.axis_y.range.zmin - real_y1) / real_height;
 				}
 				if (real_y0 <= s.axis_y.range.zmax) {
 					s.axis_y.range.zmax = real_y0;
-					s.place.zy1 = 1.0;
+					s.place.zy1 = 1;
 				} else {
 					s.place.zy1 = (s.axis_y.range.zmax - real_y1) / real_height;
 				}

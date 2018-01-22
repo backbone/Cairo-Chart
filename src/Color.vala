@@ -32,10 +32,10 @@ namespace CairoChart {
 		 * @param blue blue component.
 		 * @param alpha alpha component.
 		 */
-		public Color (double red = 0.0,
-		              double green = 0.0,
-		              double blue = 0.0,
-		              double alpha = 1.0
+		public Color (double red = 0,
+		              double green = 0,
+		              double blue = 0,
+		              double alpha = 1
 		) {
 			this.red = red;
 			this.green = green;

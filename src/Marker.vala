@@ -38,7 +38,7 @@ namespace CairoChart {
 		 */
 		public Marker (Chart chart,
 		               Shape shape = Shape.NONE,
-		               double size = 8.0
+		               double size = 8
 		) {
 			this.chart = chart;
 			this.shape = shape;

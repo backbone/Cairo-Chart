@@ -20,7 +20,7 @@ namespace CairoChart {
 		 * @param x x-coordinate.
 		 * @param y y-coordinate.
 		 */
-		public Point (double x = 0.0, double y = 0.0) {
+		public Point (double x = 0, double y = 0) {
 			this.x = x; this.y = y;
 		}
 	}
@@ -45,7 +45,7 @@ namespace CairoChart {
 		 * @param x x-coordinate.
 		 * @param y y-coordinate.
 		 */
-		public Point128 (Float128 x = 0.0, Float128 y = 0.0) {
+		public Point128 (Float128 x = 0, Float128 y = 0) {
 			this.x = x; this.y = y;
 		}
 	}
