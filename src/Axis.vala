@@ -194,38 +194,6 @@ namespace CairoChart {
 			time = dt.format(time_format) + dsec_str;
 		}
 
-		// TODO: move to Series.vala
-		public virtual void calc_rec_sizes (out double max_rec_width, out double max_rec_height, bool horizontal = true) {
-			max_rec_width = max_rec_height = 0;
-			for (var i = 0; i < nrecords; ++i) {
-				Float128 x = (int64)(range.zmin + range.zrange / nrecords * i) + 1.0/3.0;
-				switch (dtype) {
-				case Axis.DType.NUMBERS:
-					var text = new Text (chart, format.printf((LongDouble)x) + (horizontal ? "_" : ""), font);
-					max_rec_width = double.max (max_rec_width, text.width);
-					max_rec_height = double.max (max_rec_height, text.height);
-					break;
-				case Axis.DType.DATE_TIME:
-					string date, time;
-					print_dt(x, out date, out time);
-
-					var h = 0.0;
-					if (date_format != "") {
-						var text = new Text (chart, date + (horizontal ? "_" : ""), font);
-						max_rec_width = double.max (max_rec_width, text.width);
-						h = text.height;
-					}
-					if (time_format != "") {
-						var text = new Text (chart, time + (horizontal ? "_" : ""), font);
-						max_rec_width = double.max (max_rec_width, text.width);
-						h += text.height;
-					}
-					max_rec_height = double.max (max_rec_height, h);
-					break;
-				}
-			}
-		}
-
 		/**
 		 * Zooms out ``Axis``.
 		 */

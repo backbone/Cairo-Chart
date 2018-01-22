@@ -116,6 +116,37 @@ namespace CairoChart {
 			return true;
 		}
 
+		protected virtual void calc_rec_sizes (Axis axis, out double max_rec_width, out double max_rec_height, bool horizontal = true) {
+			max_rec_width = max_rec_height = 0;
+			for (var i = 0; i < axis.nrecords; ++i) {
+				Float128 x = (int64)(axis.range.zmin + axis.range.zrange / axis.nrecords * i) + 1.0/3.0;
+				switch (axis.dtype) {
+				case Axis.DType.NUMBERS:
+					var text = new Text (chart, axis.format.printf((LongDouble)x) + (horizontal ? "_" : ""), axis.font);
+					max_rec_width = double.max (max_rec_width, text.width);
+					max_rec_height = double.max (max_rec_height, text.height);
+					break;
+				case Axis.DType.DATE_TIME:
+					string date, time;
+					axis.print_dt(x, out date, out time);
+
+					var h = 0.0;
+					if (axis.date_format != "") {
+						var text = new Text (chart, date + (horizontal ? "_" : ""), axis.font);
+						max_rec_width = double.max (max_rec_width, text.width);
+						h = text.height;
+					}
+					if (axis.time_format != "") {
+						var text = new Text (chart, time + (horizontal ? "_" : ""), axis.font);
+						max_rec_width = double.max (max_rec_width, text.width);
+						h += text.height;
+					}
+					max_rec_height = double.max (max_rec_height, h);
+					break;
+				}
+			}
+		}
+
 		public virtual void join_axes (bool is_x, int si, ref int nskip) {
 			var s = chart.series[si];
 			Axis axis = s.axis_x;
@@ -123,7 +154,7 @@ namespace CairoChart {
 			if (!s.zoom_show) return;
 			if (nskip != 0) {--nskip; return;}
 			double max_rec_width = 0; double max_rec_height = 0;
-			axis.calc_rec_sizes (out max_rec_width, out max_rec_height, is_x);
+			calc_rec_sizes (axis, out max_rec_width, out max_rec_height, is_x);
 			var max_font_spacing = is_x ? axis.font.vspacing : axis.font.hspacing;
 			var max_axis_font_width = axis.title.text == "" ? 0 : axis.title.width + axis.font.hspacing;
 			var max_axis_font_height = axis.title.text == "" ? 0 : axis.title.height + axis.font.vspacing;
@@ -196,7 +227,7 @@ namespace CairoChart {
 				if (!has_intersection) {
 					if (calc_max_values) {
 						double tmp_max_rec_width = 0; double tmp_max_rec_height = 0;
-						s2.axis_x.calc_rec_sizes (out tmp_max_rec_width, out tmp_max_rec_height, true);
+						calc_rec_sizes (s2.axis_x, out tmp_max_rec_width, out tmp_max_rec_height, true);
 						max_rec_width = double.max (max_rec_width, tmp_max_rec_width);
 						max_rec_height = double.max (max_rec_height, tmp_max_rec_height);
 						max_font_spacing = double.max (max_font_spacing, s2.axis_x.font.vspacing);
@@ -233,7 +264,7 @@ namespace CairoChart {
 				}
 				if (!has_intersection) {
 					double tmp_max_rec_width = 0; double tmp_max_rec_height = 0;
-					s2.axis_y.calc_rec_sizes (out tmp_max_rec_width, out tmp_max_rec_height, false);
+					calc_rec_sizes (s2.axis_y, out tmp_max_rec_width, out tmp_max_rec_height, false);
 					max_rec_width = double.max (max_rec_width, tmp_max_rec_width);
 					max_rec_height = double.max (max_rec_height, tmp_max_rec_height);
 					max_font_spacing = double.max (max_font_spacing, s2.axis_y.font.hspacing);
@@ -329,7 +360,7 @@ namespace CairoChart {
 
 			// 1. Detect max record width/height by axis.nrecords equally selected points using format.
 			double max_rec_width, max_rec_height;
-			s.axis_x.calc_rec_sizes (out max_rec_width, out max_rec_height, true);
+			calc_rec_sizes (s.axis_x, out max_rec_width, out max_rec_height, true);
 
 			// 2. Calculate maximal available number of records, take into account the space width.
 			long max_nrecs = (long) (chart.plarea.width * s.place.zwidth / max_rec_width);
@@ -445,7 +476,7 @@ namespace CairoChart {
 			if (chart.joint_y && si != chart.zoom_1st_idx) return;
 			// 1. Detect max record width/height by axis.nrecords equally selected points using format.
 			double max_rec_width, max_rec_height;
-			s.axis_y.calc_rec_sizes (out max_rec_width, out max_rec_height, false);
+			calc_rec_sizes (s.axis_y, out max_rec_width, out max_rec_height, false);
 
 			// 2. Calculate maximal available number of records, take into account the space width.
 			long max_nrecs = (long) (chart.plarea.height * s.place.zheight / max_rec_height);
