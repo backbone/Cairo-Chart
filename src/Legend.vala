@@ -1,16 +1,40 @@
 namespace CairoChart {
 
+	/**
+	 * {@link Chart} ``Legend``.
+	 */
 	public class Legend {
 
+		/**
+		 * ``Legend`` position.
+		 */
 		public enum Position {
-			TOP = 0,	// default
+			/**
+			 * Top position.
+			 */
+			TOP = 0,
+
+			/**
+			 * Left position.
+			 */
 			LEFT,
+
+			/**
+			 * Right position.
+			 */
 			RIGHT,
+
+			/**
+			 * Bottom position.
+			 */
 			BOTTOM
 		}
 
+		/**
+		 * Position.
+		 */
 		public Position position = Position.TOP;
-		public Font font = new Font();
+
 		public Color bg_color = Color(1, 1, 1);
 		public LineStyle border_style = LineStyle ();
 		public double spacing = 5;
@@ -24,7 +48,6 @@ namespace CairoChart {
 		public virtual Legend copy () {
 			var legend = new Legend ();
 			legend.position = this.position;
-			legend.font = this.font.copy();
 			legend.bg_color = this.bg_color;
 			legend.spacing = this.spacing;
 			legend.height = this.height;
