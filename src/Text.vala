@@ -5,10 +5,10 @@ namespace CairoChart {
 	 */
 	public class Text {
 
-		Chart chart;
-		string _text;
-		Font _font;
-		Cairo.TextExtents? _ext;
+		protected Chart chart;
+		protected string _text;
+		protected Font _font;
+		protected Cairo.TextExtents? _ext;
 
 		/**
 		 * ``Text`` string.

@@ -1,18 +1,35 @@
 namespace CairoChart {
 
+	/**
+	 * {@link Chart} cursors.
+	 */
 	public class Cursors {
 
+		protected Chart chart;
 		protected List<Point?> list = new List<Point?> ();
 		protected Point active_cursor = Point(); // { get; protected set; default = Point128 (); }
 		protected bool is_cursor_active = false; // { get; protected set; default = false; }
-		public Cursors.Style cursor_style = Cursors.Style();
-		public Cursors.CursorCrossings[] crossings = {};
-		Chart chart;
 
+		/**
+		 *
+		 */
+		public Cursors.Style cursor_style = Cursors.Style();
+
+		/**
+		 *
+		 */
+		public Cursors.CursorCrossings[] crossings = {};
+
+		/**
+		 *
+		 */
 		public Cursors (Chart chart) {
 			this.chart = chart;
 		}
 
+		/**
+		 *
+		 */
 		public Cursors copy () {
 			var c = new Cursors (chart);
 			c.list = list.copy();
@@ -23,17 +40,36 @@ namespace CairoChart {
 			return c;
 		}
 
+		/**
+		 *
+		 */
 		protected enum Orientation {
-			VERTICAL = 0,  // default
+			VERTICAL = 0,
 			HORIZONTAL
 		}
 
+		/**
+		 *
+		 */
 		protected struct Style {
-
+			/**
+			 *
+			 */
 			public Orientation orientation;
+
+			/**
+			 *
+			 */
 			public double select_distance;
+
+			/**
+			 *
+			 */
 			public LineStyle line_style;
 
+			/**
+			 *
+			 */
 			public Style () {
 				orientation = Orientation.VERTICAL;
 				select_distance = 32;

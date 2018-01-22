@@ -5,8 +5,8 @@ namespace CairoChart {
 	 */
 	public class Range {
 
-		Float128 _min = 0;
-		Float128 _max = 1;
+		protected Float128 _min = 0;
+		protected Float128 _max = 1;
 
 		/**
 		 * Zoomed min bound.

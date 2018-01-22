@@ -5,7 +5,7 @@ namespace CairoChart {
 	 */
 	public class Marker {
 
-		Chart chart;
+		protected Chart chart;
 
 		/**
 		 * ``Marker`` shape.

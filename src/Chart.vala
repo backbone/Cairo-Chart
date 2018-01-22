@@ -309,7 +309,6 @@ namespace CairoChart {
 
 		protected virtual void eval_plarea () {
 			plarea = evarea.copy();
-			legend.show = false;
 			if (legend.show)
 				switch(legend.position) {
 				case Legend.Position.TOP: plarea.y0 += legend.spacing; break;

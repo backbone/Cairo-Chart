@@ -5,8 +5,8 @@ namespace CairoChart {
 	 */
 	public class Legend {
 
-		Chart chart;
-		double [] max_font_heights;
+		protected Chart chart;
+		protected double [] max_font_heights;
 
 		/**
 		 * ``Legend`` position.
@@ -158,12 +158,14 @@ namespace CairoChart {
 			var leg_height_sum = 0.0;
 			var max_font_h = 0.0;
 
+			double [] mfh = max_font_heights;
+
 			// prepare
 			switch (process_type) {
 			case ProcessType.CALC:
 				width = 0;
 				height = 0;
-				max_font_heights = {};
+				mfh = {};
 				heights_idx = 0;
 				break;
 			case ProcessType.DRAW:
@@ -172,7 +174,6 @@ namespace CairoChart {
 			}
 
 			foreach (var s in chart.series) {
-
 				if (!s.zoom_show) continue;
 
 				// carry
@@ -184,7 +185,7 @@ namespace CairoChart {
 						leg_height_sum += max_font_h;
 						switch (process_type) {
 						case ProcessType.CALC:
-							max_font_heights += max_font_h;
+							mfh += max_font_h;
 							width = double.max(width, leg_width_sum);
 							break;
 						case ProcessType.DRAW:
@@ -200,7 +201,7 @@ namespace CairoChart {
 				switch (process_type) {
 				case ProcessType.DRAW:
 					var x = legend_x0 + leg_width_sum + (leg_width_sum == 0 ? 0 : s.title.font.hspacing);
-					var y = legend_y0 + leg_height_sum + max_font_heights[heights_idx] / 2 + s.title.height / 2;
+					var y = legend_y0 + leg_height_sum + mfh[heights_idx] / 2 + s.title.height / 2;
 
 					// series title
 					chart.ctx.move_to (x + line_length, y);
@@ -228,7 +229,7 @@ namespace CairoChart {
 				case Position.RIGHT:
 					switch (process_type) {
 					case ProcessType.CALC:
-						max_font_heights += s.title.height + (leg_height_sum != 0 ? s.title.font.vspacing : 0);
+						mfh += s.title.height + (leg_height_sum != 0 ? s.title.font.vspacing : 0);
 						width = double.max (width, s.title.width + line_length);
 						break;
 					case ProcessType.DRAW:
@@ -248,7 +249,7 @@ namespace CairoChart {
 					leg_height_sum += max_font_h;
 					switch (process_type) {
 						case ProcessType.CALC:
-							max_font_heights += max_font_h;
+							mfh += max_font_h;
 							width = double.max(width, leg_width_sum);
 							break;
 					}
@@ -267,6 +268,8 @@ namespace CairoChart {
 				}
 				break;
 			}
+
+			max_font_heights = mfh;
 		}
 	}
 }

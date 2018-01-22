@@ -5,10 +5,10 @@ namespace CairoChart {
 	 */
 	public class Place {
 
-		double _x0 = 0;
-		double _x1 = 1;
-		double _y0 = 0;
-		double _y1 = 1;
+		protected double _x0 = 0;
+		protected double _x1 = 1;
+		protected double _y0 = 0;
+		protected double _y1 = 1;
 
 		/**
 		 * Zoomed Left bound.

@@ -5,11 +5,11 @@ namespace CairoChart {
 	 */
 	public class Axis {
 
-		Chart chart;
-		string _format = "%.2Lf";
-		string _date_format = "%Y.%m.%d";
-		string _time_format = "%H:%M:%S";
-		int _dsec_signs = 2; // 2 signs = centiseconds
+		protected Chart chart;
+		protected string _format = "%.2Lf";
+		protected string _date_format = "%Y.%m.%d";
+		protected string _time_format = "%H:%M:%S";
+		protected int _dsec_signs = 2; // 2 signs = centiseconds
 
 		/**
 		 * ``Axis`` title.
