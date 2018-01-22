@@ -13,7 +13,7 @@ namespace CairoChart {
 		/**
 		 * ``Text`` string.
 		 */
-		public string text {
+		public virtual string text {
 			get {
 				return _text;
 			}
@@ -26,7 +26,7 @@ namespace CairoChart {
 		/**
 		 * ``Text`` font style.
 		 */
-		public Font font {
+		public virtual Font font {
 			get {
 				return _font;
 			}
@@ -57,7 +57,7 @@ namespace CairoChart {
 		/**
 		 * Both vertical & horizontal spacing (set only).
 		 */
-		public double spacing {
+		public virtual double spacing {
 			protected get {
 				return 0;
 			}
@@ -70,7 +70,7 @@ namespace CairoChart {
 		/**
 		 * Cairo ``Text`` extents.
 		 */
-		virtual Cairo.TextExtents ext {
+		protected virtual Cairo.TextExtents ext {
 			get {
 				if (_ext == null) {
 					chart.ctx.select_font_face (font.family, font.slant, font.weight);
@@ -89,7 +89,7 @@ namespace CairoChart {
 		public virtual double width {
 			get {
 				switch (font.orient) {
-				case Gtk.Orientation.HORIZONTAL: return ext.width;
+				case Gtk.Orientation.HORIZONTAL: return ext.width + ext.x_bearing;
 				case Gtk.Orientation.VERTICAL: return ext.height;
 				default: return 0.0;
 				}
@@ -104,48 +104,10 @@ namespace CairoChart {
 		public virtual double height {
 			get {
 				switch (font.orient) {
-				case Gtk.Orientation.HORIZONTAL: return ext.height;
-				case Gtk.Orientation.VERTICAL: return ext.width;
+				case Gtk.Orientation.HORIZONTAL: return ext.height; // + ext.x_bearing ?
+				case Gtk.Orientation.VERTICAL: return ext.width;    // +- ext.y_bearing ?
 				default: return 0.0;
 				}
-			}
-			protected set {
-			}
-		}
-
-		/**
-		 * ``Text`` size.
-		 */
-		struct Size {
-			/**
-			 * ``Text`` width.
-			 */
-			double width;
-
-			/**
-			 * ``Text`` height.
-			 */
-			double height;
-		}
-
-		/**
-		 * ``Text`` @{link Size}.
-		 */
-		virtual Size size {
-			get {
-				var sz = Size();
-				var e = ext;
-				switch (font.orient) {
-				case Gtk.Orientation.HORIZONTAL:
-					sz.width = e.width + e.x_bearing;
-					sz.height = e.height;
-					break;
-				case Gtk.Orientation.VERTICAL:
-					sz.width = e.height; // + e.x_bearing ?
-					sz.height = e.width; // +- e.y_bearing ?
-					break;
-				}
-				return sz;
 			}
 			protected set {
 			}
