@@ -72,7 +72,8 @@ namespace CairoChart {
 		 * @param x1 right bound.
 		 * @param y1 bottom bound.
 		 */
-		public Area.with_abs (double x0, double y0, double x1, double y1) {
+		public Area.with_abs (double x0, double y0,
+		                      double x1, double y1) {
 			this.x0 = x0;
 			this.y0 = y0;
 			this.x1 = x1;
@@ -98,7 +99,8 @@ namespace CairoChart {
 		 * @param width ``Area`` width.
 		 * @param height ``Area`` height.
 		 */
-		public Area.with_rel (double x0, double y0, double width, double height) {
+		public Area.with_rel (double x0,    double y0,
+		                      double width, double height) {
 			this.x0 = x0;
 			this.y0 = y0;
 			this.width = width;

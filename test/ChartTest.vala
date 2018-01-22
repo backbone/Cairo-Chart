@@ -31,9 +31,9 @@ void plot_chart1 (Chart chart) {
 	s3.place.x0 = 0; s3.place.x1 = 0.5;
 	s3.place.y0 = 0.5; s3.place.y1 = 1.0;
 
-	s1.marker.type = Marker.Shape.SQUARE;
-	s2.marker.type = Marker.Shape.CIRCLE;
-	s3.marker.type = Marker.Shape.PRICLE_TRIANGLE;
+	s1.marker.shape = Marker.Shape.SQUARE;
+	s2.marker.shape = Marker.Shape.CIRCLE;
+	s3.marker.shape = Marker.Shape.PRICLE_TRIANGLE;
 
 	s1.axis_x.title = new Text(chart, "Series 1: Axis X.");
 	s1.axis_y.title = new Text(chart, "Series 1: Axis Y.");
@@ -103,9 +103,9 @@ void plot_chart2 (Chart chart) {
 	s3.place.x0 = 0.0; s3.place.x1 = 1.0;
 	s3.place.y0 = 0.5; s3.place.y1 = 1.0;
 
-	s1.marker.type = Marker.Shape.PRICLE_CIRCLE;
-	s2.marker.type = Marker.Shape.PRICLE_SQUARE;
-	s3.marker.type = Marker.Shape.SQUARE;
+	s1.marker.shape = Marker.Shape.PRICLE_CIRCLE;
+	s2.marker.shape = Marker.Shape.PRICLE_SQUARE;
+	s3.marker.shape = Marker.Shape.SQUARE;
 
 	s1.axis_x.title = new Text(chart, "All Series: Axis X.");
 	s1.axis_y.title = new Text(chart, "Series 1: Axis Y.");
@@ -153,9 +153,9 @@ void plot_chart3 (Chart chart) {
 	s3.place.x0 = 0; s3.place.x1 = 0.5;
 	s3.place.y0 = 0.0; s3.place.y1 = 1.0;
 
-	s1.marker.type = Marker.Shape.SQUARE;
-	s2.marker.type = Marker.Shape.PRICLE_CIRCLE;
-	s3.marker.type = Marker.Shape.TRIANGLE;
+	s1.marker.shape = Marker.Shape.SQUARE;
+	s2.marker.shape = Marker.Shape.PRICLE_CIRCLE;
+	s3.marker.shape = Marker.Shape.TRIANGLE;
 
 	s1.axis_x.title = new Text(chart, "Series 1: Axis X.");
 	s1.axis_y.title = new Text(chart, "All Series: Axis Y.");
@@ -217,10 +217,10 @@ void plot_chart4 (Chart chart) {
 	s4.place.x0 = 0.2; s4.place.x1 = 1.0;
 	s4.place.y0 = 0.0; s4.place.y1 = 1.0;
 
-	s1.marker.type = Marker.Shape.SQUARE;
-	s2.marker.type = Marker.Shape.PRICLE_CIRCLE;
-	s3.marker.type = Marker.Shape.TRIANGLE;
-	s4.marker.type = Marker.Shape.PRICLE_SQUARE;
+	s1.marker.shape = Marker.Shape.SQUARE;
+	s2.marker.shape = Marker.Shape.PRICLE_CIRCLE;
+	s3.marker.shape = Marker.Shape.TRIANGLE;
+	s4.marker.shape = Marker.Shape.PRICLE_SQUARE;
 
 	s1.axis_x.title = new Text(chart, "Series 1: Axis X.");
 	s1.axis_y.title = new Text(chart, "All Series: Axis Y.");
