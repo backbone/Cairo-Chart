@@ -35,8 +35,16 @@ namespace CairoChart {
 		 */
 		public Position position = Position.TOP;
 
+		/**
+		 * ``Legend`` background color.
+		 */
 		public Color bg_color = Color(1, 1, 1);
+
+		/**
+		 * Border line style.
+		 */
 		public LineStyle border_style = LineStyle ();
+
 		public double spacing = 5;
 		public double width = 0;
 		public double height = 0;
