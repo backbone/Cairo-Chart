@@ -127,13 +127,13 @@ namespace CairoChart {
 			}
 		}
 
-		public enum ProcessType {
+		protected enum ProcessType {
 			CALC = 0, // default
 			DRAW
 		}
 
 		double [] max_font_heights;
-		public virtual void process (ProcessType process_type) {
+		protected virtual void process (ProcessType process_type) {
 			var legend_x0 = 0.0, legend_y0 = 0.0;
 			var heights_idx = 0;
 			var leg_width_sum = 0.0;
