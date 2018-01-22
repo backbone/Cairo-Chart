@@ -78,8 +78,7 @@ namespace CairoChart {
 				break;
 
 			case Type.PRICLE_SQUARE:
-				chart.ctx.rectangle (x - size / 2, y - size / 2,
-				                   size, size);
+				chart.ctx.rectangle (x - size / 2, y - size / 2, size, size);
 				chart.ctx.stroke();
 				break;
 
@@ -90,9 +89,9 @@ namespace CairoChart {
 
 			case Type.PRICLE_TRIANGLE:
 				chart.ctx.move_to (x - size / 2, y - size / 2);
-				chart.ctx.line_to (x + size / 2, y - size / 2);
-				chart.ctx.line_to (x, y + size / 2);
-				chart.ctx.line_to (x - size / 2, y - size / 2);
+				chart.ctx.rel_line_to (size, 0);
+				chart.ctx.rel_line_to (-size / 2, size);
+				chart.ctx.rel_line_to (-size / 2, -size);
 				chart.ctx.stroke();
 				break;
 			}
