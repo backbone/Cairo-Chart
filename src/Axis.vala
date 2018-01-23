@@ -240,9 +240,9 @@ namespace CairoChart {
 			if (si == -1) return;
 
 			if (is_x)
-				join_rel_x_axes (si, true, ref max_rec_width, ref max_rec_height, ref max_font_spacing, ref max_axis_font_height, ref nskip);
+				join_rel_axes (si, true, ref max_rec_width, ref max_rec_height, ref max_font_spacing, ref max_axis_font_height, ref nskip);
 			else
-				join_rel_y_axes (si, true, ref max_rec_width, ref max_rec_height, ref max_font_spacing, ref max_axis_font_width, ref nskip);
+				join_rel_axes (si, true, ref max_rec_width, ref max_rec_height, ref max_font_spacing, ref max_axis_font_width, ref nskip);
 
 			// for 4.2. Cursor values for joint X axis
 			if (si == chart.zoom_1st_idx && chart.cursors.has_crossings) {
@@ -347,7 +347,7 @@ namespace CairoChart {
 			chart.ctx.stroke ();
 
 			var tmp1 = 0.0, tmp2 = 0.0, tmp3 = 0.0, tmp4 = 0.0;
-			join_rel_x_axes (si, false, ref tmp1, ref tmp2, ref tmp3, ref tmp4, ref nskip);
+			join_rel_axes (si, false, ref tmp1, ref tmp2, ref tmp3, ref tmp4, ref nskip);
 
 			if (nskip != 0) {--nskip; return;}
 
@@ -425,7 +425,7 @@ namespace CairoChart {
 			chart.ctx.stroke ();
 
 			var tmp1 = 0.0, tmp2 = 0.0, tmp3 = 0.0, tmp4 = 0.0;
-			join_rel_y_axes (si, false, ref tmp1, ref tmp2, ref tmp3, ref tmp4, ref nskip);
+			join_rel_axes (si, false, ref tmp1, ref tmp2, ref tmp3, ref tmp4, ref nskip);
 
 			if (nskip != 0) {--nskip; return;}
 
@@ -495,13 +495,13 @@ namespace CairoChart {
 			}
 		}
 
-		protected virtual void join_rel_x_axes (int si,
-		                                        bool calc_max_values,
-		                                        ref double max_rec_width,
-		                                        ref double max_rec_height,
-		                                        ref double max_font_spacing,
-		                                        ref double max_axis_font_height,
-		                                        ref int nskip) {
+		protected virtual void join_rel_axes (int si,
+		                                      bool calc_max_values,
+		                                      ref double max_rec_width,
+		                                      ref double max_rec_height,
+		                                      ref double max_font_spacing,
+		                                      ref double max_axis_font_size,
+		                                      ref int nskip) {
 			for (int sj = si - 1; sj >= 0; --sj) {
 				var s2 = chart.series[sj];
 				if (!s2.zoom_show) continue;
@@ -509,59 +509,38 @@ namespace CairoChart {
 				for (int sk = si; sk > sj; --sk) {
 					var s3 = chart.series[sk];
 					if (!s3.zoom_show) continue;
-					if (Math.coord_cross(s2.axis_x.place.zmin, s2.axis_x.place.zmax, s3.axis_x.place.zmin, s3.axis_x.place.zmax)
-					    || s2.axis_x.position != s3.axis_x.position
-					    || s2.axis_x.dtype != s3.axis_x.dtype) {
-						has_intersection = true;
-						break;
+					if (is_x) {
+						if (Math.coord_cross(s2.axis_x.place.zmin, s2.axis_x.place.zmax, s3.axis_x.place.zmin, s3.axis_x.place.zmax)
+						    || s2.axis_x.position != s3.axis_x.position
+						    || s2.axis_x.dtype != s3.axis_x.dtype) {
+							has_intersection = true;
+							break;
+						}
+					} else {
+						if (Math.coord_cross(s2.axis_y.place.zmin, s2.axis_y.place.zmax, s3.axis_y.place.zmin, s3.axis_y.place.zmax)
+						    || s2.axis_y.position != s3.axis_y.position
+						    || s2.axis_y.dtype != s3.axis_y.dtype) {
+							has_intersection = true;
+							break;
+						}
 					}
 				}
 				if (!has_intersection) {
 					if (calc_max_values) {
 						var tmp_max_rec_width = 0.0, tmp_max_rec_height = 0.0;
-						calc_rec_sizes (s2.axis_x, out tmp_max_rec_width, out tmp_max_rec_height, true);
+						if (is_x) calc_rec_sizes (s2.axis_x, out tmp_max_rec_width, out tmp_max_rec_height, true);
+						else      calc_rec_sizes (s2.axis_y, out tmp_max_rec_width, out tmp_max_rec_height, false);
 						max_rec_width = double.max (max_rec_width, tmp_max_rec_width);
 						max_rec_height = double.max (max_rec_height, tmp_max_rec_height);
-						max_font_spacing = double.max (max_font_spacing, s2.axis_x.font.vspacing);
-						max_axis_font_height = double.max (max_axis_font_height, s2.axis_x.title.text == "" ? 0 :
-						                                   s2.axis_x.title.height + font.vspacing);
+						if (is_x) max_font_spacing = double.max (max_font_spacing, s2.axis_x.font.vspacing);
+						else      max_font_spacing = double.max (max_font_spacing, s2.axis_y.font.hspacing);
+						if (is_x) max_axis_font_size = double.max (max_axis_font_size,
+						                                           s2.axis_x.title.text == "" ? 0
+						                                         : s2.axis_x.title.height + font.vspacing);
+						else      max_axis_font_size = double.max (max_axis_font_size,
+						                                           s2.axis_y.title.text == "" ? 0
+					                                             : s2.axis_y.title.width + font.hspacing);
 					}
-					++nskip;
-				} else {
-					break;
-				}
-			}
-		}
-
-		protected virtual void join_rel_y_axes (int si,
-		                                        bool calc_max_values,
-		                                        ref double max_rec_width,
-		                                        ref double max_rec_height,
-		                                        ref double max_font_spacing,
-		                                        ref double max_axis_font_width,
-		                                        ref int nskip) {
-			for (int sj = si - 1; sj >= 0; --sj) {
-				var s2 = chart.series[sj];
-				if (!s2.zoom_show) continue;
-				bool has_intersection = false;
-				for (int sk = si; sk > sj; --sk) {
-					var s3 = chart.series[sk];
-					if (!s3.zoom_show) continue;
-					if (Math.coord_cross(s2.axis_y.place.zmin, s2.axis_y.place.zmax, s3.axis_y.place.zmin, s3.axis_y.place.zmax)
-					    || s2.axis_y.position != s3.axis_y.position
-					    || s2.axis_y.dtype != s3.axis_y.dtype) {
-						has_intersection = true;
-						break;
-					}
-				}
-				if (!has_intersection) {
-					var tmp_max_rec_width = 0.0, tmp_max_rec_height = 0.0;
-					calc_rec_sizes (s2.axis_y, out tmp_max_rec_width, out tmp_max_rec_height, false);
-					max_rec_width = double.max (max_rec_width, tmp_max_rec_width);
-					max_rec_height = double.max (max_rec_height, tmp_max_rec_height);
-					max_font_spacing = double.max (max_font_spacing, s2.axis_y.font.hspacing);
-					max_axis_font_width = double.max (max_axis_font_width, s2.axis_y.title.text == "" ? 0
-					                                   : s2.axis_y.title.width + font.hspacing);
 					++nskip;
 				} else {
 					break;
