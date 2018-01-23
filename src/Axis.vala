@@ -509,20 +509,14 @@ namespace CairoChart {
 				for (int sk = si; sk > sj; --sk) {
 					var s3 = chart.series[sk];
 					if (!s3.zoom_show) continue;
-					if (is_x) {
-						if (Math.coord_cross(s2.axis_x.place.zmin, s2.axis_x.place.zmax, s3.axis_x.place.zmin, s3.axis_x.place.zmax)
-						    || s2.axis_x.position != s3.axis_x.position
-						    || s2.axis_x.dtype != s3.axis_x.dtype) {
-							has_intersection = true;
-							break;
-						}
-					} else {
-						if (Math.coord_cross(s2.axis_y.place.zmin, s2.axis_y.place.zmax, s3.axis_y.place.zmin, s3.axis_y.place.zmax)
-						    || s2.axis_y.position != s3.axis_y.position
-						    || s2.axis_y.dtype != s3.axis_y.dtype) {
-							has_intersection = true;
-							break;
-						}
+					Axis axis2, axis3;
+					if (is_x) {axis2 = s2.axis_x; axis3 = s3.axis_x; }
+					else      {axis2 = s2.axis_y; axis3 = s3.axis_y; }
+					if (Math.coord_cross(axis2.place.zmin, axis2.place.zmax, axis3.place.zmin, axis3.place.zmax)
+					    || axis2.position != axis3.position
+					    || axis2.dtype != axis3.dtype) {
+						has_intersection = true;
+						break;
 					}
 				}
 				if (!has_intersection) {
