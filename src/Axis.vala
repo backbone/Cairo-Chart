@@ -219,8 +219,6 @@ namespace CairoChart {
 			range.zoom_out();
 			place.zoom_out();
 		}
-//--------------------------------------------------------------------
-
 
 		/**
 		 * Joins equal axes.
@@ -516,15 +514,13 @@ namespace CairoChart {
 				case Axis.Position.LOW:
 					if (is_x) {
 						var print_y = chart.evarea.y1 - font.vspacing - tthv;
-						var print_x = compact_rec_pos (v, text_t);
-						chart.ctx.move_to (print_x, print_y);
+						chart.ctx.move_to (compact_rec_pos (v, text_t), print_y);
 						switch (dtype) {
 						case Axis.DType.NUMBERS: text_t.show(); break;
 						case Axis.DType.DATE_TIME:
 							if (date_format != "") text_t.show();
 							var time_text_t = new Text(chart, time_text, font, color);
-							print_x = compact_rec_pos (v, time_text_t);
-							chart.ctx.move_to (print_x, print_y - (date_format == "" ? 0 : text_t.height + font.vspacing));
+							chart.ctx.move_to (compact_rec_pos (v, time_text_t), print_y - (date_format == "" ? 0 : text_t.height + font.vspacing));
 							if (time_format != "") time_text_t.show();
 							break;
 						}
@@ -549,15 +545,13 @@ namespace CairoChart {
 				case Axis.Position.HIGH:
 					if (is_x) {
 						var print_y = chart.evarea.y0 + max_rec_size + font.vspacing + tthv;
-						var print_x = compact_rec_pos (v, text_t);
-						chart.ctx.move_to (print_x, print_y);
+						chart.ctx.move_to (compact_rec_pos (v, text_t), print_y);
 						switch (dtype) {
 						case Axis.DType.NUMBERS: text_t.show(); break;
 						case Axis.DType.DATE_TIME:
 							if (date_format != "") text_t.show();
 							var time_text_t = new Text(chart, time_text, font, color);
-							print_x = compact_rec_pos (v, time_text_t);
-							chart.ctx.move_to (print_x, print_y - (date_format == "" ? 0 : text_t.height + font.vspacing));
+							chart.ctx.move_to (compact_rec_pos (v, time_text_t), print_y - (date_format == "" ? 0 : text_t.height + font.vspacing));
 							if (time_format != "") time_text_t.show();
 							break;
 						}
