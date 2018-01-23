@@ -506,15 +506,13 @@ namespace CairoChart {
 				var s2 = chart.series[sj];
 				if (!s2.zoom_show) continue;
 				bool has_intersection = false;
+				Axis a2 = s2.axis_x; if (!is_x) a2 = s2.axis_y;
 				for (int sk = si; sk > sj; --sk) {
 					var s3 = chart.series[sk];
 					if (!s3.zoom_show) continue;
-					Axis axis2, axis3;
-					if (is_x) {axis2 = s2.axis_x; axis3 = s3.axis_x; }
-					else      {axis2 = s2.axis_y; axis3 = s3.axis_y; }
-					if (Math.coord_cross(axis2.place.zmin, axis2.place.zmax, axis3.place.zmin, axis3.place.zmax)
-					    || axis2.position != axis3.position
-					    || axis2.dtype != axis3.dtype) {
+					Axis a3 = s3.axis_x; if (!is_x) a3 = s3.axis_y;
+					if (Math.coord_cross(a2.place.zmin, a2.place.zmax, a3.place.zmin, a3.place.zmax)
+					    || a2.position != a3.position || a2.dtype != a3.dtype) {
 						has_intersection = true;
 						break;
 					}
@@ -522,18 +520,14 @@ namespace CairoChart {
 				if (!has_intersection) {
 					if (calc_max_values) {
 						var tmp_max_rec_width = 0.0, tmp_max_rec_height = 0.0;
-						if (is_x) calc_rec_sizes (s2.axis_x, out tmp_max_rec_width, out tmp_max_rec_height, true);
-						else      calc_rec_sizes (s2.axis_y, out tmp_max_rec_width, out tmp_max_rec_height, false);
+						calc_rec_sizes (a2, out tmp_max_rec_width, out tmp_max_rec_height, is_x);
 						max_rec_width = double.max (max_rec_width, tmp_max_rec_width);
 						max_rec_height = double.max (max_rec_height, tmp_max_rec_height);
-						if (is_x) max_font_spacing = double.max (max_font_spacing, s2.axis_x.font.vspacing);
-						else      max_font_spacing = double.max (max_font_spacing, s2.axis_y.font.hspacing);
-						if (is_x) max_axis_font_size = double.max (max_axis_font_size,
-						                                           s2.axis_x.title.text == "" ? 0
-						                                         : s2.axis_x.title.height + font.vspacing);
-						else      max_axis_font_size = double.max (max_axis_font_size,
-						                                           s2.axis_y.title.text == "" ? 0
-					                                             : s2.axis_y.title.width + font.hspacing);
+						max_font_spacing = double.max (max_font_spacing, is_x ? a2.font.vspacing : a2.font.hspacing);
+						max_axis_font_size = double.max (max_axis_font_size,
+						                                 a2.title.text == "" ? 0
+						                               : is_x ? a2.title.height + font.vspacing
+						                                      : a2.title.width + font.hspacing);
 					}
 					++nskip;
 				} else {
