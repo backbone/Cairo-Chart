@@ -9,7 +9,7 @@ namespace CairoChart {
 		protected List<Point?> list = new List<Point?> ();
 		protected Point active_cursor = Point(); // { get; protected set; default = Point128 (); }
 		protected bool is_cursor_active = false; // { get; protected set; default = false; }
-		protected Cursors.CursorCrossings[] crossings = {};
+		protected Crossings[] crossings = {};
 
 		/**
 		 * ``Cursors`` lines orientation.
@@ -58,7 +58,7 @@ namespace CairoChart {
 		/**
 		 * Cursor style.
 		 */
-		public Cursors.Style style = Cursors.Style();
+		public Style style = Style();
 
 		/**
 		 * Has crossings.
@@ -116,8 +116,8 @@ namespace CairoChart {
 			foreach (var c in list) {
 				double d = distance;
 				switch (style.orientation) {
-				case Cursors.Orientation.VERTICAL: d = (rel2scr_x(c.x) - rel2scr_x(active_cursor.x)).abs(); break;
-				case Cursors.Orientation.HORIZONTAL: d = (rel2scr_y(c.y) - rel2scr_y(active_cursor.y)).abs(); break;
+				case Orientation.VERTICAL: d = (rel2scr_x(c.x) - rel2scr_x(active_cursor.x)).abs(); break;
+				case Orientation.HORIZONTAL: d = (rel2scr_y(c.y) - rel2scr_y(active_cursor.y)).abs(); break;
 				}
 				if (d < distance) {
 					distance = d;
@@ -205,7 +205,7 @@ namespace CairoChart {
 			for (var cci = 0, max_cci = crossings.length; cci < max_cci; ++cci) {
 				var low = Point128(chart.plarea.x1, chart.plarea.y1);  // low and high
 				var high = Point128(chart.plarea.x0, chart.plarea.y0); //              points of the cursor
-				unowned CursorCross[] ccs = crossings[cci].crossings;
+				unowned Cross[] ccs = crossings[cci].crossings;
 				style.line_style.apply(chart);
 				for (var ci = 0, max_ci = ccs.length; ci < max_ci; ++ci) {
 					var si = ccs[ci].series_index;
@@ -393,7 +393,7 @@ namespace CairoChart {
 		public void eval_crossings () {
 			var all_cursors = get_all_cursors();
 
-			CursorCrossings[] local_cursor_crossings = {};
+			Crossings[] local_cursor_crossings = {};
 
 			for (var ci = 0, max_ci = all_cursors.length(); ci < max_ci; ++ci) {
 				var c = all_cursors.nth_data(ci);
@@ -402,7 +402,7 @@ namespace CairoChart {
 				case Orientation.HORIZONTAL: if (c.y <= chart.zoom.y0 || c.y >= chart.zoom.y1) continue; break;
 				}
 
-				CursorCross[] crossings = {};
+				Cross[] crossings = {};
 				for (var si = 0, max_si = chart.series.length; si < max_si; ++si) {
 					var s = chart.series[si];
 					if (!s.zoom_show) continue;
@@ -419,7 +419,7 @@ namespace CairoChart {
 								Point128 size; bool show_x, show_date, show_time, show_y;
 								cross_what_to_show(s, out show_x, out show_time, out show_date, out show_y);
 								calc_cross_sizes (s, point, out size, show_x, show_time, show_date, show_y);
-								CursorCross cc = {si, point, size, show_x, show_date, show_time, show_y};
+								Cross cc = {si, point, size, show_x, show_date, show_time, show_y};
 								crossings += cc;
 							}
 							break;
@@ -431,7 +431,7 @@ namespace CairoChart {
 								Point128 size; bool show_x, show_date, show_time, show_y;
 								cross_what_to_show(s, out show_x, out show_time, out show_date, out show_y);
 								calc_cross_sizes (s, point, out size, show_x, show_time, show_date, show_y);
-								CursorCross cc = {si, point, size, show_x, show_date, show_time, show_y};
+								Cross cc = {si, point, size, show_x, show_date, show_time, show_y};
 								crossings += cc;
 							}
 							break;
@@ -439,14 +439,14 @@ namespace CairoChart {
 					}
 				}
 				if (crossings.length != 0) {
-					CursorCrossings ccs = {ci, crossings};
+					Crossings ccs = {ci, crossings};
 					local_cursor_crossings += ccs;
 				}
 			}
 			crossings = local_cursor_crossings;
 		}
 
-		protected struct CursorCross {
+		protected struct Cross {
 			uint series_index;
 			Point128 point;
 			Point128 size;
@@ -458,9 +458,9 @@ namespace CairoChart {
 			Point scr_value_point;
 		}
 
-		protected struct CursorCrossings {
+		protected struct Crossings {
 			uint cursor_index;
-			CursorCross[] crossings;
+			Cross[] crossings;
 		}
 
 		protected virtual Float128 rel2scr_x(Float128 x) {
@@ -482,7 +482,7 @@ namespace CairoChart {
 			for (var ccsi = 0, max_ccsi = crossings.length; ccsi < max_ccsi; ++ccsi) {
 				for (var cci = 0, max_cci = crossings[ccsi].crossings.length; cci < max_cci; ++cci) {
 					// TODO: Ticket #142: find smart algorithm of cursors values placements
-					unowned CursorCross[] cr = crossings[ccsi].crossings;
+					unowned Cross[] cr = crossings[ccsi].crossings;
 					cr[cci].scr_point = chart.series[cr[cci].series_index].scr_pnt (cr[cci].point);
 					var d_max = double.max (cr[cci].size.x / 1.5, cr[cci].size.y / 1.5);
 					cr[cci].scr_value_point = Point (cr[cci].scr_point.x + d_max, cr[cci].scr_point.y - d_max);

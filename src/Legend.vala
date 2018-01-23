@@ -113,7 +113,7 @@ namespace CairoChart {
 				switch (position) {
 				case Position.TOP:
 					x0 = (chart.area.width - width) / 2;
-					var title_height = chart.title.height + (chart.legend.position == Legend.Position.TOP ?
+					var title_height = chart.title.height + (chart.legend.position == Position.TOP ?
 					                   chart.title.font.vspacing * 2 : chart.title.font.vspacing);
 					y0 = title_height;
 				break;

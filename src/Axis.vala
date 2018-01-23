@@ -270,7 +270,7 @@ namespace CairoChart {
 			                              : chart.plarea.height * place.zrange / max_rec_height);
 
 			// 3. Calculate grid step.
-			Float128 step = Math.calc_round_step (range.zrange / max_nrecs, dtype == Axis.DType.DATE_TIME);
+			Float128 step = Math.calc_round_step (range.zrange / max_nrecs, dtype == DType.DATE_TIME);
 			if (step > range.zrange)
 				step = range.zrange;
 
@@ -294,11 +294,11 @@ namespace CairoChart {
 					if (is_x) tmp = max_rec_height + font.vspacing;
 					else      tmp = max_rec_width + font.hspacing;
 					switch (position) {
-					case Axis.Position.LOW:
+					case Position.LOW:
 						if (is_x) chart.evarea.y1 -= tmp;
 						else      chart.evarea.x0 += tmp;
 						break;
-					case Axis.Position.HIGH:
+					case Position.HIGH:
 						if (is_x) chart.evarea.y0 += tmp;
 						else      chart.evarea.x1 -= tmp;
 						break;
@@ -311,19 +311,19 @@ namespace CairoChart {
 					var scr_x = chart.plarea.x0 + chart.plarea.width * (place.zmin + place.zmax) / 2;
 					var scr_y = 0.0;
 					switch (position) {
-					case Axis.Position.LOW: scr_y = chart.evarea.y1 - font.vspacing; break;
-					case Axis.Position.HIGH: scr_y = chart.evarea.y0 + font.vspacing + title.height; break;
+					case Position.LOW: scr_y = chart.evarea.y1 - font.vspacing; break;
+					case Position.HIGH: scr_y = chart.evarea.y0 + font.vspacing + title.height; break;
 					}
 					chart.ctx.move_to(scr_x - title.width / 2, scr_y);
 					chart.color = color;
 				} else {
 					var scr_y = chart.plarea.y0 + chart.plarea.height * (1 - (place.zmin + place.zmax) / 2);
 					switch (position) {
-					case Axis.Position.LOW:
+					case Position.LOW:
 						var scr_x = chart.evarea.x0 + font.hspacing + title.width;
 						chart.ctx.move_to(scr_x, scr_y + title.height / 2);
 						break;
-					case Axis.Position.HIGH:
+					case Position.HIGH:
 						var scr_x = chart.evarea.x1 - font.hspacing;
 						chart.ctx.move_to(scr_x, scr_y + title.height / 2);
 						break;
@@ -350,11 +350,11 @@ namespace CairoChart {
 			if (is_x) tmp = max_rec_height + font.vspacing + (title.text == "" ? 0 : title.height + font.vspacing);
 			else      tmp = max_rec_width + font.hspacing + (title.text == "" ? 0 : title.width + font.hspacing);
 			switch (position) {
-			case Axis.Position.LOW:
+			case Position.LOW:
 				if (is_x) chart.evarea.y1 -= tmp;
 				else      chart.evarea.x0 += tmp;
 				break;
-			case Axis.Position.HIGH:
+			case Position.HIGH:
 				if (is_x) chart.evarea.y0 += tmp;
 				else      chart.evarea.x1 -= tmp;
 				break;
@@ -390,8 +390,8 @@ namespace CairoChart {
 					if (is_x && chart.joint_x) {
 						var tmp = max_rec_height + axis.font.vspacing;
 						switch (axis.position) {
-						case Axis.Position.LOW: chart.plarea.y1 -= tmp; break;
-						case Axis.Position.HIGH: chart.plarea.y0 += tmp; break;
+						case Position.LOW: chart.plarea.y1 -= tmp; break;
+						case Position.HIGH: chart.plarea.y0 += tmp; break;
 						}
 					}
 					break;
@@ -399,8 +399,8 @@ namespace CairoChart {
 					if (!is_x && chart.joint_y) {
 						var tmp = max_rec_width + font.hspacing;
 						switch (position) {
-						case Axis.Position.LOW: chart.plarea.x0 += tmp; break;
-						case Axis.Position.HIGH: chart.plarea.x1 -= tmp; break;
+						case Position.LOW: chart.plarea.x0 += tmp; break;
+						case Position.HIGH: chart.plarea.x1 -= tmp; break;
 						}
 					}
 					break;
@@ -409,15 +409,15 @@ namespace CairoChart {
 			if (is_x && (!chart.joint_x || si == chart.zoom_1st_idx)) {
 				var tmp = max_rec_height + max_font_spacing + max_axis_font_height;
 				switch (axis.position) {
-				case Axis.Position.LOW: chart.plarea.y1 -= tmp; break;
-				case Axis.Position.HIGH: chart.plarea.y0 += tmp; break;
+				case Position.LOW: chart.plarea.y1 -= tmp; break;
+				case Position.HIGH: chart.plarea.y0 += tmp; break;
 				}
 			}
 			if (!is_x && (!chart.joint_y || si == chart.zoom_1st_idx)) {
 				var tmp = max_rec_width + max_font_spacing + max_axis_font_width;
 				switch (position) {
-				case Axis.Position.LOW: chart.plarea.x0 += tmp; break;
-				case Axis.Position.HIGH: chart.plarea.x1 -= tmp; break;
+				case Position.LOW: chart.plarea.x0 += tmp; break;
+				case Position.HIGH: chart.plarea.x1 -= tmp; break;
 				}
 			}
 		}
@@ -427,12 +427,12 @@ namespace CairoChart {
 			for (var i = 0; i < axis.nrecords; ++i) {
 				Float128 x = (int64)(axis.range.zmin + axis.range.zrange / axis.nrecords * i) + 1/3.0;
 				switch (axis.dtype) {
-				case Axis.DType.NUMBERS:
+				case DType.NUMBERS:
 					var text = new Text (chart, axis.format.printf((LongDouble)x) + (horizontal ? "_" : ""), axis.font);
 					max_rec_width = double.max (max_rec_width, text.width);
 					max_rec_height = double.max (max_rec_height, text.height);
 					break;
-				case Axis.DType.DATE_TIME:
+				case DType.DATE_TIME:
 					string date, time;
 					axis.print_dt(x, out date, out time);
 
@@ -504,8 +504,8 @@ namespace CairoChart {
 					chart.color = color;
 				string text = "", time_text = ""; var time_text_t = new Text(chart); var crpt = 0.0;
 				switch (dtype) {
-				case Axis.DType.NUMBERS: text = format.printf((LongDouble)v); break;
-				case Axis.DType.DATE_TIME:
+				case DType.NUMBERS: text = format.printf((LongDouble)v); break;
+				case DType.DATE_TIME:
 					print_dt(v, out text, out time_text);
 					time_text_t = new Text(chart, time_text, font, color);
 					crpt = compact_rec_pos (v, time_text_t);
@@ -522,7 +522,7 @@ namespace CairoChart {
 				if (is_x) {
 					var crp = compact_rec_pos (v, text_t);
 					switch (position) {
-					case Axis.Position.LOW:
+					case Position.LOW:
 						chart.ctx.move_to (crp, ey1); text_t.show();
 						chart.ctx.move_to (crpt, ey1 - dtf); time_text_t.show();
 						ser.axis_x.grid_style.apply(chart);
@@ -530,7 +530,7 @@ namespace CairoChart {
 						if (chart.joint_x) chart.ctx.line_to (scr_v, py0);
 						else chart.ctx.line_to (scr_v, double.min (y, py0 + ph * (1 - ser.axis_y.place.zmax)));
 						break;
-					case Axis.Position.HIGH:
+					case Position.HIGH:
 						chart.ctx.move_to (crp, ey0); text_t.show();
 						chart.ctx.move_to (crpt, ey0 - dtf); time_text_t.show();
 						ser.axis_x.grid_style.apply(chart); chart.ctx.move_to (scr_v, ey0);
@@ -541,14 +541,14 @@ namespace CairoChart {
 				} else {
 					var crp = compact_rec_pos (v, text_t);
 					switch (position) {
-					case Axis.Position.LOW:
+					case Position.LOW:
 						chart.ctx.move_to (ex0 - text_t.width, crp);
 						text_t.show(); ser.axis_y.grid_style.apply(chart);
 						chart.ctx.move_to (ex0, scr_v);
 						if (chart.joint_y) chart.ctx.line_to (chart.plarea.x1, scr_v);
 						else chart.ctx.line_to (double.max (ex0, px0 + pw * ser.axis_x.place.zmax), scr_v);
 						break;
-					case Axis.Position.HIGH:
+					case Position.HIGH:
 						chart.ctx.move_to (ex1 - text_t.width, crp);
 						text_t.show(); ser.axis_y.grid_style.apply(chart);
 						double x = ex1 - max_rec_size; chart.ctx.move_to (x, scr_v);
