@@ -224,8 +224,12 @@ namespace CairoChart {
 		 * @param is_x is this X-axis or not.
 		 * @param nskip returns number of series to skip printing.
 		 */
-		public virtual void join_axes (bool is_x, ref int nskip) {
+		public virtual void join_axes (ref int nskip) {
 			Axis axis = this;
+			bool is_x;
+			if (ser.axis_x == this) is_x = true;
+			else if (ser.axis_y == this) is_x = false;
+			else return;
 			if (!ser.zoom_show) return;
 			if (nskip != 0) {--nskip; return;}
 			var max_rec_width = 0.0, max_rec_height = 0.0;

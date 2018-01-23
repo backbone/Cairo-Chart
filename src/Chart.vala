@@ -353,10 +353,10 @@ namespace CairoChart {
 			if (nshow == 1) joint_x = joint_y = false;
 
 			for (var si = series.length - 1, nskip = 0; si >= 0; --si)
-				series[si].axis_x.join_axes(true, ref nskip);
+				series[si].axis_x.join_axes(ref nskip);
 
 			for (var si = series.length - 1, nskip = 0; si >= 0; --si)
-				series[si].axis_y.join_axes(false, ref nskip);
+				series[si].axis_y.join_axes(ref nskip);
 		}
 
 		protected virtual void draw_plarea_border () {
