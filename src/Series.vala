@@ -10,9 +10,29 @@ namespace CairoChart {
 		protected unowned Chart chart { get; protected set; default = null; }
 
 		/**
+		 * Title of the ``Chart``.
+		 */
+		public Text title;
+
+		/**
+		 * ``Series`` line style.
+		 */
+		public LineStyle line_style = LineStyle ();
+
+		/**
 		 * 128-bit (X;Y) points.
 		 */
 		public Point128[] points = {};
+
+		/**
+		 * ``Marker`` style.
+		 */
+		public Marker marker;
+
+		/**
+		 * Grid style.
+		 */
+		public Grid grid = new Grid ();
 
 		/**
 		 * Sort style.
@@ -48,26 +68,6 @@ namespace CairoChart {
 		 * Y-axis.
 		 */
 		public Axis axis_y;
-
-		/**
-		 * Title of the ``Chart``.
-		 */
-		public Text title;
-
-		/**
-		 * ``Marker`` style.
-		 */
-		public Marker marker;
-
-		/**
-		 * Grid style.
-		 */
-		public Grid grid = new Grid ();
-
-		/**
-		 * ``Series`` line style.
-		 */
-		public LineStyle line_style = LineStyle ();
 
 		/**
 		 * ``Series`` color (set only).
@@ -119,6 +119,22 @@ namespace CairoChart {
 		}
 
 		/**
+		 * Gets screen point by real ``Series`` (X;Y) value.
+		 * @param p real ``Series`` (X;Y) value.
+		 */
+		public virtual Point scr_pnt (Point128 p) {
+			return Point(axis_x.scr_pos(p.x), axis_y.scr_pos(p.y));
+		}
+
+		/**
+		 * Gets real ``Series`` (X;Y) value by plot area screen point.
+		 * @param p (X;Y) screen point.
+		 */
+		public virtual Point128 axis_pnt (Point p) {
+			return Point128 (axis_x.axis_val(p.x), axis_y.axis_val(p.y));
+		}
+
+		/**
 		 * Draws the ``Series``.
 		 */
 		public virtual void draw () {
@@ -145,22 +161,6 @@ namespace CairoChart {
 				                           chart.plarea.y0, chart.plarea.y1))
 					marker.draw_at_pos(p);
 			}
-		}
-
-		/**
-		 * Gets screen point by real ``Series`` (X;Y) value.
-		 * @param p real ``Series`` (X;Y) value.
-		 */
-		public virtual Point scr_pnt (Point128 p) {
-			return Point(axis_x.scr_pos(p.x), axis_y.scr_pos(p.y));
-		}
-
-		/**
-		 * Gets real ``Series`` (X;Y) value by plot area screen point.
-		 * @param p (X;Y) screen point.
-		 */
-		public virtual Point128 axis_pnt (Point p) {
-			return Point128 (axis_x.axis_val(p.x), axis_y.axis_val(p.y));
 		}
 
 		/**

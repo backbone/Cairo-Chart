@@ -9,6 +9,11 @@ namespace CairoChart {
 		protected double [] max_font_heights;
 
 		/**
+		 * Show legend?
+		 */
+		public bool show = true;
+
+		/**
 		 * ``Legend`` position.
 		 */
 		public enum Position {
@@ -67,11 +72,6 @@ namespace CairoChart {
 		 * {@link Series} line length.
 		 */
 		public double line_length = 30;
-
-		/**
-		 * Show legend?
-		 */
-		public bool show = true;
 
 		/**
 		 * Constructs a new ``Legend``.

@@ -131,62 +131,66 @@ namespace CairoChart {
 		}
 
 		/**
-		 * Evaluates crossings.
+		 * Gets delta between 2 cursors values.
+		 * @param delta returns delta value.
 		 */
-		public void eval_crossings () {
-			var all_cursors = get_all_cursors();
-
-			CursorCrossings[] local_cursor_crossings = {};
-
-			for (var ci = 0, max_ci = all_cursors.length(); ci < max_ci; ++ci) {
-				var c = all_cursors.nth_data(ci);
-				switch (style.orientation) {
-				case Orientation.VERTICAL: if (c.x <= chart.zoom.x0 || c.x >= chart.zoom.x1) continue; break;
-				case Orientation.HORIZONTAL: if (c.y <= chart.zoom.y0 || c.y >= chart.zoom.y1) continue; break;
-				}
-
-				CursorCross[] crossings = {};
-				for (var si = 0, max_si = chart.series.length; si < max_si; ++si) {
-					var s = chart.series[si];
-					if (!s.zoom_show) continue;
-
-					var points = Math.sort_points (s, s.sort);
-
-					for (var i = 0; i + 1 < points.length; ++i) {
-						switch (style.orientation) {
-						case Orientation.VERTICAL:
-							Float128 y = 0;
-							if (Math.vcross(s.scr_pnt(points[i]), s.scr_pnt(points[i+1]), rel2scr_x(c.x),
-							                chart.plarea.y0, chart.plarea.y1, out y)) {
-								var point = Point128(s.axis_x.axis_val(rel2scr_x(c.x)), s.axis_y.axis_val(y));
-								Point128 size; bool show_x, show_date, show_time, show_y;
-								cross_what_to_show(s, out show_x, out show_time, out show_date, out show_y);
-								calc_cross_sizes (s, point, out size, show_x, show_time, show_date, show_y);
-								CursorCross cc = {si, point, size, show_x, show_date, show_time, show_y};
-								crossings += cc;
-							}
-							break;
-						case Orientation.HORIZONTAL:
-							Float128 x = 0;
-							if (Math.hcross(s.scr_pnt(points[i]), s.scr_pnt(points[i+1]),
-							                chart.plarea.x0, chart.plarea.x1, rel2scr_y(c.y), out x)) {
-								var point = Point128(s.axis_x.axis_val(x), s.axis_y.axis_val(rel2scr_y(c.y)));
-								Point128 size; bool show_x, show_date, show_time, show_y;
-								cross_what_to_show(s, out show_x, out show_time, out show_date, out show_y);
-								calc_cross_sizes (s, point, out size, show_x, show_time, show_date, show_y);
-								CursorCross cc = {si, point, size, show_x, show_date, show_time, show_y};
-								crossings += cc;
-							}
-							break;
-						}
-					}
-				}
-				if (crossings.length != 0) {
-					CursorCrossings ccs = {ci, crossings};
-					local_cursor_crossings += ccs;
-				}
+		public bool get_delta (out Float128 delta) {
+			delta = 0;
+			if (chart.series.length == 0) return false;
+			if (list.length() + (is_cursor_active ? 1 : 0) != 2) return false;
+			if (chart.joint_x && style.orientation == Orientation.VERTICAL) {
+				Float128 val1 = chart.series[chart.zoom_1st_idx].axis_x.axis_val(rel2scr_x(list.nth_data(0).x));
+				Float128 val2 = 0;
+				if (is_cursor_active)
+					val2 = chart.series[chart.zoom_1st_idx].axis_x.axis_val(rel2scr_x(active_cursor.x));
+				else
+					val2 = chart.series[chart.zoom_1st_idx].axis_x.axis_val(rel2scr_x(list.nth_data(1).x));
+				if (val2 > val1)
+					delta = val2 - val1;
+				else
+					delta = val1 - val2;
+				return true;
 			}
-			crossings = local_cursor_crossings;
+			if (chart.joint_y && style.orientation == Orientation.HORIZONTAL) {
+				Float128 val1 = chart.series[chart.zoom_1st_idx].axis_y.axis_val(rel2scr_y(list.nth_data(0).y));
+				Float128 val2 = 0;
+				if (is_cursor_active)
+					val2 = chart.series[chart.zoom_1st_idx].axis_y.axis_val(rel2scr_y(active_cursor.y));
+				else
+					val2 = chart.series[chart.zoom_1st_idx].axis_y.axis_val(rel2scr_y(list.nth_data(1).y));
+				if (val2 > val1)
+					delta = val2 - val1;
+				else
+					delta = val1 - val2;
+				return true;
+			}
+			return false;
+		}
+
+		/**
+		 * Gets delta formatted string.
+		 */
+		public string get_delta_str () {
+			Float128 delta = 0;
+			if (!get_delta(out delta)) return "";
+			var str = "";
+			var s = chart.series[chart.zoom_1st_idx];
+			if (chart.joint_x)
+				switch (s.axis_x.dtype) {
+				case Axis.DType.NUMBERS:
+					str = s.axis_x.format.printf((LongDouble)delta);
+					break;
+				case Axis.DType.DATE_TIME:
+					var date = "", time = "";
+					int64 days = (int64)(delta / 24 / 3600);
+					s.axis_x.print_dt(delta, out date, out time);
+					str = days.to_string() + " + " + time;
+					break;
+				}
+			if (chart.joint_y) {
+				str = s.axis_y.format.printf((LongDouble)delta);
+			}
+			return str;
 		}
 
 		/**
@@ -384,66 +388,62 @@ namespace CairoChart {
 		}
 
 		/**
-		 * Gets delta between 2 cursors values.
-		 * @param delta returns delta value.
+		 * Evaluates crossings.
 		 */
-		public bool get_delta (out Float128 delta) {
-			delta = 0;
-			if (chart.series.length == 0) return false;
-			if (list.length() + (is_cursor_active ? 1 : 0) != 2) return false;
-			if (chart.joint_x && style.orientation == Orientation.VERTICAL) {
-				Float128 val1 = chart.series[chart.zoom_1st_idx].axis_x.axis_val(rel2scr_x(list.nth_data(0).x));
-				Float128 val2 = 0;
-				if (is_cursor_active)
-					val2 = chart.series[chart.zoom_1st_idx].axis_x.axis_val(rel2scr_x(active_cursor.x));
-				else
-					val2 = chart.series[chart.zoom_1st_idx].axis_x.axis_val(rel2scr_x(list.nth_data(1).x));
-				if (val2 > val1)
-					delta = val2 - val1;
-				else
-					delta = val1 - val2;
-				return true;
-			}
-			if (chart.joint_y && style.orientation == Orientation.HORIZONTAL) {
-				Float128 val1 = chart.series[chart.zoom_1st_idx].axis_y.axis_val(rel2scr_y(list.nth_data(0).y));
-				Float128 val2 = 0;
-				if (is_cursor_active)
-					val2 = chart.series[chart.zoom_1st_idx].axis_y.axis_val(rel2scr_y(active_cursor.y));
-				else
-					val2 = chart.series[chart.zoom_1st_idx].axis_y.axis_val(rel2scr_y(list.nth_data(1).y));
-				if (val2 > val1)
-					delta = val2 - val1;
-				else
-					delta = val1 - val2;
-				return true;
-			}
-			return false;
-		}
+		public void eval_crossings () {
+			var all_cursors = get_all_cursors();
 
-		/**
-		 * Gets delta formatted string.
-		 */
-		public string get_delta_str () {
-			Float128 delta = 0;
-			if (!get_delta(out delta)) return "";
-			var str = "";
-			var s = chart.series[chart.zoom_1st_idx];
-			if (chart.joint_x)
-				switch (s.axis_x.dtype) {
-				case Axis.DType.NUMBERS:
-					str = s.axis_x.format.printf((LongDouble)delta);
-					break;
-				case Axis.DType.DATE_TIME:
-					var date = "", time = "";
-					int64 days = (int64)(delta / 24 / 3600);
-					s.axis_x.print_dt(delta, out date, out time);
-					str = days.to_string() + " + " + time;
-					break;
+			CursorCrossings[] local_cursor_crossings = {};
+
+			for (var ci = 0, max_ci = all_cursors.length(); ci < max_ci; ++ci) {
+				var c = all_cursors.nth_data(ci);
+				switch (style.orientation) {
+				case Orientation.VERTICAL: if (c.x <= chart.zoom.x0 || c.x >= chart.zoom.x1) continue; break;
+				case Orientation.HORIZONTAL: if (c.y <= chart.zoom.y0 || c.y >= chart.zoom.y1) continue; break;
 				}
-			if (chart.joint_y) {
-				str = s.axis_y.format.printf((LongDouble)delta);
+
+				CursorCross[] crossings = {};
+				for (var si = 0, max_si = chart.series.length; si < max_si; ++si) {
+					var s = chart.series[si];
+					if (!s.zoom_show) continue;
+
+					var points = Math.sort_points (s, s.sort);
+
+					for (var i = 0; i + 1 < points.length; ++i) {
+						switch (style.orientation) {
+						case Orientation.VERTICAL:
+							Float128 y = 0;
+							if (Math.vcross(s.scr_pnt(points[i]), s.scr_pnt(points[i+1]), rel2scr_x(c.x),
+							                chart.plarea.y0, chart.plarea.y1, out y)) {
+								var point = Point128(s.axis_x.axis_val(rel2scr_x(c.x)), s.axis_y.axis_val(y));
+								Point128 size; bool show_x, show_date, show_time, show_y;
+								cross_what_to_show(s, out show_x, out show_time, out show_date, out show_y);
+								calc_cross_sizes (s, point, out size, show_x, show_time, show_date, show_y);
+								CursorCross cc = {si, point, size, show_x, show_date, show_time, show_y};
+								crossings += cc;
+							}
+							break;
+						case Orientation.HORIZONTAL:
+							Float128 x = 0;
+							if (Math.hcross(s.scr_pnt(points[i]), s.scr_pnt(points[i+1]),
+							                chart.plarea.x0, chart.plarea.x1, rel2scr_y(c.y), out x)) {
+								var point = Point128(s.axis_x.axis_val(x), s.axis_y.axis_val(rel2scr_y(c.y)));
+								Point128 size; bool show_x, show_date, show_time, show_y;
+								cross_what_to_show(s, out show_x, out show_time, out show_date, out show_y);
+								calc_cross_sizes (s, point, out size, show_x, show_time, show_date, show_y);
+								CursorCross cc = {si, point, size, show_x, show_date, show_time, show_y};
+								crossings += cc;
+							}
+							break;
+						}
+					}
+				}
+				if (crossings.length != 0) {
+					CursorCrossings ccs = {ci, crossings};
+					local_cursor_crossings += ccs;
+				}
 			}
-			return str;
+			crossings = local_cursor_crossings;
 		}
 
 		protected struct CursorCross {

@@ -91,24 +91,6 @@ namespace CairoChart {
 		}
 
 		/**
-		 * Show ``Text``.
-		 */
-		public virtual void show () {
-			if (text == "") return;
-			chart.ctx.select_font_face(font.family,
-			                           font.slant,
-			                           font.weight);
-			chart.ctx.set_font_size(font.size);
-			if (font.orient == Gtk.Orientation.VERTICAL) {
-				chart.ctx.rotate(- GLib.Math.PI / 2);
-				chart.ctx.show_text(text);
-				chart.ctx.rotate(GLib.Math.PI / 2);
-			} else {
-				chart.ctx.show_text(text);
-			}
-		}
-
-		/**
 		 * Constructs a new ``Text``.
 		 * @param chart ``Chart`` instance.
 		 * @param text ``Text`` string.
@@ -137,6 +119,24 @@ namespace CairoChart {
 			text._ext = this._ext;
 			text.color = this.color;
 			return text;
+		}
+
+		/**
+		 * Show ``Text``.
+		 */
+		public virtual void show () {
+			if (text == "") return;
+			chart.ctx.select_font_face(font.family,
+			                           font.slant,
+			                           font.weight);
+			chart.ctx.set_font_size(font.size);
+			if (font.orient == Gtk.Orientation.VERTICAL) {
+				chart.ctx.rotate(- GLib.Math.PI / 2);
+				chart.ctx.show_text(text);
+				chart.ctx.rotate(GLib.Math.PI / 2);
+			} else {
+				chart.ctx.show_text(text);
+			}
 		}
 	}
 }

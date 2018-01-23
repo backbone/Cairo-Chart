@@ -29,6 +29,31 @@ namespace CairoChart {
 		public Range place = new Range();
 
 		/**
+		 * ``Axis`` position.
+		 */
+		public enum Position {
+			/**
+			 * Bottom/Left ``Axis``.
+			 */
+			LOW = 0,
+
+			/**
+			 * Top/Right ``Axis``.
+			 */
+			HIGH = 1,
+
+			/**
+			 * 2 ``Axes``.
+			 */
+			BOTH = 2
+		}
+
+		/**
+		 * Position.
+		 */
+		public Position position = Position.LOW;
+
+		/**
 		 * Data type.
 		 */
 		public enum DType {
@@ -67,31 +92,6 @@ namespace CairoChart {
 		 * Scale type.
 		 */
 		public Scale scale;
-
-		/**
-		 * ``Axis`` position.
-		 */
-		public enum Position {
-			/**
-			 * Bottom/Left ``Axis``.
-			 */
-			LOW = 0,
-
-			/**
-			 * Top/Right ``Axis``.
-			 */
-			HIGH = 1,
-
-			/**
-			 * 2 ``Axes``.
-			 */
-			BOTH = 2
-		}
-
-		/**
-		 * Position.
-		 */
-		public Position position = Position.LOW;
 
 		/**
 		 * Float128 numbers print string format.
