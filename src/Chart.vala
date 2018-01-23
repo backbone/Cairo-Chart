@@ -11,24 +11,9 @@ namespace CairoChart {
 		public Area area = new Area();
 
 		/**
-		 * Plot area bounds.
+		 * ``Chart`` Title.
 		 */
-		public Area plarea = new Area();
-
-		/**
-		 * Current evaluated plot area.
-		 */
-		public Area evarea = new Area();
-
-		/**
-		 * Zoom area limits (relative coordinates: 0-1).
-		 */
-		public Area zoom = new Area();
-
-		/**
-		 * Cairo ``Context`` of the Drawing Area.
-		 */
-		public Cairo.Context ctx = null;
+		public Text title;
 
 		/**
 		 * Background ``Color``.
@@ -41,34 +26,14 @@ namespace CairoChart {
 		public Color border_color = Color(0, 0, 0, 0.3);
 
 		/**
-		 * ``Chart`` Title.
-		 */
-		public Text title;
-
-		/**
-		 * Legend.
-		 */
-		public Legend legend;
-
-		/**
 		 * ``Chart`` Series array.
 		 */
 		public Series[] series = {};
 
 		/**
-		 * Index of the 1'st shown series in a zoomed area.
+		 * Legend.
 		 */
-		public virtual int zoom_1st_idx { get; protected set; default = 0; }
-
-		/**
-		 * Joint/common X axes or not.
-		 */
-		public virtual bool joint_x { get; protected set; default = false; }
-
-		/**
-		 * Joint/common Y axes or not.
-		 */
-		public virtual bool joint_y { get; protected set; default = false; }
+		public Legend legend;
 
 		/**
 		 * Joint/common {@link Axis} ``Color``.
@@ -81,9 +46,44 @@ namespace CairoChart {
 		public LineStyle selection_style = LineStyle ();
 
 		/**
+		 * Plot area bounds.
+		 */
+		public Area plarea = new Area();
+
+		/**
+		 * Zoom area limits (relative coordinates: 0-1).
+		 */
+		public Area zoom = new Area();
+
+		/**
+		 * Cairo ``Context`` of the Drawing Area.
+		 */
+		public Cairo.Context ctx = null;
+
+		/**
+		 * Current evaluated plot area.
+		 */
+		public Area evarea = new Area();
+
+		/**
 		 * ``Chart`` cursors.
 		 */
 		public virtual Cursors cursors { get; protected set; default = null; }
+
+		/**
+		 * Joint/common X axes or not.
+		 */
+		public virtual bool joint_x { get; protected set; default = false; }
+
+		/**
+		 * Joint/common Y axes or not.
+		 */
+		public virtual bool joint_y { get; protected set; default = false; }
+
+		/**
+		 * Index of the 1'st shown series in a zoomed area.
+		 */
+		public virtual int zoom_1st_idx { get; protected set; default = 0; }
 
 		/**
 		 * Set paint color for further drawing.
