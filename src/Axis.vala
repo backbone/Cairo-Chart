@@ -156,7 +156,7 @@ namespace CairoChart {
 		/**
 		 * ``Axis`` line style.
 		 */
-		public LineStyle line_style = LineStyle ();
+		public LineStyle grid_style = LineStyle (Color(), 1, {2, 3});
 
 		/**
 		 * Number of equally placed points to evaluate records sizes.
@@ -187,7 +187,7 @@ namespace CairoChart {
 			axis._time_format = this._time_format;
 			axis.color = this.color;
 			axis.font = this.font.copy();
-			axis.line_style = this.line_style;
+			axis.grid_style = this.grid_style;
 			axis.range = this.range.copy();
 			axis.place = this.place.copy();
 			axis.position = this.position;
@@ -498,7 +498,8 @@ namespace CairoChart {
 			for (Float128 v = min; Math.point_belong (v, min, range.zmax); v += step) {
 				if (is_x && chart.joint_x || !is_x && chart.joint_y) {
 					chart.color = chart.joint_color;
-					ser.grid.style.color = Color(0, 0, 0, 0.5);
+					ser.axis_x.grid_style.color = Color(0, 0, 0, 0.5);
+					ser.axis_y.grid_style.color = Color(0, 0, 0, 0.5);
 				} else
 					chart.color = color;
 				string text = "", time_text = ""; var time_text_t = new Text(chart); var crpt = 0.0;
@@ -524,7 +525,7 @@ namespace CairoChart {
 					case Axis.Position.LOW:
 						chart.ctx.move_to (crp, ey1); text_t.show();
 						chart.ctx.move_to (crpt, ey1 - dtf); time_text_t.show();
-						ser.grid.style.apply(chart);
+						ser.axis_x.grid_style.apply(chart);
 						double y = ey1 - max_rec_size; chart.ctx.move_to (scr_v, y);
 						if (chart.joint_x) chart.ctx.line_to (scr_v, py0);
 						else chart.ctx.line_to (scr_v, double.min (y, py0 + ph * (1 - ser.axis_y.place.zmax)));
@@ -532,7 +533,7 @@ namespace CairoChart {
 					case Axis.Position.HIGH:
 						chart.ctx.move_to (crp, ey0); text_t.show();
 						chart.ctx.move_to (crpt, ey0 - dtf); time_text_t.show();
-						ser.grid.style.apply(chart); chart.ctx.move_to (scr_v, ey0);
+						ser.axis_x.grid_style.apply(chart); chart.ctx.move_to (scr_v, ey0);
 						if (chart.joint_x) chart.ctx.line_to (scr_v, chart.plarea.y1);
 						else chart.ctx.line_to (scr_v, double.max (ey0, py0 + ph * (1 - ser.axis_y.place.zmin)));
 						break;
@@ -542,14 +543,14 @@ namespace CairoChart {
 					switch (position) {
 					case Axis.Position.LOW:
 						chart.ctx.move_to (ex0 - text_t.width, crp);
-						text_t.show(); ser.grid.style.apply(chart);
+						text_t.show(); ser.axis_y.grid_style.apply(chart);
 						chart.ctx.move_to (ex0, scr_v);
 						if (chart.joint_y) chart.ctx.line_to (chart.plarea.x1, scr_v);
 						else chart.ctx.line_to (double.max (ex0, px0 + pw * ser.axis_x.place.zmax), scr_v);
 						break;
 					case Axis.Position.HIGH:
 						chart.ctx.move_to (ex1 - text_t.width, crp);
-						text_t.show(); ser.grid.style.apply(chart);
+						text_t.show(); ser.axis_y.grid_style.apply(chart);
 						double x = ex1 - max_rec_size; chart.ctx.move_to (x, scr_v);
 						if (chart.joint_y) chart.ctx.line_to (px0, scr_v);
 						else chart.ctx.line_to (double.min (x, px0 + pw * ser.axis_x.place.zmin), scr_v);

@@ -30,11 +30,6 @@ namespace CairoChart {
 		public Marker marker;
 
 		/**
-		 * Grid style.
-		 */
-		public Grid grid = new Grid ();
-
-		/**
 		 * Sort style.
 		 */
 		public enum Sort {
@@ -78,8 +73,10 @@ namespace CairoChart {
 				line_style.color = value;
 				axis_x.color = value;
 				axis_y.color = value;
-				grid.style.color = value;
-				grid.style.color.alpha = 0.5;
+				axis_x.grid_style.color = value;
+				axis_x.grid_style.color.alpha = 0.5;
+				axis_y.grid_style.color = value;
+				axis_y.grid_style.color.alpha = 0.5;
 			}
 			default = Color (0, 0, 0, 1);
 		}
@@ -108,7 +105,6 @@ namespace CairoChart {
 			var series = new Series (chart);
 			series.axis_x = this.axis_x.copy ();
 			series.axis_y = this.axis_y.copy ();
-			series.grid = this.grid.copy ();
 			series.line_style = this.line_style;
 			series.marker = this.marker;
 			series.points = this.points;
