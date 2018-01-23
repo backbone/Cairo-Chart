@@ -499,8 +499,8 @@ namespace CairoChart {
 				if (is_x && chart.joint_x || !is_x && chart.joint_y) {
 					chart.color = chart.joint_color;
 					ser.grid.style.color = Color(0, 0, 0, 0.5);
-				}
-				else chart.color = color;
+				} else
+					chart.color = color;
 				string text = "", time_text = ""; var time_text_t = new Text(chart); var crpt = 0.0;
 				switch (dtype) {
 				case Axis.DType.NUMBERS: text = format.printf((LongDouble)v); break;
@@ -526,14 +526,12 @@ namespace CairoChart {
 						if (dtype == Axis.DType.DATE_TIME)
 							{ chart.ctx.move_to (crpt, print_y - dtf); time_text_t.show(); }
 						ser.grid.style.apply(chart);
-						double y = ey1 - max_rec_size - tthv;
-						chart.ctx.move_to (scr_v, y);
+						double y = ey1 - max_rec_size - tthv; chart.ctx.move_to (scr_v, y);
 						if (chart.joint_x) chart.ctx.line_to (scr_v, py0);
 						else chart.ctx.line_to (scr_v, double.min (y, py0 + ph * (1 - ser.axis_y.place.zmax)));
 					} else {
 						chart.ctx.move_to (ex0 + max_rec_size - text_t.width + ttwh, compact_rec_pos (v, text_t));
-						text_t.show();
-						ser.grid.style.apply(chart);
+						text_t.show(); ser.grid.style.apply(chart);
 						double x = ex0 + max_rec_size + ttwh;
 						chart.ctx.move_to (x, scr_v);
 						if (chart.joint_y) chart.ctx.line_to (px1, scr_v);
@@ -551,14 +549,12 @@ namespace CairoChart {
 							break;
 						}
 						ser.grid.style.apply(chart);
-						double y = ey0 + max_rec_size + tthv;
-						chart.ctx.move_to (scr_v, y);
+						double y = ey0 + max_rec_size + tthv; chart.ctx.move_to (scr_v, y);
 						if (chart.joint_x) chart.ctx.line_to (scr_v, py1);
 						else chart.ctx.line_to (scr_v, double.max (y, py0 + ph * (1 - ser.axis_y.place.zmin)));
 					} else {
 						chart.ctx.move_to (ex1 - text_t.width - ttwh, compact_rec_pos (v, text_t));
-						text_t.show();
-						ser.grid.style.apply(chart);
+						text_t.show(); ser.grid.style.apply(chart);
 						double x = ex1 - max_rec_size - ttwh;
 						chart.ctx.move_to (x, scr_v);
 						if (chart.joint_y) chart.ctx.line_to (px0, scr_v);
