@@ -508,13 +508,13 @@ namespace CairoChart {
 				}
 				var scr_v = scr_pos (v);
 				var text_t = new Text(chart, text, font, color);
-				var tthv = title.text == "" ? 0 : title.height + font.vspacing;
+				var tthv = title.text == "" ? 0 : title.height + font.vspacing; tthv += font.vspacing;
 				var ttwh = title.text == "" ? 0 : title.width + font.hspacing; ttwh += font.hspacing;
 				var dtf = (date_format == "" ? 0 : text_t.height + font.vspacing);
 				switch (position) {
 				case Axis.Position.LOW:
 					if (is_x) {
-						var print_y = chart.evarea.y1 - font.vspacing - tthv;
+						var print_y = chart.evarea.y1 - tthv;
 						chart.ctx.move_to (compact_rec_pos (v, text_t), print_y);
 						switch (dtype) {
 						case Axis.DType.NUMBERS: text_t.show(); break;
@@ -527,7 +527,7 @@ namespace CairoChart {
 						}
 						// 6. Draw grid lines to the ser.axis_y.place.zmin.
 						ser.grid.style.apply(chart);
-						double y = chart.evarea.y1 - max_rec_size - font.vspacing - tthv;
+						double y = chart.evarea.y1 - max_rec_size - tthv;
 						chart.ctx.move_to (scr_v, y);
 						if (chart.joint_x) chart.ctx.line_to (scr_v, chart.plarea.y0);
 						else chart.ctx.line_to (scr_v, double.min (y, chart.plarea.y0 + chart.plarea.height * (1 - ser.axis_y.place.zmax)));
@@ -545,7 +545,7 @@ namespace CairoChart {
 					}
 				case Axis.Position.HIGH:
 					if (is_x) {
-						var print_y = chart.evarea.y0 + max_rec_size + font.vspacing + tthv;
+						var print_y = chart.evarea.y0 + max_rec_size + tthv;
 						chart.ctx.move_to (compact_rec_pos (v, text_t), print_y);
 						switch (dtype) {
 						case Axis.DType.NUMBERS: text_t.show(); break;
@@ -558,7 +558,7 @@ namespace CairoChart {
 						}
 						// 6. Draw grid lines to the ser.axis_y.place.zmax.
 						ser.grid.style.apply(chart);
-						double y = chart.evarea.y0 + max_rec_size + font.vspacing + tthv;
+						double y = chart.evarea.y0 + max_rec_size + tthv;
 						chart.ctx.move_to (scr_v, y);
 						if (chart.joint_x) chart.ctx.line_to (scr_v, chart.plarea.y1);
 						else chart.ctx.line_to (scr_v, double.max (y, chart.plarea.y0 + chart.plarea.height * (1 - ser.axis_y.place.zmin)));
