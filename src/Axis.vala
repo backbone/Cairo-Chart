@@ -515,7 +515,7 @@ namespace CairoChart {
 				var tthv = title.text == "" ? font.vspacing : title.height + 2 * font.vspacing;
 				var ttwh = title.text == "" ? font.hspacing : title.width + 2 * font.hspacing;
 				var dtf = (date_format == "" ? 0 : text_t.height + font.vspacing);
-				var py0 = chart.plarea.y0, ey0 = chart.evarea.y0, py1 = chart.plarea.y1, ey1 = chart.evarea.y1;
+				var py0 = chart.plarea.y0, ey0 = chart.evarea.y0 + max_rec_size + tthv, py1 = chart.plarea.y1, ey1 = chart.evarea.y1;
 				var px0 = chart.plarea.x0, ex0 = chart.evarea.x0, px1 = chart.plarea.x1, ex1 = chart.evarea.x1;
 				var ph = chart.plarea.height, pw = chart.plarea.width;
 				switch (position) {
@@ -540,18 +540,17 @@ namespace CairoChart {
 					break;
 				case Axis.Position.HIGH:
 					if (is_x) {
-						var print_y = ey0 + max_rec_size + tthv;
-						chart.ctx.move_to (compact_rec_pos (v, text_t), print_y);
+						chart.ctx.move_to (compact_rec_pos (v, text_t), ey0);
 						switch (dtype) {
 						case Axis.DType.NUMBERS: text_t.show(); break;
 						case Axis.DType.DATE_TIME:
-							text_t.show(); chart.ctx.move_to (crpt, print_y - dtf); time_text_t.show();
+							text_t.show(); chart.ctx.move_to (crpt, ey0 - dtf); time_text_t.show();
 							break;
 						}
 						ser.grid.style.apply(chart);
-						double y = ey0 + max_rec_size + tthv; chart.ctx.move_to (scr_v, y);
+						chart.ctx.move_to (scr_v, ey0);
 						if (chart.joint_x) chart.ctx.line_to (scr_v, py1);
-						else chart.ctx.line_to (scr_v, double.max (y, py0 + ph * (1 - ser.axis_y.place.zmin)));
+						else chart.ctx.line_to (scr_v, double.max (ey0, py0 + ph * (1 - ser.axis_y.place.zmin)));
 					} else {
 						chart.ctx.move_to (ex1 - text_t.width - ttwh, compact_rec_pos (v, text_t));
 						text_t.show(); ser.grid.style.apply(chart);
