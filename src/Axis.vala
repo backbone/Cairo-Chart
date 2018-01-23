@@ -534,7 +534,6 @@ namespace CairoChart {
 						chart.ctx.move_to (scr_v, y);
 						if (chart.joint_x) chart.ctx.line_to (scr_v, py0);
 						else chart.ctx.line_to (scr_v, double.min (y, py0 + ph * (1 - ser.axis_y.place.zmax)));
-						break;
 					} else {
 						chart.ctx.move_to (ex0 + max_rec_size - text_t.width + ttwh, compact_rec_pos (v, text_t));
 						text_t.show();
@@ -543,8 +542,8 @@ namespace CairoChart {
 						chart.ctx.move_to (x, scr_v);
 						if (chart.joint_y) chart.ctx.line_to (px1, scr_v);
 						else chart.ctx.line_to (double.max (x, px0 + pw * ser.axis_x.place.zmax), scr_v);
-						break;
 					}
+					break;
 				case Axis.Position.HIGH:
 					if (is_x) {
 						var print_y = ey0 + max_rec_size + tthv;
@@ -560,7 +559,6 @@ namespace CairoChart {
 						chart.ctx.move_to (scr_v, y);
 						if (chart.joint_x) chart.ctx.line_to (scr_v, py1);
 						else chart.ctx.line_to (scr_v, double.max (y, py0 + ph * (1 - ser.axis_y.place.zmin)));
-						break;
 					} else {
 						chart.ctx.move_to (ex1 - text_t.width - ttwh, compact_rec_pos (v, text_t));
 						text_t.show();
@@ -569,8 +567,8 @@ namespace CairoChart {
 						chart.ctx.move_to (x, scr_v);
 						if (chart.joint_y) chart.ctx.line_to (px0, scr_v);
 						else chart.ctx.line_to (double.min (x, px0 + pw * ser.axis_x.place.zmin), scr_v);
-						break;
 					}
+					break;
 				}
 			}
 		}
