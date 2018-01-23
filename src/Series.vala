@@ -96,8 +96,8 @@ namespace CairoChart {
 		public Series (Chart chart) {
 			this.chart = chart;
 			title = new Text(chart);
-			axis_x = new Axis(chart, this);
-			axis_y = new Axis(chart, this);
+			axis_x = new Axis(chart, this, true);
+			axis_y = new Axis(chart, this, false);
 			this.marker = new Marker(chart);
 		}
 
@@ -152,7 +152,7 @@ namespace CairoChart {
 		 * @param p real ``Series`` (X;Y) value.
 		 */
 		public virtual Point get_scr_point (Point128 p) {
-			return Point(axis_x.get_scr_x(p.x), axis_y.get_scr_y(p.y));
+			return Point(axis_x.scr_pos(p.x), axis_y.scr_pos(p.y));
 		}
 
 		/**
@@ -160,7 +160,7 @@ namespace CairoChart {
 		 * @param p (X;Y) screen point.
 		 */
 		public virtual Point128 get_real_point (Point p) {
-			return Point128 (axis_x.get_real_x(p.x), axis_y.get_real_y(p.y));
+			return Point128 (axis_x.axis_val(p.x), axis_y.axis_val(p.y));
 		}
 
 		/**

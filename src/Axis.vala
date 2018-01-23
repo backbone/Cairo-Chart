@@ -11,6 +11,7 @@ namespace CairoChart {
 		protected string _date_format = "%Y.%m.%d";
 		protected string _time_format = "%H:%M:%S";
 		protected int _dsec_signs = 2; // 2 signs = centiseconds
+		protected bool is_x;
 
 		/**
 		 * ``Axis`` title.
@@ -166,10 +167,12 @@ namespace CairoChart {
 		 * Constructs a new ``Axis``.
 		 * @param chart ``Chart`` instance.
 		 * @param ser ``Series`` instance.
+		 * @param is_x is X-axis or not (Y-axis otherwise).
 		 */
-		public Axis (Chart chart, Series ser) {
+		public Axis (Chart chart, Series ser, bool is_x) {
 			this.chart = chart;
 			this.ser = ser;
+			this.is_x = is_x;
 			title = new Text (chart, "");
 		}
 
@@ -177,7 +180,7 @@ namespace CairoChart {
 		 * Gets a copy of the ``Axis``.
 		 */
 		public virtual Axis copy () {
-			var axis = new Axis (chart, ser);
+			var axis = new Axis (chart, ser, is_x);
 			axis._date_format = this._date_format;
 			axis._dsec_signs = this._dsec_signs;
 			axis._format = this._format;
@@ -221,15 +224,10 @@ namespace CairoChart {
 
 		/**
 		 * Joins equal axes.
-		 * @param is_x is this X-axis or not.
 		 * @param nskip returns number of series to skip printing.
 		 */
 		public virtual void join_axes (ref int nskip) {
 			Axis axis = this;
-			bool is_x;
-			if (ser.axis_x == this) is_x = true;
-			else if (ser.axis_y == this) is_x = false;
-			else return;
 			if (!ser.zoom_show) return;
 			if (nskip != 0) {--nskip; return;}
 			var max_rec_width = 0.0, max_rec_height = 0.0;
@@ -242,9 +240,9 @@ namespace CairoChart {
 			if (si == -1) return;
 
 			if (is_x)
-				join_relative_x_axes (si, true, ref max_rec_width, ref max_rec_height, ref max_font_spacing, ref max_axis_font_height, ref nskip);
+				join_rel_x_axes (si, true, ref max_rec_width, ref max_rec_height, ref max_font_spacing, ref max_axis_font_height, ref nskip);
 			else
-				join_relative_y_axes (si, true, ref max_rec_width, ref max_rec_height, ref max_font_spacing, ref max_axis_font_width, ref nskip);
+				join_rel_y_axes (si, true, ref max_rec_width, ref max_rec_height, ref max_font_spacing, ref max_axis_font_width, ref nskip);
 
 			// for 4.2. Cursor values for joint X axis
 			if (si == chart.zoom_1st_idx && chart.cursors.has_crossings) {
@@ -289,7 +287,7 @@ namespace CairoChart {
 		 * Draws horizontal axis.
 		 * @param nskip number of series to skip printing.
 		 */
-		public virtual void draw_horizontal_axis (ref int nskip) {
+		public virtual void draw_haxis (ref int nskip) {
 			if (!ser.zoom_show) return;
 
 			var si = Math.find_arr<Series>(chart.series, ser);
@@ -344,12 +342,12 @@ namespace CairoChart {
 				title.show();
 			}
 
-			draw_horizontal_records (step, max_rec_height, x_min);
+			draw_hrecs (step, max_rec_height, x_min);
 
 			chart.ctx.stroke ();
 
 			var tmp1 = 0.0, tmp2 = 0.0, tmp3 = 0.0, tmp4 = 0.0;
-			join_relative_x_axes (si, false, ref tmp1, ref tmp2, ref tmp3, ref tmp4, ref nskip);
+			join_rel_x_axes (si, false, ref tmp1, ref tmp2, ref tmp3, ref tmp4, ref nskip);
 
 			if (nskip != 0) {--nskip; return;}
 
@@ -364,7 +362,7 @@ namespace CairoChart {
 		 * Draws vertical axis.
 		 * @param nskip number of series to skip printing.
 		 */
-		public virtual void draw_vertical_axis (ref int nskip) {
+		public virtual void draw_vaxis (ref int nskip) {
 			if (!ser.zoom_show) return;
 
 			var si = Math.find_arr<Series>(chart.series, ser);
@@ -422,12 +420,12 @@ namespace CairoChart {
 				title.show();
 			}
 
-			draw_vertical_records (step, max_rec_width, y_min);
+			draw_vrecs (step, max_rec_width, y_min);
 
 			chart.ctx.stroke ();
 
 			var tmp1 = 0.0, tmp2 = 0.0, tmp3 = 0.0, tmp4 = 0.0;
-			join_relative_y_axes (si, false, ref tmp1, ref tmp2, ref tmp3, ref tmp4, ref nskip);
+			join_rel_y_axes (si, false, ref tmp1, ref tmp2, ref tmp3, ref tmp4, ref nskip);
 
 			if (nskip != 0) {--nskip; return;}
 
@@ -439,55 +437,31 @@ namespace CairoChart {
 		}
 
 		/**
-		 * Gets compact placement X-position on the screen.
-		 * @param x real ``Series`` X-value.
+		 * Gets compact placement position on the screen.
+		 * @param axis_value real ``Axis`` value.
 		 * @param text to place on the screen.
 		 */
-		public virtual double compact_rec_x_pos (Float128 x, Text text) {
-			return get_scr_x(x) - text.width / 2
-			       - text.width * (x - (range.zmin + range.zmax) / 2) / range.zrange;
+		public virtual double compact_rec_pos (Float128 axis_value, Text text) {
+			return is_x ? scr_pos(axis_value) - text.width / 2 - text.width * (axis_value - (range.zmin + range.zmax) / 2) / range.zrange
+			            : scr_pos(axis_value) + text.height / 2 + text.height * (axis_value - (range.zmin + range.zmax) / 2) / range.zrange;
 		}
 
 		/**
-		 * Gets compact placement Y-position on the screen.
-		 * @param y real ``Series`` Y-value.
-		 * @param text to place on the screen.
+		 * Gets screen position by real ``Axis`` value.
+		 * @param axis_value real ``Axis`` value.
 		 */
-		public virtual double compact_rec_y_pos (Float128 y, Text text) {
-			return get_scr_y(y) + text.height / 2
-			       + text.height * (y - (range.zmin + range.zmax) / 2) / range.zrange;
+		public virtual double scr_pos (Float128 axis_value) {
+			return is_x ? chart.plarea.x0 + chart.plarea.width * (place.zmin + (axis_value - range.zmin) / range.zrange * place.zrange)
+			            : chart.plarea.y0 + chart.plarea.height * (1 - (place.zmin + (axis_value - range.zmin) / range.zrange * place.zrange));
 		}
 
 		/**
-		 * Gets screen X-position by real ``Series`` X-value.
-		 * @param x real ``Series`` X-value.
+		 * Gets real ``Axis`` value by screen position.
+		 * @param scr_pos screen position.
 		 */
-		public virtual double get_scr_x (Float128 x) {
-			return chart.plarea.x0 + chart.plarea.width * (place.zmin + (x - range.zmin) / range.zrange * place.zrange);
-		}
-
-		/**
-		 * Gets screen Y-position by real ``Series`` Y-value.
-		 * @param y real ``Series`` Y-value.
-		 */
-		public virtual double get_scr_y (Float128 y) {
-			return chart.plarea.y0 + chart.plarea.height * (1 - (place.zmin + (y - range.zmin) / range.zrange * place.zrange));
-		}
-
-		/**
-		 * Gets real ``Series`` X-value by plot area screen X-position.
-		 * @param scr_x screen X-position.
-		 */
-		public virtual Float128 get_real_x (double scr_x) {
-			return range.zmin + ((scr_x - chart.plarea.x0) / chart.plarea.width - place.zmin) * range.zrange / place.zrange;
-		}
-
-		/**
-		 * Gets real ``Series`` Y-value by plot area screen Y-position.
-		 * @param scr_y screen Y-position.
-		 */
-		public virtual Float128 get_real_y (double scr_y) {
-			return range.zmin + ((chart.plarea.y1 - scr_y) / chart.plarea.height - place.zmin) * range.zrange / place.zrange;
+		public virtual Float128 axis_val (double scr_pos) {
+			return is_x ? range.zmin + ((scr_pos - chart.plarea.x0) / chart.plarea.width - place.zmin) * range.zrange / place.zrange
+			            : range.zmin + ((chart.plarea.y1 - scr_pos) / chart.plarea.height - place.zmin) * range.zrange / place.zrange;
 		}
 
 		protected virtual void calc_rec_sizes (Axis axis, out double max_rec_width, out double max_rec_height, bool horizontal = true) {
@@ -521,13 +495,13 @@ namespace CairoChart {
 			}
 		}
 
-		protected virtual void join_relative_x_axes (int si,
-		                                             bool calc_max_values,
-		                                             ref double max_rec_width,
-		                                             ref double max_rec_height,
-		                                             ref double max_font_spacing,
-		                                             ref double max_axis_font_height,
-		                                             ref int nskip) {
+		protected virtual void join_rel_x_axes (int si,
+		                                        bool calc_max_values,
+		                                        ref double max_rec_width,
+		                                        ref double max_rec_height,
+		                                        ref double max_font_spacing,
+		                                        ref double max_axis_font_height,
+		                                        ref int nskip) {
 			for (int sj = si - 1; sj >= 0; --sj) {
 				var s2 = chart.series[sj];
 				if (!s2.zoom_show) continue;
@@ -559,13 +533,13 @@ namespace CairoChart {
 			}
 		}
 
-		protected virtual void join_relative_y_axes (int si,
-		                                             bool calc_max_values,
-		                                             ref double max_rec_width,
-		                                             ref double max_rec_height,
-		                                             ref double max_font_spacing,
-		                                             ref double max_axis_font_width,
-		                                             ref int nskip) {
+		protected virtual void join_rel_y_axes (int si,
+		                                        bool calc_max_values,
+		                                        ref double max_rec_width,
+		                                        ref double max_rec_height,
+		                                        ref double max_font_spacing,
+		                                        ref double max_axis_font_width,
+		                                        ref int nskip) {
 			for (int sj = si - 1; sj >= 0; --sj) {
 				var s2 = chart.series[sj];
 				if (!s2.zoom_show) continue;
@@ -595,7 +569,7 @@ namespace CairoChart {
 			}
 		}
 
-		protected virtual void draw_horizontal_records (Float128 step, double max_rec_height, Float128 x_min) {
+		protected virtual void draw_hrecs (Float128 step, double max_rec_height, Float128 x_min) {
 			// 5. Draw records, update cur_{x,y}_{min,max}.
 			var ctx = chart.ctx;
 			var joint_x = chart.joint_x;
@@ -608,13 +582,13 @@ namespace CairoChart {
 				case Axis.DType.NUMBERS: text = format.printf((LongDouble)x); break;
 				case Axis.DType.DATE_TIME: print_dt(x, out text, out time_text); break;
 				}
-				var scr_x = get_scr_x (x);
+				var scr_x = scr_pos (x);
 				var text_t = new Text(chart, text, font, color);
 
 				switch (position) {
 				case Axis.Position.LOW:
 					var print_y = chart.evarea.y1 - font.vspacing - (title.text == "" ? 0 : title.height + font.vspacing);
-					var print_x = compact_rec_x_pos (x, text_t);
+					var print_x = compact_rec_pos (x, text_t);
 					ctx.move_to (print_x, print_y);
 					switch (dtype) {
 					case Axis.DType.NUMBERS:
@@ -623,7 +597,7 @@ namespace CairoChart {
 					case Axis.DType.DATE_TIME:
 						if (date_format != "") text_t.show();
 						var time_text_t = new Text(chart, time_text, font, color);
-						print_x = compact_rec_x_pos (x, time_text_t);
+						print_x = compact_rec_pos (x, time_text_t);
 						ctx.move_to (print_x, print_y - (date_format == "" ? 0 : text_t.height + font.vspacing));
 						if (time_format != "") time_text_t.show();
 						break;
@@ -641,7 +615,7 @@ namespace CairoChart {
 					break;
 				case Axis.Position.HIGH:
 					var print_y = chart.evarea.y0 + max_rec_height + font.vspacing + (title.text == "" ? 0 : title.height + font.vspacing);
-					var print_x = compact_rec_x_pos (x, text_t);
+					var print_x = compact_rec_pos (x, text_t);
 					ctx.move_to (print_x, print_y);
 
 					switch (dtype) {
@@ -651,7 +625,7 @@ namespace CairoChart {
 					case Axis.DType.DATE_TIME:
 						if (date_format != "") text_t.show();
 						var time_text_t = new Text(chart, time_text, font, color);
-						print_x = compact_rec_x_pos (x, time_text_t);
+						print_x = compact_rec_pos (x, time_text_t);
 						ctx.move_to (print_x, print_y - (date_format == "" ? 0 : text_t.height + font.vspacing));
 						if (time_format != "") time_text_t.show();
 						break;
@@ -671,7 +645,7 @@ namespace CairoChart {
 			}
 		}
 
-		protected virtual void draw_vertical_records (Float128 step, double max_rec_width, Float128 y_min) {
+		protected virtual void draw_vrecs (Float128 step, double max_rec_width, Float128 y_min) {
 			// 5. Draw records, update cur_{x,y}_{min,max}.
 			var ctx = chart.ctx;
 			var joint_y = chart.joint_y;
@@ -680,14 +654,14 @@ namespace CairoChart {
 				if (joint_y) chart.color = chart.joint_color;
 				else chart.color = color;
 				var text = format.printf((LongDouble)y);
-				var scr_y = get_scr_y (y);
+				var scr_y = scr_pos (y);
 				var text_t = new Text(chart, text, font, color);
 
 				switch (position) {
 				case Axis.Position.LOW:
 					ctx.move_to (chart.evarea.x0 + max_rec_width - text_t.width + font.hspacing
 					                 + (title.text == "" ? 0 : title.width + font.hspacing),
-					                 compact_rec_y_pos (y, text_t));
+					                 compact_rec_pos (y, text_t));
 					text_t.show();
 					// 6. Draw grid lines to the ser.axis_x.place.zmin.
 					var grid_style = ser.grid.style;
@@ -703,7 +677,7 @@ namespace CairoChart {
 				case Axis.Position.HIGH:
 					ctx.move_to (chart.evarea.x1 - text_t.width - font.hspacing
 					                 - (title.text == "" ? 0 : title.width + font.hspacing),
-					                 compact_rec_y_pos (y, text_t));
+					                 compact_rec_pos (y, text_t));
 					text_t.show();
 					// 6. Draw grid lines to the ser.axis_x.place.zmax.
 					var grid_style = ser.grid.style;

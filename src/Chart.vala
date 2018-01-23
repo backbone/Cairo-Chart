@@ -191,11 +191,11 @@ namespace CairoChart {
 		public virtual void zoom_in (Area area) {
 			foreach (var s in series) {
 				if (!s.zoom_show) continue;
-				var real_x0 = s.axis_x.get_real_x (area.x0);
-				var real_x1 = s.axis_x.get_real_x (area.x1);
+				var real_x0 = s.axis_x.axis_val (area.x0);
+				var real_x1 = s.axis_x.axis_val (area.x1);
 				var real_width = real_x1 - real_x0;
-				var real_y0 = s.axis_y.get_real_y (area.y0);
-				var real_y1 = s.axis_y.get_real_y (area.y1);
+				var real_y0 = s.axis_y.axis_val (area.y0);
+				var real_y1 = s.axis_y.axis_val (area.y1);
 				var real_height = real_y0 - real_y1;
 				// if selected square does not intersect with the series's square
 				if (   real_x1 <= s.axis_x.range.zmin || real_x0 >= s.axis_x.range.zmax
@@ -374,11 +374,11 @@ namespace CairoChart {
 		}
 		protected virtual void draw_haxes () {
 			for (var si = series.length - 1, nskip = 0; si >=0; --si)
-				series[si].axis_x.draw_horizontal_axis (ref nskip);
+				series[si].axis_x.draw_haxis (ref nskip);
 		}
 		protected virtual void draw_vaxes () {
 			for (var si = series.length - 1, nskip = 0; si >=0; --si)
-				series[si].axis_y.draw_vertical_axis (ref nskip);
+				series[si].axis_y.draw_vaxis (ref nskip);
 		}
 		protected virtual void draw_series () {
 			foreach (var s in series)
