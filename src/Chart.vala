@@ -353,10 +353,10 @@ namespace CairoChart {
 			if (nshow == 1) joint_x = joint_y = false;
 
 			for (var si = series.length - 1, nskip = 0; si >= 0; --si)
-				series[si].join_axes(true, si, ref nskip);
+				series[si].join_axes(true, ref nskip);
 
 			for (var si = series.length - 1, nskip = 0; si >= 0; --si)
-				series[si].join_axes(false, si, ref nskip);
+				series[si].join_axes(false, ref nskip);
 		}
 
 		protected virtual void draw_plarea_border () {
@@ -374,11 +374,11 @@ namespace CairoChart {
 		}
 		protected virtual void draw_haxes () {
 			for (var si = series.length - 1, nskip = 0; si >=0; --si)
-				series[si].draw_horizontal_axis (si, ref nskip);
+				series[si].draw_horizontal_axis (ref nskip);
 		}
 		protected virtual void draw_vaxes () {
 			for (var si = series.length - 1, nskip = 0; si >=0; --si)
-				series[si].draw_vertical_axis (si, ref nskip);
+				series[si].draw_vertical_axis (ref nskip);
 		}
 		protected virtual void draw_series () {
 			foreach (var s in series)

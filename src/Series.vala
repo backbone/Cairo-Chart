@@ -157,10 +157,9 @@ namespace CairoChart {
 		/**
 		 * Joins equal axes.
 		 * @param is_x is this X-axis or not.
-		 * @param si series index.
 		 * @param nskip returns number of series to skip printing.
 		 */
-		public virtual void join_axes (bool is_x, int si, ref int nskip) {
+		public virtual void join_axes (bool is_x, ref int nskip) {
 			Axis axis = axis_x;
 			if (!is_x) axis = axis_y;
 			if (!zoom_show) return;
@@ -170,6 +169,9 @@ namespace CairoChart {
 			var max_font_spacing = is_x ? axis.font.vspacing : axis.font.hspacing;
 			var max_axis_font_width = axis.title.text == "" ? 0 : axis.title.width + axis.font.hspacing;
 			var max_axis_font_height = axis.title.text == "" ? 0 : axis.title.height + axis.font.vspacing;
+
+			var si = Math.find_arr<Series>(chart.series, this);
+			if (si == -1) return;
 
 			if (is_x)
 				join_relative_x_axes (si, true, ref max_rec_width, ref max_rec_height, ref max_font_spacing, ref max_axis_font_height, ref nskip);
@@ -217,11 +219,14 @@ namespace CairoChart {
 
 		/**
 		 * Draws horizontal axis.
-		 * @param si series index.
 		 * @param nskip number of series to skip printing.
 		 */
-		public virtual void draw_horizontal_axis (int si, ref int nskip) {
+		public virtual void draw_horizontal_axis (ref int nskip) {
 			if (!zoom_show) return;
+
+			var si = Math.find_arr<Series>(chart.series, this);
+			if (si == -1) return;
+
 			if (chart.joint_x && si != chart.zoom_1st_idx) return;
 
 			// 1. Detect max record width/height by axis.nrecords equally selected points using format.
@@ -289,11 +294,14 @@ namespace CairoChart {
 
 		/**
 		 * Draws vertical axis.
-		 * @param si series index.
 		 * @param nskip number of series to skip printing.
 		 */
-		public virtual void draw_vertical_axis (int si, ref int nskip) {
+		public virtual void draw_vertical_axis (ref int nskip) {
 			if (!zoom_show) return;
+
+			var si = Math.find_arr<Series>(chart.series, this);
+			if (si == -1) return;
+
 			if (chart.joint_y && si != chart.zoom_1st_idx) return;
 			// 1. Detect max record width/height by axis.nrecords equally selected points using format.
 			double max_rec_width, max_rec_height;

@@ -149,5 +149,13 @@ namespace CairoChart {
 			}
 			return points;
 		}
+
+		internal int find_arr<G> (G[] arr, G elem) {
+			for (var i = 0; i < arr.length; ++i) {
+				if (arr[i] == elem)
+					return i;
+			}
+			return -1;
+		}
 	}
 }
