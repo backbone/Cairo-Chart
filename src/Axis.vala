@@ -510,10 +510,12 @@ namespace CairoChart {
 				}
 				var scr_v = scr_pos (v);
 				var text_t = new Text(chart, text, font, color);
+				var tthv = title.text == "" ? 0 : title.height + font.vspacing;
+				var ttwh = title.text == "" ? 0 : title.width + font.hspacing;
 				switch (position) {
 				case Axis.Position.LOW:
 					if (is_x) {
-						var print_y = chart.evarea.y1 - font.vspacing - (title.text == "" ? 0 : title.height + font.vspacing);
+						var print_y = chart.evarea.y1 - font.vspacing - tthv;
 						var print_x = compact_rec_pos (v, text_t);
 						chart.ctx.move_to (print_x, print_y);
 						switch (dtype) {
@@ -528,17 +530,17 @@ namespace CairoChart {
 						}
 						// 6. Draw grid lines to the ser.axis_y.place.zmin.
 						ser.grid.style.apply(chart);
-						double y = chart.evarea.y1 - max_rec_size - font.vspacing - (title.text == "" ? 0 : title.height + font.vspacing);
+						double y = chart.evarea.y1 - max_rec_size - font.vspacing - tthv;
 						chart.ctx.move_to (scr_v, y);
 						if (chart.joint_x) chart.ctx.line_to (scr_v, chart.plarea.y0);
 						else chart.ctx.line_to (scr_v, double.min (y, chart.plarea.y0 + chart.plarea.height * (1 - ser.axis_y.place.zmax)));
 						break;
 					} else {
-						chart.ctx.move_to (chart.evarea.x0 + max_rec_size - text_t.width + font.hspacing + (title.text == "" ? 0 : title.width + font.hspacing), compact_rec_pos (v, text_t));
+						chart.ctx.move_to (chart.evarea.x0 + max_rec_size - text_t.width + font.hspacing + ttwh, compact_rec_pos (v, text_t));
 						text_t.show();
 						// 6. Draw grid lines to the ser.axis_x.place.zmin.
 						ser.grid.style.apply(chart);
-						double x = chart.evarea.x0 + max_rec_size + font.hspacing + (title.text == "" ? 0 : title.width + font.hspacing);
+						double x = chart.evarea.x0 + max_rec_size + font.hspacing + ttwh;
 						chart.ctx.move_to (x, scr_v);
 						if (chart.joint_y) chart.ctx.line_to (chart.plarea.x1, scr_v);
 						else chart.ctx.line_to (double.max (x, chart.plarea.x0 + chart.plarea.width * ser.axis_x.place.zmax), scr_v);
@@ -546,7 +548,7 @@ namespace CairoChart {
 					}
 				case Axis.Position.HIGH:
 					if (is_x) {
-						var print_y = chart.evarea.y0 + max_rec_size + font.vspacing + (title.text == "" ? 0 : title.height + font.vspacing);
+						var print_y = chart.evarea.y0 + max_rec_size + font.vspacing + tthv;
 						var print_x = compact_rec_pos (v, text_t);
 						chart.ctx.move_to (print_x, print_y);
 						switch (dtype) {
@@ -561,17 +563,17 @@ namespace CairoChart {
 						}
 						// 6. Draw grid lines to the ser.axis_y.place.zmax.
 						ser.grid.style.apply(chart);
-						double y = chart.evarea.y0 + max_rec_size + font.vspacing + (title.text == "" ? 0 : title.height + font.vspacing);
+						double y = chart.evarea.y0 + max_rec_size + font.vspacing + tthv;
 						chart.ctx.move_to (scr_v, y);
 						if (chart.joint_x) chart.ctx.line_to (scr_v, chart.plarea.y1);
 						else chart.ctx.line_to (scr_v, double.max (y, chart.plarea.y0 + chart.plarea.height * (1 - ser.axis_y.place.zmin)));
 						break;
 					} else {
-						chart.ctx.move_to (chart.evarea.x1 - text_t.width - font.hspacing - (title.text == "" ? 0 : title.width + font.hspacing), compact_rec_pos (v, text_t));
+						chart.ctx.move_to (chart.evarea.x1 - text_t.width - font.hspacing - ttwh, compact_rec_pos (v, text_t));
 						text_t.show();
 						// 6. Draw grid lines to the ser.axis_x.place.zmax.
 						ser.grid.style.apply(chart);
-						double x = chart.evarea.x1 - max_rec_size - font.hspacing - (title.text == "" ? 0 : title.width + font.hspacing);
+						double x = chart.evarea.x1 - max_rec_size - font.hspacing - ttwh;
 						chart.ctx.move_to (x, scr_v);
 						if (chart.joint_y) chart.ctx.line_to (chart.plarea.x0, scr_v);
 						else chart.ctx.line_to (double.min (x, chart.plarea.x0 + chart.plarea.width * ser.axis_x.place.zmin), scr_v);
