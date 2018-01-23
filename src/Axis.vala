@@ -370,8 +370,8 @@ namespace CairoChart {
 				title.show();
 			}
 
-			if (is_x) draw_hrecs (step, max_rec_height, min);
-			else draw_vrecs (step, max_rec_width, min);
+			if (is_x) draw_recs (step, max_rec_height, min);
+			else draw_recs (step, max_rec_width, min);
 
 			chart.ctx.stroke ();
 
@@ -495,127 +495,113 @@ namespace CairoChart {
 			}
 		}
 
-		protected virtual void draw_hrecs (Float128 step, double max_rec_height, Float128 x_min) {
+		protected virtual void draw_recs (Float128 step, double max_rec_size, Float128 min) {
 			// 5. Draw records, update cur_{x,y}_{min,max}.
 			var ctx = chart.ctx;
-			var joint_x = chart.joint_x;
 
-			for (Float128 x = x_min, x_max = range.zmax; Math.point_belong (x, x_min, x_max); x += step) {
-				if (joint_x) chart.color = chart.joint_color;
+			for (Float128 v = min, max = range.zmax; Math.point_belong (v, min, max); v += step) {
+				if (is_x && chart.joint_x || !is_x && chart.joint_y) chart.color = chart.joint_color;
 				else chart.color = color;
 				string text = "", time_text = "";
 				switch (dtype) {
-				case Axis.DType.NUMBERS: text = format.printf((LongDouble)x); break;
-				case Axis.DType.DATE_TIME: print_dt(x, out text, out time_text); break;
+				case Axis.DType.NUMBERS: text = format.printf((LongDouble)v); break;
+				case Axis.DType.DATE_TIME: print_dt(v, out text, out time_text); break;
 				}
-				var scr_x = scr_pos (x);
+				var scr_v = scr_pos (v);
 				var text_t = new Text(chart, text, font, color);
 
 				switch (position) {
 				case Axis.Position.LOW:
-					var print_y = chart.evarea.y1 - font.vspacing - (title.text == "" ? 0 : title.height + font.vspacing);
-					var print_x = compact_rec_pos (x, text_t);
-					ctx.move_to (print_x, print_y);
-					switch (dtype) {
-					case Axis.DType.NUMBERS:
-						text_t.show();
+					if (is_x) {
+						var print_y = chart.evarea.y1 - font.vspacing - (title.text == "" ? 0 : title.height + font.vspacing);
+						var print_x = compact_rec_pos (v, text_t);
+						ctx.move_to (print_x, print_y);
+						switch (dtype) {
+						case Axis.DType.NUMBERS:
+							text_t.show();
+							break;
+						case Axis.DType.DATE_TIME:
+							if (date_format != "") text_t.show();
+							var time_text_t = new Text(chart, time_text, font, color);
+							print_x = compact_rec_pos (v, time_text_t);
+							ctx.move_to (print_x, print_y - (date_format == "" ? 0 : text_t.height + font.vspacing));
+							if (time_format != "") time_text_t.show();
+							break;
+						}
+						// 6. Draw grid lines to the ser.axis_y.place.zmin.
+						var grid_style = ser.grid.style;
+						if (chart.joint_x) grid_style.color = Color(0, 0, 0, 0.5);
+						grid_style.apply(chart);
+						double y = chart.evarea.y1 - max_rec_size - font.vspacing - (title.text == "" ? 0 : title.height + font.vspacing);
+						ctx.move_to (scr_v, y);
+						if (chart.joint_x)
+							ctx.line_to (scr_v, chart.plarea.y0);
+						else
+							ctx.line_to (scr_v, double.min (y, chart.plarea.y0 + chart.plarea.height * (1 - ser.axis_y.place.zmax)));
 						break;
-					case Axis.DType.DATE_TIME:
-						if (date_format != "") text_t.show();
-						var time_text_t = new Text(chart, time_text, font, color);
-						print_x = compact_rec_pos (x, time_text_t);
-						ctx.move_to (print_x, print_y - (date_format == "" ? 0 : text_t.height + font.vspacing));
-						if (time_format != "") time_text_t.show();
+					} else {
+						ctx.move_to (chart.evarea.x0 + max_rec_size - text_t.width + font.hspacing
+						                 + (title.text == "" ? 0 : title.width + font.hspacing),
+						                 compact_rec_pos (v, text_t));
+						text_t.show();
+						// 6. Draw grid lines to the ser.axis_x.place.zmin.
+						var grid_style = ser.grid.style;
+						if (chart.joint_y) grid_style.color = Color(0, 0, 0, 0.5);
+						grid_style.apply(chart);
+						double x = chart.evarea.x0 + max_rec_size + font.hspacing + (title.text == "" ? 0 : title.width + font.hspacing);
+						ctx.move_to (x, scr_v);
+						if (chart.joint_y)
+							ctx.line_to (chart.plarea.x1, scr_v);
+						else
+							ctx.line_to (double.max (x, chart.plarea.x0 + chart.plarea.width * ser.axis_x.place.zmax), scr_v);
 						break;
 					}
-					// 6. Draw grid lines to the ser.axis_y.place.zmin.
-					var grid_style = ser.grid.style;
-					if (joint_x) grid_style.color = Color(0, 0, 0, 0.5);
-					grid_style.apply(chart);
-					double y = chart.evarea.y1 - max_rec_height - font.vspacing - (title.text == "" ? 0 : title.height + font.vspacing);
-					ctx.move_to (scr_x, y);
-					if (joint_x)
-						ctx.line_to (scr_x, chart.plarea.y0);
-					else
-						ctx.line_to (scr_x, double.min (y, chart.plarea.y0 + chart.plarea.height * (1 - ser.axis_y.place.zmax)));
-					break;
 				case Axis.Position.HIGH:
-					var print_y = chart.evarea.y0 + max_rec_height + font.vspacing + (title.text == "" ? 0 : title.height + font.vspacing);
-					var print_x = compact_rec_pos (x, text_t);
-					ctx.move_to (print_x, print_y);
+					if (is_x) {
+						var print_y = chart.evarea.y0 + max_rec_size + font.vspacing + (title.text == "" ? 0 : title.height + font.vspacing);
+						var print_x = compact_rec_pos (v, text_t);
+						ctx.move_to (print_x, print_y);
 
-					switch (dtype) {
-					case Axis.DType.NUMBERS:
-						text_t.show();
+						switch (dtype) {
+						case Axis.DType.NUMBERS:
+							text_t.show();
+							break;
+						case Axis.DType.DATE_TIME:
+							if (date_format != "") text_t.show();
+							var time_text_t = new Text(chart, time_text, font, color);
+							print_x = compact_rec_pos (v, time_text_t);
+							ctx.move_to (print_x, print_y - (date_format == "" ? 0 : text_t.height + font.vspacing));
+							if (time_format != "") time_text_t.show();
+							break;
+						}
+						// 6. Draw grid lines to the ser.axis_y.place.zmax.
+						var grid_style = ser.grid.style;
+						if (chart.joint_x) grid_style.color = Color(0, 0, 0, 0.5);
+						grid_style.apply(chart);
+						double y = chart.evarea.y0 + max_rec_size + font.vspacing + (title.text == "" ? 0 : title.height + font.vspacing);
+						ctx.move_to (scr_v, y);
+						if (chart.joint_x)
+							ctx.line_to (scr_v, chart.plarea.y1);
+						else
+							ctx.line_to (scr_v, double.max (y, chart.plarea.y0 + chart.plarea.height * (1 - ser.axis_y.place.zmin)));
 						break;
-					case Axis.DType.DATE_TIME:
-						if (date_format != "") text_t.show();
-						var time_text_t = new Text(chart, time_text, font, color);
-						print_x = compact_rec_pos (x, time_text_t);
-						ctx.move_to (print_x, print_y - (date_format == "" ? 0 : text_t.height + font.vspacing));
-						if (time_format != "") time_text_t.show();
+					} else {
+						ctx.move_to (chart.evarea.x1 - text_t.width - font.hspacing
+						                 - (title.text == "" ? 0 : title.width + font.hspacing),
+						                 compact_rec_pos (v, text_t));
+						text_t.show();
+						// 6. Draw grid lines to the ser.axis_x.place.zmax.
+						var grid_style = ser.grid.style;
+						if (chart.joint_y) grid_style.color = Color(0, 0, 0, 0.5);
+						grid_style.apply(chart);
+						double x = chart.evarea.x1 - max_rec_size - font.hspacing - (title.text == "" ? 0 : title.width + font.hspacing);
+						ctx.move_to (x, scr_v);
+						if (chart.joint_y)
+							ctx.line_to (chart.plarea.x0, scr_v);
+						else
+							ctx.line_to (double.min (x, chart.plarea.x0 + chart.plarea.width * ser.axis_x.place.zmin), scr_v);
 						break;
 					}
-					// 6. Draw grid lines to the ser.axis_y.place.zmax.
-					var grid_style = ser.grid.style;
-					if (joint_x) grid_style.color = Color(0, 0, 0, 0.5);
-					grid_style.apply(chart);
-					double y = chart.evarea.y0 + max_rec_height + font.vspacing + (title.text == "" ? 0 : title.height + font.vspacing);
-					ctx.move_to (scr_x, y);
-					if (joint_x)
-						ctx.line_to (scr_x, chart.plarea.y1);
-					else
-						ctx.line_to (scr_x, double.max (y, chart.plarea.y0 + chart.plarea.height * (1 - ser.axis_y.place.zmin)));
-					break;
-				}
-			}
-		}
-
-		protected virtual void draw_vrecs (Float128 step, double max_rec_width, Float128 y_min) {
-			// 5. Draw records, update cur_{x,y}_{min,max}.
-			var ctx = chart.ctx;
-			var joint_y = chart.joint_y;
-
-			for (Float128 y = y_min, y_max = range.zmax; Math.point_belong (y, y_min, y_max); y += step) {
-				if (joint_y) chart.color = chart.joint_color;
-				else chart.color = color;
-				var text = format.printf((LongDouble)y);
-				var scr_y = scr_pos (y);
-				var text_t = new Text(chart, text, font, color);
-
-				switch (position) {
-				case Axis.Position.LOW:
-					ctx.move_to (chart.evarea.x0 + max_rec_width - text_t.width + font.hspacing
-					                 + (title.text == "" ? 0 : title.width + font.hspacing),
-					                 compact_rec_pos (y, text_t));
-					text_t.show();
-					// 6. Draw grid lines to the ser.axis_x.place.zmin.
-					var grid_style = ser.grid.style;
-					if (joint_y) grid_style.color = Color(0, 0, 0, 0.5);
-					grid_style.apply(chart);
-					double x = chart.evarea.x0 + max_rec_width + font.hspacing + (title.text == "" ? 0 : title.width + font.hspacing);
-					ctx.move_to (x, scr_y);
-					if (joint_y)
-						ctx.line_to (chart.plarea.x1, scr_y);
-					else
-						ctx.line_to (double.max (x, chart.plarea.x0 + chart.plarea.width * ser.axis_x.place.zmax), scr_y);
-					break;
-				case Axis.Position.HIGH:
-					ctx.move_to (chart.evarea.x1 - text_t.width - font.hspacing
-					                 - (title.text == "" ? 0 : title.width + font.hspacing),
-					                 compact_rec_pos (y, text_t));
-					text_t.show();
-					// 6. Draw grid lines to the ser.axis_x.place.zmax.
-					var grid_style = ser.grid.style;
-					if (joint_y) grid_style.color = Color(0, 0, 0, 0.5);
-					grid_style.apply(chart);
-					double x = chart.evarea.x1 - max_rec_width - font.hspacing - (title.text == "" ? 0 : title.width + font.hspacing);
-					ctx.move_to (x, scr_y);
-					if (joint_y)
-						ctx.line_to (chart.plarea.x0, scr_y);
-					else
-						ctx.line_to (double.min (x, chart.plarea.x0 + chart.plarea.width * ser.axis_x.place.zmin), scr_y);
-					break;
 				}
 			}
 		}
