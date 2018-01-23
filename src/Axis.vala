@@ -523,8 +523,7 @@ namespace CairoChart {
 					switch (position) {
 					case Axis.Position.LOW:
 						chart.ctx.move_to (crp, ey1); text_t.show();
-						if (dtype == Axis.DType.DATE_TIME)
-							{ chart.ctx.move_to (crpt, ey1 - dtf); time_text_t.show(); }
+						chart.ctx.move_to (crpt, ey1 - dtf); time_text_t.show();
 						ser.grid.style.apply(chart);
 						double y = ey1 - max_rec_size; chart.ctx.move_to (scr_v, y);
 						if (chart.joint_x) chart.ctx.line_to (scr_v, py0);
@@ -532,8 +531,7 @@ namespace CairoChart {
 						break;
 					case Axis.Position.HIGH:
 						chart.ctx.move_to (crp, ey0); text_t.show();
-						if (dtype == Axis.DType.DATE_TIME)
-							{ chart.ctx.move_to (crpt, ey0 - dtf); time_text_t.show(); }
+						chart.ctx.move_to (crpt, ey0 - dtf); time_text_t.show();
 						ser.grid.style.apply(chart); chart.ctx.move_to (scr_v, ey0);
 						if (chart.joint_x) chart.ctx.line_to (scr_v, chart.plarea.y1);
 						else chart.ctx.line_to (scr_v, double.max (ey0, py0 + ph * (1 - ser.axis_y.place.zmin)));
