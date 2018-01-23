@@ -156,7 +156,7 @@ namespace CairoChart {
 						switch (style.orientation) {
 						case Orientation.VERTICAL:
 							Float128 y = 0;
-							if (Math.vcross(s.get_scr_point(points[i]), s.get_scr_point(points[i+1]), rel2scr_x(c.x),
+							if (Math.vcross(s.scr_pnt(points[i]), s.scr_pnt(points[i+1]), rel2scr_x(c.x),
 							                chart.plarea.y0, chart.plarea.y1, out y)) {
 								var point = Point128(s.axis_x.axis_val(rel2scr_x(c.x)), s.axis_y.axis_val(y));
 								Point128 size; bool show_x, show_date, show_time, show_y;
@@ -168,7 +168,7 @@ namespace CairoChart {
 							break;
 						case Orientation.HORIZONTAL:
 							Float128 x = 0;
-							if (Math.hcross(s.get_scr_point(points[i]), s.get_scr_point(points[i+1]),
+							if (Math.hcross(s.scr_pnt(points[i]), s.scr_pnt(points[i+1]),
 							                chart.plarea.x0, chart.plarea.x1, rel2scr_y(c.y), out x)) {
 								var point = Point128(s.axis_x.axis_val(x), s.axis_y.axis_val(rel2scr_y(c.y)));
 								Point128 size; bool show_x, show_date, show_time, show_y;
@@ -207,7 +207,7 @@ namespace CairoChart {
 					var si = ccs[ci].series_index;
 					var s = chart.series[si];
 					var p = ccs[ci].point;
-					var scrp = s.get_scr_point(p);
+					var scrp = s.scr_pnt(p);
 					if (scrp.x < low.x) low.x = scrp.x;
 					if (scrp.y < low.y) low.y = scrp.y;
 					if (scrp.x > high.x) high.x = scrp.x;
@@ -483,7 +483,7 @@ namespace CairoChart {
 				for (var cci = 0, max_cci = crossings[ccsi].crossings.length; cci < max_cci; ++cci) {
 					// TODO: Ticket #142: find smart algorithm of cursors values placements
 					unowned CursorCross[] cr = crossings[ccsi].crossings;
-					cr[cci].scr_point = chart.series[cr[cci].series_index].get_scr_point (cr[cci].point);
+					cr[cci].scr_point = chart.series[cr[cci].series_index].scr_pnt (cr[cci].point);
 					var d_max = double.max (cr[cci].size.x / 1.5, cr[cci].size.y / 1.5);
 					cr[cci].scr_value_point = Point (cr[cci].scr_point.x + d_max, cr[cci].scr_point.y - d_max);
 				}

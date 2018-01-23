@@ -130,8 +130,8 @@ namespace CairoChart {
 				if (Math.cut_line (
 				        Point(chart.plarea.x0, chart.plarea.y0),
 				        Point(chart.plarea.x1, chart.plarea.y1),
-				        get_scr_point(points[i-1]),
-				        get_scr_point(points[i]),
+				        scr_pnt(points[i-1]),
+				        scr_pnt(points[i]),
 				        out c, out d)
 				) {
 					chart.ctx.move_to (c.x, c.y);
@@ -140,7 +140,7 @@ namespace CairoChart {
 			}
 			chart.ctx.stroke();
 			for (int i = 0; i < points.length; ++i) {
-				var p = get_scr_point(points[i]);
+				var p = scr_pnt(points[i]);
 				if (Math.point_in_rect (p, chart.plarea.x0, chart.plarea.x1,
 				                           chart.plarea.y0, chart.plarea.y1))
 					marker.draw_at_pos(p);
@@ -151,7 +151,7 @@ namespace CairoChart {
 		 * Gets screen point by real ``Series`` (X;Y) value.
 		 * @param p real ``Series`` (X;Y) value.
 		 */
-		public virtual Point get_scr_point (Point128 p) {
+		public virtual Point scr_pnt (Point128 p) {
 			return Point(axis_x.scr_pos(p.x), axis_y.scr_pos(p.y));
 		}
 
@@ -159,7 +159,7 @@ namespace CairoChart {
 		 * Gets real ``Series`` (X;Y) value by plot area screen point.
 		 * @param p (X;Y) screen point.
 		 */
-		public virtual Point128 get_real_point (Point p) {
+		public virtual Point128 axis_pnt (Point p) {
 			return Point128 (axis_x.axis_val(p.x), axis_y.axis_val(p.y));
 		}
 
