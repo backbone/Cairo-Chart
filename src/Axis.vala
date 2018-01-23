@@ -370,8 +370,8 @@ namespace CairoChart {
 				title.show();
 			}
 
-			if (is_x) draw_recs (step, max_rec_height, min);
-			else draw_recs (step, max_rec_width, min);
+			if (is_x) draw_recs (min, step, max_rec_height);
+			else draw_recs (min, step, max_rec_width);
 
 			chart.ctx.stroke ();
 
@@ -495,9 +495,9 @@ namespace CairoChart {
 			}
 		}
 
-		protected virtual void draw_recs (Float128 step, double max_rec_size, Float128 min) {
+		protected virtual void draw_recs (Float128 min, Float128 step, double max_rec_size) {
 			// 5. Draw records, update cur_{x,y}_{min,max}.
-			for (Float128 v = min, max = range.zmax; Math.point_belong (v, min, max); v += step) {
+			for (Float128 v = min; Math.point_belong (v, min, range.zmax); v += step) {
 				if (is_x && chart.joint_x || !is_x && chart.joint_y) {
 					chart.color = chart.joint_color;
 					ser.grid.style.color = Color(0, 0, 0, 0.5);
