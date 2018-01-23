@@ -5,7 +5,7 @@ namespace CairoChart {
 	 */
 	public class Text {
 
-		protected Chart chart;
+		protected unowned Chart chart;
 		protected string _text;
 		protected Font _font;
 		protected Cairo.TextExtents? _ext;

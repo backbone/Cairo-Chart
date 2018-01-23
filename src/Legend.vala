@@ -5,7 +5,7 @@ namespace CairoChart {
 	 */
 	public class Legend {
 
-		protected Chart chart;
+		protected unowned Chart chart;
 		protected double [] max_font_heights;
 
 		/**

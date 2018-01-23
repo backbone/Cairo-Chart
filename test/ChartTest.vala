@@ -18,18 +18,18 @@ void plot_chart1 (Chart chart) {
 
 	s1.axis_x.range.min = 0; s1.axis_x.range.max = 2;
 	s1.axis_y.range.min = 0; s1.axis_y.range.max = 3;
-	s1.place.x0 = 0.25; s1.place.x1 = 0.75;
-	s1.place.y0 = 0.3; s1.place.y1 = 0.9;
+	s1.axis_x.place.min = 0.25; s1.axis_x.place.max = 0.75;
+	s1.axis_y.place.min = 0.3; s1.axis_y.place.max = 0.9;
 
 	s2.axis_x.range.min = -15; s2.axis_x.range.max = 30;
 	s2.axis_y.range.min = -20; s2.axis_y.range.max = 200;
-	s2.place.x0 = 0.5; s2.place.x1 = 1;
-	s2.place.y0 = 0.0; s2.place.y1 = 0.5;
+	s2.axis_x.place.min = 0.5; s2.axis_x.place.max = 1;
+	s2.axis_y.place.min = 0.0; s2.axis_y.place.max = 0.5;
 
 	s3.axis_x.range.min = 0; s3.axis_x.range.max = 130;
 	s3.axis_y.range.min = 15; s3.axis_y.range.max = 35;
-	s3.place.x0 = 0; s3.place.x1 = 0.5;
-	s3.place.y0 = 0.5; s3.place.y1 = 1.0;
+	s3.axis_x.place.min = 0; s3.axis_x.place.max = 0.5;
+	s3.axis_y.place.min = 0.5; s3.axis_y.place.max = 1.0;
 
 	s1.marker.shape = Marker.Shape.SQUARE;
 	s2.marker.shape = Marker.Shape.CIRCLE;
@@ -90,18 +90,18 @@ void plot_chart2 (Chart chart) {
 
 	s1.axis_x.range.min = -15; s1.axis_x.range.max = 30;
 	s1.axis_y.range.min = 0; s1.axis_y.range.max = 3;
-	s1.place.x0 = 0.0; s1.place.x1 = 1.0;
-	s1.place.y0 = 0.3; s1.place.y1 = 0.9;
+	s1.axis_x.place.min = 0.0; s1.axis_x.place.max = 1.0;
+	s1.axis_y.place.min = 0.3; s1.axis_y.place.max = 0.9;
 
 	s2.axis_x.range.min = -15; s2.axis_x.range.max = 30;
 	s2.axis_y.range.min = -20; s2.axis_y.range.max = 200;
-	s2.place.x0 = 0.0; s2.place.x1 = 1.0;
-	s2.place.y0 = 0.0; s2.place.y1 = 0.5;
+	s2.axis_x.place.min = 0.0; s2.axis_x.place.max = 1.0;
+	s2.axis_y.place.min = 0.0; s2.axis_y.place.max = 0.5;
 
 	s3.axis_x.range.min = -15; s3.axis_x.range.max = 30;
 	s3.axis_y.range.min = 15; s3.axis_y.range.max = 35;
-	s3.place.x0 = 0.0; s3.place.x1 = 1.0;
-	s3.place.y0 = 0.5; s3.place.y1 = 1.0;
+	s3.axis_x.place.min = 0.0; s3.axis_x.place.max = 1.0;
+	s3.axis_y.place.min = 0.5; s3.axis_y.place.max = 1.0;
 
 	s1.marker.shape = Marker.Shape.PRICLE_CIRCLE;
 	s2.marker.shape = Marker.Shape.PRICLE_SQUARE;
@@ -140,18 +140,18 @@ void plot_chart3 (Chart chart) {
 
 	s1.axis_x.range.min = 0; s1.axis_x.range.max = 2;
 	s1.axis_y.range.min = -20; s1.axis_y.range.max = 200;
-	s1.place.x0 = 0.25; s1.place.x1 = 0.75;
-	s1.place.y0 = 0.0; s1.place.y1 = 1.0;
+	s1.axis_x.place.min = 0.25; s1.axis_x.place.max = 0.75;
+	s1.axis_y.place.min = 0.0; s1.axis_y.place.max = 1.0;
 
 	s2.axis_x.range.min = -15; s2.axis_x.range.max = 30;
 	s2.axis_y.range.min = -20; s2.axis_y.range.max = 200;
-	s2.place.x0 = 0.5; s2.place.x1 = 1;
-	s2.place.y0 = 0.0; s2.place.y1 = 1.0;
+	s2.axis_x.place.min = 0.5; s2.axis_x.place.max = 1;
+	s2.axis_y.place.min = 0.0; s2.axis_y.place.max = 1.0;
 
 	s3.axis_x.range.min = 0; s3.axis_x.range.max = 130;
 	s3.axis_y.range.min = -20; s3.axis_y.range.max = 200;
-	s3.place.x0 = 0; s3.place.x1 = 0.5;
-	s3.place.y0 = 0.0; s3.place.y1 = 1.0;
+	s3.axis_x.place.min = 0; s3.axis_x.place.max = 0.5;
+	s3.axis_y.place.min = 0.0; s3.axis_y.place.max = 1.0;
 
 	s1.marker.shape = Marker.Shape.SQUARE;
 	s2.marker.shape = Marker.Shape.PRICLE_CIRCLE;
@@ -200,23 +200,23 @@ void plot_chart4 (Chart chart) {
 
 	s1.axis_x.range.min = now - 100000; s1.axis_x.range.max = now + 100000;
 	s1.axis_y.range.min = -20; s1.axis_y.range.max = 200;
-	s1.place.x0 = 0.25; s1.place.x1 = 0.75;
-	s1.place.y0 = 0.0; s1.place.y1 = 1.0;
+	s1.axis_x.place.min = 0.25; s1.axis_x.place.max = 0.75;
+	s1.axis_y.place.min = 0.0; s1.axis_y.place.max = 1.0;
 
 	s2.axis_x.range.min = -15; s2.axis_x.range.max = 30;
 	s2.axis_y.range.min = -20; s2.axis_y.range.max = 200;
-	s2.place.x0 = 0.2; s2.place.x1 = 1;
-	s2.place.y0 = 0.0; s2.place.y1 = 1.0;
+	s2.axis_x.place.min = 0.2; s2.axis_x.place.max = 1;
+	s2.axis_y.place.min = 0.0; s2.axis_y.place.max = 1.0;
 
 	s3.axis_x.range.min = high - 2; s3.axis_x.range.max = high + 1;
 	s3.axis_y.range.min = -20; s3.axis_y.range.max = 200;
-	s3.place.x0 = 0; s3.place.x1 = 0.8;
-	s3.place.y0 = 0.0; s3.place.y1 = 1.0;
+	s3.axis_x.place.min = 0; s3.axis_x.place.max = 0.8;
+	s3.axis_y.place.min = 0.0; s3.axis_y.place.max = 1.0;
 
 	s4.axis_x.range.min = high + 0.0049; s4.axis_x.range.max = high + 0.0054;
 	s4.axis_y.range.min = -20; s4.axis_y.range.max = 200;
-	s4.place.x0 = 0.2; s4.place.x1 = 1.0;
-	s4.place.y0 = 0.0; s4.place.y1 = 1.0;
+	s4.axis_x.place.min = 0.2; s4.axis_x.place.max = 1.0;
+	s4.axis_y.place.min = 0.0; s4.axis_y.place.max = 1.0;
 
 	s1.marker.shape = Marker.Shape.SQUARE;
 	s2.marker.shape = Marker.Shape.PRICLE_CIRCLE;
