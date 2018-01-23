@@ -191,11 +191,11 @@ namespace CairoChart {
 		public virtual void zoom_in (Area area) {
 			foreach (var s in series) {
 				if (!s.zoom_show) continue;
-				var real_x0 = s.get_real_x (area.x0);
-				var real_x1 = s.get_real_x (area.x1);
+				var real_x0 = s.axis_x.get_real_x (area.x0);
+				var real_x1 = s.axis_x.get_real_x (area.x1);
 				var real_width = real_x1 - real_x0;
-				var real_y0 = s.get_real_y (area.y0);
-				var real_y1 = s.get_real_y (area.y1);
+				var real_y0 = s.axis_y.get_real_y (area.y0);
+				var real_y1 = s.axis_y.get_real_y (area.y1);
 				var real_height = real_y0 - real_y1;
 				// if selected square does not intersect with the series's square
 				if (   real_x1 <= s.axis_x.range.zmin || real_x0 >= s.axis_x.range.zmax
@@ -205,27 +205,27 @@ namespace CairoChart {
 				}
 				if (real_x0 >= s.axis_x.range.zmin) {
 					s.axis_x.range.zmin = real_x0;
-					s.place.zx0 = 0;
+					s.axis_x.place.zmin = 0;
 				} else {
-					s.place.zx0 = (s.axis_x.range.zmin - real_x0) / real_width;
+					s.axis_x.place.zmin = (s.axis_x.range.zmin - real_x0) / real_width;
 				}
 				if (real_x1 <= s.axis_x.range.zmax) {
 					s.axis_x.range.zmax = real_x1;
-					s.place.zx1 = 1;
+					s.axis_x.place.zmax = 1;
 				} else {
-					s.place.zx1 = (s.axis_x.range.zmax - real_x0) / real_width;
+					s.axis_x.place.zmax = (s.axis_x.range.zmax - real_x0) / real_width;
 				}
 				if (real_y1 >= s.axis_y.range.zmin) {
 					s.axis_y.range.zmin = real_y1;
-					s.place.zy0 = 0;
+					s.axis_y.place.zmin = 0;
 				} else {
-					s.place.zy0 = (s.axis_y.range.zmin - real_y1) / real_height;
+					s.axis_y.place.zmin = (s.axis_y.range.zmin - real_y1) / real_height;
 				}
 				if (real_y0 <= s.axis_y.range.zmax) {
 					s.axis_y.range.zmax = real_y0;
-					s.place.zy1 = 1;
+					s.axis_y.place.zmax = 1;
 				} else {
-					s.place.zy1 = (s.axis_y.range.zmax - real_y1) / real_height;
+					s.axis_y.place.zmax = (s.axis_y.range.zmax - real_y1) / real_height;
 				}
 			}
 
@@ -311,8 +311,8 @@ namespace CairoChart {
 			if (   s1.axis_x.position != s2.axis_x.position
 			    || s1.axis_x.range.zmin != s2.axis_x.range.zmin
 			    || s1.axis_x.range.zmax != s2.axis_x.range.zmax
-			    || s1.place.zx0 != s2.place.zx0
-			    || s1.place.zx1 != s2.place.zx1
+			    || s1.axis_x.place.zmin != s2.axis_x.place.zmin
+			    || s1.axis_x.place.zmax != s2.axis_x.place.zmax
 			    || s1.axis_x.dtype != s2.axis_x.dtype
 			)
 				return false;
@@ -323,8 +323,8 @@ namespace CairoChart {
 			if (   s1.axis_y.position != s2.axis_y.position
 			    || s1.axis_y.range.zmin != s2.axis_y.range.zmin
 			    || s1.axis_y.range.zmax != s2.axis_y.range.zmax
-			    || s1.place.zy0 != s2.place.zy0
-			    || s1.place.zy1 != s2.place.zy1
+			    || s1.axis_y.place.zmin != s2.axis_y.place.zmin
+			    || s1.axis_y.place.zmax != s2.axis_y.place.zmax
 			    || s1.axis_y.dtype != s2.axis_y.dtype
 			)
 				return false;
@@ -353,10 +353,10 @@ namespace CairoChart {
 			if (nshow == 1) joint_x = joint_y = false;
 
 			for (var si = series.length - 1, nskip = 0; si >= 0; --si)
-				series[si].join_axes(true, ref nskip);
+				series[si].axis_x.join_axes(true, ref nskip);
 
 			for (var si = series.length - 1, nskip = 0; si >= 0; --si)
-				series[si].join_axes(false, ref nskip);
+				series[si].axis_y.join_axes(false, ref nskip);
 		}
 
 		protected virtual void draw_plarea_border () {
@@ -374,11 +374,11 @@ namespace CairoChart {
 		}
 		protected virtual void draw_haxes () {
 			for (var si = series.length - 1, nskip = 0; si >=0; --si)
-				series[si].draw_horizontal_axis (ref nskip);
+				series[si].axis_x.draw_horizontal_axis (ref nskip);
 		}
 		protected virtual void draw_vaxes () {
 			for (var si = series.length - 1, nskip = 0; si >=0; --si)
-				series[si].draw_vertical_axis (ref nskip);
+				series[si].axis_y.draw_vertical_axis (ref nskip);
 		}
 		protected virtual void draw_series () {
 			foreach (var s in series)
