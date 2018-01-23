@@ -350,7 +350,6 @@ namespace CairoChart {
 					}
 					chart.ctx.move_to(scr_x - title.width / 2, scr_y);
 					chart.color = color;
-					if (chart.joint_x) chart.color = chart.joint_color;
 				} else {
 					var scr_y = chart.plarea.y0 + chart.plarea.height * (1 - (place.zmin + place.zmax) / 2);
 					switch (position) {
@@ -363,9 +362,11 @@ namespace CairoChart {
 						chart.ctx.move_to(scr_x, scr_y + title.height / 2);
 						break;
 					}
-					chart.color = color;
-					if (chart.joint_y) chart.color = chart.joint_color;
 				}
+				if (is_x && chart.joint_x || !is_x && chart.joint_y)
+					chart.color = chart.joint_color;
+				else
+					chart.color = color;
 				title.show();
 			}
 
