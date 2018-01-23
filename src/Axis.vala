@@ -500,7 +500,10 @@ namespace CairoChart {
 			var ctx = chart.ctx;
 
 			for (Float128 v = min, max = range.zmax; Math.point_belong (v, min, max); v += step) {
-				if (is_x && chart.joint_x || !is_x && chart.joint_y) chart.color = chart.joint_color;
+				if (is_x && chart.joint_x || !is_x && chart.joint_y) {
+					chart.color = chart.joint_color;
+					ser.grid.style.color = Color(0, 0, 0, 0.5);
+				}
 				else chart.color = color;
 				string text = "", time_text = "";
 				switch (dtype) {
@@ -529,9 +532,7 @@ namespace CairoChart {
 							break;
 						}
 						// 6. Draw grid lines to the ser.axis_y.place.zmin.
-						var grid_style = ser.grid.style;
-						if (chart.joint_x) grid_style.color = Color(0, 0, 0, 0.5);
-						grid_style.apply(chart);
+						ser.grid.style.apply(chart);
 						double y = chart.evarea.y1 - max_rec_size - font.vspacing - (title.text == "" ? 0 : title.height + font.vspacing);
 						ctx.move_to (scr_v, y);
 						if (chart.joint_x)
@@ -545,9 +546,7 @@ namespace CairoChart {
 						                 compact_rec_pos (v, text_t));
 						text_t.show();
 						// 6. Draw grid lines to the ser.axis_x.place.zmin.
-						var grid_style = ser.grid.style;
-						if (chart.joint_y) grid_style.color = Color(0, 0, 0, 0.5);
-						grid_style.apply(chart);
+						ser.grid.style.apply(chart);
 						double x = chart.evarea.x0 + max_rec_size + font.hspacing + (title.text == "" ? 0 : title.width + font.hspacing);
 						ctx.move_to (x, scr_v);
 						if (chart.joint_y)
@@ -575,9 +574,7 @@ namespace CairoChart {
 							break;
 						}
 						// 6. Draw grid lines to the ser.axis_y.place.zmax.
-						var grid_style = ser.grid.style;
-						if (chart.joint_x) grid_style.color = Color(0, 0, 0, 0.5);
-						grid_style.apply(chart);
+						ser.grid.style.apply(chart);
 						double y = chart.evarea.y0 + max_rec_size + font.vspacing + (title.text == "" ? 0 : title.height + font.vspacing);
 						ctx.move_to (scr_v, y);
 						if (chart.joint_x)
@@ -591,9 +588,7 @@ namespace CairoChart {
 						                 compact_rec_pos (v, text_t));
 						text_t.show();
 						// 6. Draw grid lines to the ser.axis_x.place.zmax.
-						var grid_style = ser.grid.style;
-						if (chart.joint_y) grid_style.color = Color(0, 0, 0, 0.5);
-						grid_style.apply(chart);
+						ser.grid.style.apply(chart);
 						double x = chart.evarea.x1 - max_rec_size - font.hspacing - (title.text == "" ? 0 : title.width + font.hspacing);
 						ctx.move_to (x, scr_v);
 						if (chart.joint_y)
