@@ -495,7 +495,6 @@ namespace CairoChart {
 		}
 
 		protected virtual void draw_recs (Float128 min, Float128 step, double max_rec_size) {
-			// 5. Draw records, update cur_{x,y}_{min,max}.
 			for (Float128 v = min; Math.point_belong (v, min, range.zmax); v += step) {
 				if (is_x && chart.joint_x || !is_x && chart.joint_y) {
 					chart.color = chart.joint_color;
@@ -530,7 +529,6 @@ namespace CairoChart {
 							text_t.show(); chart.ctx.move_to (crpt, print_y - dtf); time_text_t.show();
 							break;
 						}
-						// 6. Draw grid lines to the ser.axis_y.place.zmin.
 						ser.grid.style.apply(chart);
 						double y = ey1 - max_rec_size - tthv;
 						chart.ctx.move_to (scr_v, y);
@@ -540,7 +538,6 @@ namespace CairoChart {
 					} else {
 						chart.ctx.move_to (ex0 + max_rec_size - text_t.width + ttwh, compact_rec_pos (v, text_t));
 						text_t.show();
-						// 6. Draw grid lines to the ser.axis_x.place.zmin.
 						ser.grid.style.apply(chart);
 						double x = ex0 + max_rec_size + ttwh;
 						chart.ctx.move_to (x, scr_v);
@@ -558,7 +555,6 @@ namespace CairoChart {
 							text_t.show(); chart.ctx.move_to (crpt, print_y - dtf); time_text_t.show();
 							break;
 						}
-						// 6. Draw grid lines to the ser.axis_y.place.zmax.
 						ser.grid.style.apply(chart);
 						double y = ey0 + max_rec_size + tthv;
 						chart.ctx.move_to (scr_v, y);
@@ -568,7 +564,6 @@ namespace CairoChart {
 					} else {
 						chart.ctx.move_to (ex1 - text_t.width - ttwh, compact_rec_pos (v, text_t));
 						text_t.show();
-						// 6. Draw grid lines to the ser.axis_x.place.zmax.
 						ser.grid.style.apply(chart);
 						double x = ex1 - max_rec_size - ttwh;
 						chart.ctx.move_to (x, scr_v);
