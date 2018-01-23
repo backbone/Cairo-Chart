@@ -530,8 +530,7 @@ namespace CairoChart {
 						else chart.ctx.line_to (scr_v, double.min (y, py0 + ph * (1 - ser.axis_y.place.zmax)));
 					} else {
 						chart.ctx.move_to (ex0 - text_t.width, compact_rec_pos (v, text_t));
-						text_t.show(); ser.grid.style.apply(chart);
-						chart.ctx.move_to (ex0, scr_v);
+						text_t.show(); ser.grid.style.apply(chart); chart.ctx.move_to (ex0, scr_v);
 						if (chart.joint_y) chart.ctx.line_to (chart.plarea.x1, scr_v);
 						else chart.ctx.line_to (double.max (ex0, px0 + pw * ser.axis_x.place.zmax), scr_v);
 					}
@@ -541,8 +540,7 @@ namespace CairoChart {
 						chart.ctx.move_to (compact_rec_pos (v, text_t), ey0); text_t.show();
 						if (dtype == Axis.DType.DATE_TIME)
 							{ chart.ctx.move_to (crpt, ey0 - dtf); time_text_t.show(); }
-						ser.grid.style.apply(chart);
-						chart.ctx.move_to (scr_v, ey0);
+						ser.grid.style.apply(chart); chart.ctx.move_to (scr_v, ey0);
 						if (chart.joint_x) chart.ctx.line_to (scr_v, chart.plarea.y1);
 						else chart.ctx.line_to (scr_v, double.max (ey0, py0 + ph * (1 - ser.axis_y.place.zmin)));
 					} else {
