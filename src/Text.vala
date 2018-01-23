@@ -94,6 +94,7 @@ namespace CairoChart {
 		 * Show ``Text``.
 		 */
 		public virtual void show () {
+			if (text == "") return;
 			chart.ctx.select_font_face(font.family,
 			                           font.slant,
 			                           font.weight);

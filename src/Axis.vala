@@ -209,7 +209,8 @@ namespace CairoChart {
 			date = dt.format(date_format);
 			var dsec_str =
 				("%."+(dsec_signs.to_string())+"Lf").printf((LongDouble)(x - (int64)x)).offset(1);
-			time = dt.format(time_format) + dsec_str;
+			if (time_format != "")
+				time = dt.format(time_format) + dsec_str;
 		}
 
 		/**
@@ -526,9 +527,7 @@ namespace CairoChart {
 						switch (dtype) {
 						case Axis.DType.NUMBERS: text_t.show(); break;
 						case Axis.DType.DATE_TIME:
-							if (date_format != "") text_t.show();
-							chart.ctx.move_to (crpt, print_y - dtf);
-							if (time_format != "") time_text_t.show();
+							text_t.show(); chart.ctx.move_to (crpt, print_y - dtf); time_text_t.show();
 							break;
 						}
 						// 6. Draw grid lines to the ser.axis_y.place.zmin.
@@ -556,9 +555,7 @@ namespace CairoChart {
 						switch (dtype) {
 						case Axis.DType.NUMBERS: text_t.show(); break;
 						case Axis.DType.DATE_TIME:
-							if (date_format != "") text_t.show();
-							chart.ctx.move_to (crpt, print_y - dtf);
-							if (time_format != "") time_text_t.show();
+							text_t.show(); chart.ctx.move_to (crpt, print_y - dtf); time_text_t.show();
 							break;
 						}
 						// 6. Draw grid lines to the ser.axis_y.place.zmax.
