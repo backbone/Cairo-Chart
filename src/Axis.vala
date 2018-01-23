@@ -511,10 +511,11 @@ namespace CairoChart {
 				var tthv = title.text == "" ? 0 : title.height + font.vspacing; tthv += font.vspacing;
 				var ttwh = title.text == "" ? 0 : title.width + font.hspacing; ttwh += font.hspacing;
 				var dtf = (date_format == "" ? 0 : text_t.height + font.vspacing);
+				var py0 = chart.plarea.y0, ey0 = chart.evarea.y0, py1 = chart.plarea.y1, ey1 = chart.evarea.y1;
 				switch (position) {
 				case Axis.Position.LOW:
 					if (is_x) {
-						var print_y = chart.evarea.y1 - tthv;
+						var print_y = ey1 - tthv;
 						chart.ctx.move_to (compact_rec_pos (v, text_t), print_y);
 						switch (dtype) {
 						case Axis.DType.NUMBERS: text_t.show(); break;
@@ -527,10 +528,10 @@ namespace CairoChart {
 						}
 						// 6. Draw grid lines to the ser.axis_y.place.zmin.
 						ser.grid.style.apply(chart);
-						double y = chart.evarea.y1 - max_rec_size - tthv;
+						double y = ey1 - max_rec_size - tthv;
 						chart.ctx.move_to (scr_v, y);
-						if (chart.joint_x) chart.ctx.line_to (scr_v, chart.plarea.y0);
-						else chart.ctx.line_to (scr_v, double.min (y, chart.plarea.y0 + chart.plarea.height * (1 - ser.axis_y.place.zmax)));
+						if (chart.joint_x) chart.ctx.line_to (scr_v, py0);
+						else chart.ctx.line_to (scr_v, double.min (y, py0 + chart.plarea.height * (1 - ser.axis_y.place.zmax)));
 						break;
 					} else {
 						chart.ctx.move_to (chart.evarea.x0 + max_rec_size - text_t.width + ttwh, compact_rec_pos (v, text_t));
@@ -545,7 +546,7 @@ namespace CairoChart {
 					}
 				case Axis.Position.HIGH:
 					if (is_x) {
-						var print_y = chart.evarea.y0 + max_rec_size + tthv;
+						var print_y = ey0 + max_rec_size + tthv;
 						chart.ctx.move_to (compact_rec_pos (v, text_t), print_y);
 						switch (dtype) {
 						case Axis.DType.NUMBERS: text_t.show(); break;
@@ -558,10 +559,10 @@ namespace CairoChart {
 						}
 						// 6. Draw grid lines to the ser.axis_y.place.zmax.
 						ser.grid.style.apply(chart);
-						double y = chart.evarea.y0 + max_rec_size + tthv;
+						double y = ey0 + max_rec_size + tthv;
 						chart.ctx.move_to (scr_v, y);
-						if (chart.joint_x) chart.ctx.line_to (scr_v, chart.plarea.y1);
-						else chart.ctx.line_to (scr_v, double.max (y, chart.plarea.y0 + chart.plarea.height * (1 - ser.axis_y.place.zmin)));
+						if (chart.joint_x) chart.ctx.line_to (scr_v, py1);
+						else chart.ctx.line_to (scr_v, double.max (y, py0 + chart.plarea.height * (1 - ser.axis_y.place.zmin)));
 						break;
 					} else {
 						chart.ctx.move_to (chart.evarea.x1 - text_t.width - ttwh, compact_rec_pos (v, text_t));
