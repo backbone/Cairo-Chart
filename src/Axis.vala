@@ -516,7 +516,7 @@ namespace CairoChart {
 				var ttwh = title.text == "" ? font.hspacing : title.width + 2 * font.hspacing;
 				var dtf = (date_format == "" ? 0 : text_t.height + font.vspacing);
 				var py0 = chart.plarea.y0, ey0 = chart.evarea.y0 + max_rec_size + tthv, ey1 = chart.evarea.y1 - tthv;
-				var px0 = chart.plarea.x0, ex0 = chart.evarea.x0, px1 = chart.plarea.x1, ex1 = chart.evarea.x1;
+				var px0 = chart.plarea.x0, ex0 = chart.evarea.x0 + max_rec_size + ttwh, ex1 = chart.evarea.x1 - ttwh;
 				var ph = chart.plarea.height, pw = chart.plarea.width;
 				switch (position) {
 				case Axis.Position.LOW:
@@ -529,12 +529,11 @@ namespace CairoChart {
 						if (chart.joint_x) chart.ctx.line_to (scr_v, py0);
 						else chart.ctx.line_to (scr_v, double.min (y, py0 + ph * (1 - ser.axis_y.place.zmax)));
 					} else {
-						chart.ctx.move_to (ex0 + max_rec_size - text_t.width + ttwh, compact_rec_pos (v, text_t));
+						chart.ctx.move_to (ex0 - text_t.width, compact_rec_pos (v, text_t));
 						text_t.show(); ser.grid.style.apply(chart);
-						double x = ex0 + max_rec_size + ttwh;
-						chart.ctx.move_to (x, scr_v);
-						if (chart.joint_y) chart.ctx.line_to (px1, scr_v);
-						else chart.ctx.line_to (double.max (x, px0 + pw * ser.axis_x.place.zmax), scr_v);
+						chart.ctx.move_to (ex0, scr_v);
+						if (chart.joint_y) chart.ctx.line_to (chart.plarea.x1, scr_v);
+						else chart.ctx.line_to (double.max (ex0, px0 + pw * ser.axis_x.place.zmax), scr_v);
 					}
 					break;
 				case Axis.Position.HIGH:
@@ -551,9 +550,9 @@ namespace CairoChart {
 						if (chart.joint_x) chart.ctx.line_to (scr_v, chart.plarea.y1);
 						else chart.ctx.line_to (scr_v, double.max (ey0, py0 + ph * (1 - ser.axis_y.place.zmin)));
 					} else {
-						chart.ctx.move_to (ex1 - text_t.width - ttwh, compact_rec_pos (v, text_t));
+						chart.ctx.move_to (ex1 - text_t.width, compact_rec_pos (v, text_t));
 						text_t.show(); ser.grid.style.apply(chart);
-						double x = ex1 - max_rec_size - ttwh;
+						double x = ex1 - max_rec_size;
 						chart.ctx.move_to (x, scr_v);
 						if (chart.joint_y) chart.ctx.line_to (px0, scr_v);
 						else chart.ctx.line_to (double.min (x, px0 + pw * ser.axis_x.place.zmin), scr_v);
