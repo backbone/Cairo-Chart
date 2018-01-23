@@ -522,13 +522,9 @@ namespace CairoChart {
 				case Axis.Position.LOW:
 					if (is_x) {
 						var print_y = ey1 - tthv;
-						chart.ctx.move_to (compact_rec_pos (v, text_t), print_y);
-						switch (dtype) {
-						case Axis.DType.NUMBERS: text_t.show(); break;
-						case Axis.DType.DATE_TIME:
-							text_t.show(); chart.ctx.move_to (crpt, print_y - dtf); time_text_t.show();
-							break;
-						}
+						chart.ctx.move_to (compact_rec_pos (v, text_t), print_y); text_t.show();
+						if (dtype == Axis.DType.DATE_TIME)
+							{ chart.ctx.move_to (crpt, print_y - dtf); time_text_t.show(); }
 						ser.grid.style.apply(chart);
 						double y = ey1 - max_rec_size - tthv;
 						chart.ctx.move_to (scr_v, y);
