@@ -199,6 +199,24 @@ namespace CairoChart {
 		}
 
 		/**
+		 * Gets screen position by real ``Axis`` value.
+		 * @param axis_value real ``Axis`` value.
+		 */
+		public virtual double scr_pos (Float128 axis_value) {
+			return is_x ? chart.plarea.x0 + chart.plarea.width * (place.zmin + (axis_value - range.zmin) / range.zrange * place.zrange)
+			            : chart.plarea.y0 + chart.plarea.height * (1 - (place.zmin + (axis_value - range.zmin) / range.zrange * place.zrange));
+		}
+
+		/**
+		 * Gets real ``Axis`` value by screen position.
+		 * @param scr_pos screen position.
+		 */
+		public virtual Float128 axis_val (double scr_pos) {
+			return is_x ? range.zmin + ((scr_pos - chart.plarea.x0) / chart.plarea.width - place.zmin) * range.zrange / place.zrange
+			            : range.zmin + ((chart.plarea.y1 - scr_pos) / chart.plarea.height - place.zmin) * range.zrange / place.zrange;
+		}
+
+		/**
 		 * Prints date/time to strings with a current formats.
 		 * @param date returns formatted date string.
 		 * @param time returns formatted time string.
@@ -214,72 +232,21 @@ namespace CairoChart {
 		}
 
 		/**
+		 * Gets compact placement position on the screen.
+		 * @param axis_value real ``Axis`` value.
+		 * @param text to place on the screen.
+		 */
+		public virtual double compact_rec_pos (Float128 axis_value, Text text) {
+			return is_x ? scr_pos(axis_value) - text.width / 2 - text.width * (axis_value - (range.zmin + range.zmax) / 2) / range.zrange
+			            : scr_pos(axis_value) + text.height / 2 + text.height * (axis_value - (range.zmin + range.zmax) / 2) / range.zrange;
+		}
+
+		/**
 		 * Zooms out ``Axis``.
 		 */
 		public virtual void zoom_out () {
 			range.zoom_out();
 			place.zoom_out();
-		}
-
-		/**
-		 * Joins equal axes.
-		 * @param nskip returns number of series to skip printing.
-		 */
-		public virtual void join_axes (ref int nskip) {
-			Axis axis = this;
-			if (!ser.zoom_show) return;
-			if (nskip != 0) {--nskip; return;}
-			var max_rec_width = 0.0, max_rec_height = 0.0;
-			calc_rec_sizes (axis, out max_rec_width, out max_rec_height, is_x);
-			var max_font_spacing = is_x ? axis.font.vspacing : axis.font.hspacing;
-			var max_axis_font_width = axis.title.text == "" ? 0 : axis.title.width + axis.font.hspacing;
-			var max_axis_font_height = axis.title.text == "" ? 0 : axis.title.height + axis.font.vspacing;
-
-			var si = Math.find_arr<Series>(chart.series, ser);
-			if (si == -1) return;
-
-			if (is_x)
-				join_rel_axes (si, true, ref max_rec_width, ref max_rec_height, ref max_font_spacing, ref max_axis_font_height, ref nskip);
-			else
-				join_rel_axes (si, true, ref max_rec_width, ref max_rec_height, ref max_font_spacing, ref max_axis_font_width, ref nskip);
-
-			// for 4.2. Cursor values for joint X axis
-			if (si == chart.zoom_1st_idx && chart.cursors.has_crossings) {
-				switch (chart.cursors.style.orientation) {
-				case Cursors.Orientation.VERTICAL:
-					if (is_x && chart.joint_x) {
-						var tmp = max_rec_height + axis.font.vspacing;
-						switch (axis.position) {
-						case Axis.Position.LOW: chart.plarea.y1 -= tmp; break;
-						case Axis.Position.HIGH: chart.plarea.y0 += tmp; break;
-						}
-					}
-					break;
-				case Cursors.Orientation.HORIZONTAL:
-					if (!is_x && chart.joint_y) {
-						var tmp = max_rec_width + font.hspacing;
-						switch (position) {
-						case Axis.Position.LOW: chart.plarea.x0 += tmp; break;
-						case Axis.Position.HIGH: chart.plarea.x1 -= tmp; break;
-						}
-					}
-					break;
-				}
-			}
-			if (is_x && (!chart.joint_x || si == chart.zoom_1st_idx)) {
-				var tmp = max_rec_height + max_font_spacing + max_axis_font_height;
-				switch (axis.position) {
-				case Axis.Position.LOW: chart.plarea.y1 -= tmp; break;
-				case Axis.Position.HIGH: chart.plarea.y0 += tmp; break;
-				}
-			}
-			if (!is_x && (!chart.joint_y || si == chart.zoom_1st_idx)) {
-				var tmp = max_rec_width + max_font_spacing + max_axis_font_width;
-				switch (position) {
-				case Axis.Position.LOW: chart.plarea.x0 += tmp; break;
-				case Axis.Position.HIGH: chart.plarea.x1 -= tmp; break;
-				}
-			}
 		}
 
 		/**
@@ -395,31 +362,64 @@ namespace CairoChart {
 		}
 
 		/**
-		 * Gets compact placement position on the screen.
-		 * @param axis_value real ``Axis`` value.
-		 * @param text to place on the screen.
+		 * Joins equal axes.
+		 * @param nskip returns number of series to skip printing.
 		 */
-		public virtual double compact_rec_pos (Float128 axis_value, Text text) {
-			return is_x ? scr_pos(axis_value) - text.width / 2 - text.width * (axis_value - (range.zmin + range.zmax) / 2) / range.zrange
-			            : scr_pos(axis_value) + text.height / 2 + text.height * (axis_value - (range.zmin + range.zmax) / 2) / range.zrange;
-		}
+		public virtual void join_axes (ref int nskip) {
+			Axis axis = this;
+			if (!ser.zoom_show) return;
+			if (nskip != 0) {--nskip; return;}
+			var max_rec_width = 0.0, max_rec_height = 0.0;
+			calc_rec_sizes (axis, out max_rec_width, out max_rec_height, is_x);
+			var max_font_spacing = is_x ? axis.font.vspacing : axis.font.hspacing;
+			var max_axis_font_width = axis.title.text == "" ? 0 : axis.title.width + axis.font.hspacing;
+			var max_axis_font_height = axis.title.text == "" ? 0 : axis.title.height + axis.font.vspacing;
 
-		/**
-		 * Gets screen position by real ``Axis`` value.
-		 * @param axis_value real ``Axis`` value.
-		 */
-		public virtual double scr_pos (Float128 axis_value) {
-			return is_x ? chart.plarea.x0 + chart.plarea.width * (place.zmin + (axis_value - range.zmin) / range.zrange * place.zrange)
-			            : chart.plarea.y0 + chart.plarea.height * (1 - (place.zmin + (axis_value - range.zmin) / range.zrange * place.zrange));
-		}
+			var si = Math.find_arr<Series>(chart.series, ser);
+			if (si == -1) return;
 
-		/**
-		 * Gets real ``Axis`` value by screen position.
-		 * @param scr_pos screen position.
-		 */
-		public virtual Float128 axis_val (double scr_pos) {
-			return is_x ? range.zmin + ((scr_pos - chart.plarea.x0) / chart.plarea.width - place.zmin) * range.zrange / place.zrange
-			            : range.zmin + ((chart.plarea.y1 - scr_pos) / chart.plarea.height - place.zmin) * range.zrange / place.zrange;
+			if (is_x)
+				join_rel_axes (si, true, ref max_rec_width, ref max_rec_height, ref max_font_spacing, ref max_axis_font_height, ref nskip);
+			else
+				join_rel_axes (si, true, ref max_rec_width, ref max_rec_height, ref max_font_spacing, ref max_axis_font_width, ref nskip);
+
+			// for 4.2. Cursor values for joint X axis
+			if (si == chart.zoom_1st_idx && chart.cursors.has_crossings) {
+				switch (chart.cursors.style.orientation) {
+				case Cursors.Orientation.VERTICAL:
+					if (is_x && chart.joint_x) {
+						var tmp = max_rec_height + axis.font.vspacing;
+						switch (axis.position) {
+						case Axis.Position.LOW: chart.plarea.y1 -= tmp; break;
+						case Axis.Position.HIGH: chart.plarea.y0 += tmp; break;
+						}
+					}
+					break;
+				case Cursors.Orientation.HORIZONTAL:
+					if (!is_x && chart.joint_y) {
+						var tmp = max_rec_width + font.hspacing;
+						switch (position) {
+						case Axis.Position.LOW: chart.plarea.x0 += tmp; break;
+						case Axis.Position.HIGH: chart.plarea.x1 -= tmp; break;
+						}
+					}
+					break;
+				}
+			}
+			if (is_x && (!chart.joint_x || si == chart.zoom_1st_idx)) {
+				var tmp = max_rec_height + max_font_spacing + max_axis_font_height;
+				switch (axis.position) {
+				case Axis.Position.LOW: chart.plarea.y1 -= tmp; break;
+				case Axis.Position.HIGH: chart.plarea.y0 += tmp; break;
+				}
+			}
+			if (!is_x && (!chart.joint_y || si == chart.zoom_1st_idx)) {
+				var tmp = max_rec_width + max_font_spacing + max_axis_font_width;
+				switch (position) {
+				case Axis.Position.LOW: chart.plarea.x0 += tmp; break;
+				case Axis.Position.HIGH: chart.plarea.x1 -= tmp; break;
+				}
+			}
 		}
 
 		protected virtual void calc_rec_sizes (Axis axis, out double max_rec_width, out double max_rec_height, bool horizontal = true) {
