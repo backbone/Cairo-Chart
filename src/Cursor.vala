@@ -5,7 +5,7 @@ namespace CairoChart {
 	 */
 	public class Cursors {
 
-		protected Chart chart;
+		protected unowned Chart chart;
 		protected List<Point?> list = new List<Point?> ();
 		protected Point active_cursor = Point(); // { get; protected set; default = Point128 (); }
 		protected bool is_cursor_active = false; // { get; protected set; default = false; }

@@ -5,7 +5,8 @@ namespace CairoChart {
 	 */
 	public class Axis {
 
-		protected Chart chart;
+		protected unowned Chart chart;
+		protected unowned Series ser;
 		protected string _format = "%.2Lf";
 		protected string _date_format = "%Y.%m.%d";
 		protected string _time_format = "%H:%M:%S";
@@ -20,6 +21,11 @@ namespace CairoChart {
 		 * ``Axis`` range/limits.
 		 */
 		public Range range = new Range();
+
+		/**
+		 * ``Axis`` relative range/limits.
+		 */
+		public Range place = new Range();
 
 		/**
 		 * Data type.
@@ -158,10 +164,12 @@ namespace CairoChart {
 
 		/**
 		 * Constructs a new ``Axis``.
-		 * @param chart {@link Chart} instance.
+		 * @param chart ``Chart`` instance.
+		 * @param ser ``Series`` instance.
 		 */
-		public Axis (Chart chart) {
+		public Axis (Chart chart, Series ser) {
 			this.chart = chart;
+			this.ser = ser;
 			title = new Text (chart, "");
 		}
 
@@ -169,7 +177,7 @@ namespace CairoChart {
 		 * Gets a copy of the ``Axis``.
 		 */
 		public virtual Axis copy () {
-			var axis = new Axis (chart);
+			var axis = new Axis (chart, ser);
 			axis._date_format = this._date_format;
 			axis._dsec_signs = this._dsec_signs;
 			axis._format = this._format;
@@ -178,6 +186,7 @@ namespace CairoChart {
 			axis.font = this.font.copy();
 			axis.line_style = this.line_style;
 			axis.range = this.range.copy();
+			axis.place = this.place.copy();
 			axis.position = this.position;
 			axis.scale = this.scale;
 			axis.title = this.title.copy();
@@ -205,6 +214,7 @@ namespace CairoChart {
 		 */
 		public virtual void zoom_out () {
 			range.zoom_out();
+			place.zoom_out();
 		}
 //--------------------------------------------------------------------
 
@@ -215,9 +225,8 @@ namespace CairoChart {
 		 * @param nskip returns number of series to skip printing.
 		 */
 		public virtual void join_axes (bool is_x, ref int nskip) {
-			Axis axis = axis_x;
-			if (!is_x) axis = axis_y;
-			if (!zoom_show) return;
+			Axis axis = this;
+			if (!ser.zoom_show) return;
 			if (nskip != 0) {--nskip; return;}
 			var max_rec_width = 0.0, max_rec_height = 0.0;
 			calc_rec_sizes (axis, out max_rec_width, out max_rec_height, is_x);
@@ -225,7 +234,7 @@ namespace CairoChart {
 			var max_axis_font_width = axis.title.text == "" ? 0 : axis.title.width + axis.font.hspacing;
 			var max_axis_font_height = axis.title.text == "" ? 0 : axis.title.height + axis.font.vspacing;
 
-			var si = Math.find_arr<Series>(chart.series, this);
+			var si = Math.find_arr<Series>(chart.series, ser);
 			if (si == -1) return;
 
 			if (is_x)

@@ -7,7 +7,7 @@ namespace CairoChart {
 	 */
 	public class Series {
 
-		protected Chart chart { get; protected set; default = null; }
+		protected unowned Chart chart { get; protected set; default = null; }
 
 		/**
 		 * 128-bit (X;Y) points.
@@ -48,11 +48,6 @@ namespace CairoChart {
 		 * Y-axis.
 		 */
 		public Axis axis_y;
-
-		/**
-		 * ``Place`` of the ``Series`` on the {@link Chart}.
-		 */
-		public Place place = new Place();
 
 		/**
 		 * Title of the ``Chart``.
@@ -101,8 +96,8 @@ namespace CairoChart {
 		public Series (Chart chart) {
 			this.chart = chart;
 			title = new Text(chart);
-			axis_x = new Axis(chart);
-			axis_y = new Axis(chart);
+			axis_x = new Axis(chart, this);
+			axis_y = new Axis(chart, this);
 			this.marker = new Marker(chart);
 		}
 
@@ -116,7 +111,6 @@ namespace CairoChart {
 			series.grid = this.grid.copy ();
 			series.line_style = this.line_style;
 			series.marker = this.marker;
-			series.place = this.place.copy();
 			series.points = this.points;
 			series.sort = this.sort;
 			series.title = this.title.copy();
@@ -177,7 +171,6 @@ namespace CairoChart {
 				zoom_show = true;
 				axis_x.zoom_out();
 				axis_y.zoom_out();
-				place.zoom_out();
 		}
 	}
 }
