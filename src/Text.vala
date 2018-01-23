@@ -1,71 +1,142 @@
-namespace Gtk.CairoChart {
-	[Compact]
+namespace CairoChart {
+
+	/**
+	 * ``CairoChart`` Text.
+	 */
 	public class Text {
-		public string text = "";
-		public FontStyle style = FontStyle ();
+
+		protected unowned Chart chart;
+		protected string _text;
+		protected Font _font;
+		protected Cairo.TextExtents? _ext;
+
+		/**
+		 * ``Text`` string.
+		 */
+		public virtual string text {
+			get {
+				return _text;
+			}
+			set {
+				_text = value;
+				_ext = null;
+			}
+		}
+
+		/**
+		 * ``Text`` font style.
+		 */
+		public virtual Font font {
+			get {
+				return _font;
+			}
+			set {
+				_font = value;
+				_font.notify.connect((s, p) => {
+					_ext = null;
+				});
+				_ext = null;
+			}
+		}
+
+		/**
+		 * ``Text`` color.
+		 */
 		public Color color = Color();
 
-		public Cairo.TextExtents get_extents (Cairo.Context context) {
-			context.select_font_face (style.family, style.slant, style.weight);
-			context.set_font_size (style.size);
-			Cairo.TextExtents extents;
-			context.text_extents (text, out extents);
-			return extents;
-		}
-
-		public double get_width (Cairo.Context context) {
-			var extents = get_extents (context);
-			switch (style.orientation) {
-			case FontOrient.HORIZONTAL: return extents.width;
-			case FontOrient.VERTICAL: return extents.height;
-			default: return 0.0;
+		/**
+		 * Cairo ``Text`` extents.
+		 */
+		protected virtual Cairo.TextExtents ext {
+			get {
+				if (_ext == null) {
+					chart.ctx.select_font_face (font.family, font.slant, font.weight);
+					chart.ctx.set_font_size (font.size);
+					chart.ctx.text_extents (text, out _ext);
+				}
+				return _ext;
+			}
+			protected set {
 			}
 		}
 
-		public double get_height (Cairo.Context context) {
-			var extents = get_extents (context);
-			switch (style.orientation) {
-			case FontOrient.HORIZONTAL: return extents.height;
-			case FontOrient.VERTICAL: return extents.width;
-			default: return 0.0;
+		/**
+		 * ``Text`` width.
+		 */
+		public virtual double width {
+			get {
+				switch (font.orient) {
+				case Gtk.Orientation.HORIZONTAL: return ext.width + ext.x_bearing;
+				case Gtk.Orientation.VERTICAL: return ext.height;
+				default: return 0;
+				}
+			}
+			protected set {
 			}
 		}
 
-		public struct Size {
-			double width;
-			double height;
-		}
-
-		public Size size (Cairo.Context context) {
-			var sz = Size();
-			var extents = get_extents (context);
-			switch (style.orientation) {
-			case FontOrient.HORIZONTAL:
-				sz.width = extents.width + extents.x_bearing;
-				sz.height = extents.height;
-				break;
-			case FontOrient.VERTICAL:
-				sz.width = extents.height; // + extents.x_bearing ?
-				sz.height = extents.width; // +- extents.y_bearing ?
-				break;
+		/**
+		 * ``Text`` height.
+		 */
+		public virtual double height {
+			get {
+				switch (font.orient) {
+				case Gtk.Orientation.HORIZONTAL: return ext.height; // + ext.x_bearing ?
+				case Gtk.Orientation.VERTICAL: return ext.width;    // +- ext.y_bearing ?
+				default: return 0;
+				}
 			}
-			return sz;
+			protected set {
+			}
 		}
 
-		public Text (string text = "",
-		             FontStyle style = FontStyle(),
-		             Color color = Color()) {
+		/**
+		 * Constructs a new ``Text``.
+		 * @param chart ``Chart`` instance.
+		 * @param text ``Text`` string.
+		 * @param font ``Text`` font style.
+		 * @param color ``Text`` color.
+		 */
+		public Text (Chart chart,
+		             string text = "",
+		             Font font = new Font(),
+		             Color color = Color()
+		) {
+			this.chart = chart;
 			this.text = text;
-			this.style = style;
+			this.font = font;
 			this.color = color;
 		}
 
-		public Text copy () {
-			var text = new Text ();
+		/**
+		 * Gets a copy of the ``Text``.
+		 */
+		public virtual Text copy () {
+			var text = new Text (chart);
+			text.chart = this.chart;
 			text.text = this.text;
-			text.style = this.style;
+			text.font = this.font.copy();
+			text._ext = this._ext;
 			text.color = this.color;
 			return text;
+		}
+
+		/**
+		 * Show ``Text``.
+		 */
+		public virtual void show () {
+			if (text == "") return;
+			chart.ctx.select_font_face(font.family,
+			                           font.slant,
+			                           font.weight);
+			chart.ctx.set_font_size(font.size);
+			if (font.orient == Gtk.Orientation.VERTICAL) {
+				chart.ctx.rotate(- GLib.Math.PI / 2);
+				chart.ctx.show_text(text);
+				chart.ctx.rotate(GLib.Math.PI / 2);
+			} else {
+				chart.ctx.show_text(text);
+			}
 		}
 	}
 }
