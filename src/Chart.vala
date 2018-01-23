@@ -46,6 +46,11 @@ namespace CairoChart {
 		public LineStyle selection_style = LineStyle ();
 
 		/**
+		 * Zoom Scroll speed.
+		 */
+		public double zoom_scroll_speed = 64.0;
+
+		/**
 		 * Plot area bounds.
 		 */
 		public Area plarea = new Area();
@@ -182,7 +187,7 @@ namespace CairoChart {
 		}
 
 		/**
-		 * Zooms the ``Chart``.
+		 * Zooms in the ``Chart``.
 		 * @param area selected zoom area.
 		 */
 		public virtual void zoom_in (Area area) {
@@ -262,6 +267,8 @@ namespace CairoChart {
 		public virtual void move (Point delta) {
 			var d = delta;
 
+			if (plarea.width.abs() < 1 || plarea.height.abs() < 1) return;
+
 			d.x /= -plarea.width; d.y /= -plarea.height;
 
 			var z = zoom.copy();
@@ -277,13 +284,10 @@ namespace CairoChart {
 
 			d.x *= z.width; d.y *= z.height;
 
-			var px1 = plarea.x1;
-			var py1 = plarea.y1;
-
 			if (x0 + d.x < plarea.x0) d.x = plarea.x0 - x0;
-			if (x1 + d.x > px1) d.x = px1 - x1;
+			if (x1 + d.x > plarea.x1) d.x = plarea.x1 - x1;
 			if (y0 + d.y < plarea.y0) d.y = plarea.y0 - y0;
-			if (y1 + d.y > py1) d.y = py1 - y1;
+			if (y1 + d.y > plarea.y1) d.y = plarea.y1 - y1;
 
 			zoom_in(
 				new Area.with_rel(
@@ -293,6 +297,52 @@ namespace CairoChart {
 					plarea.height * z.height
 				)
 			);
+		}
+
+		/**
+		 * Zooms in the ``Chart`` by event point (scrolling).
+		 * @param p event position.
+		 */
+		public virtual void zoom_scroll_in (Point p) {
+			var w = plarea.width, h = plarea.height;
+			if (w < 8 || h < 8) return;
+			zoom_in (
+				new Area.with_abs(
+					plarea.x0 + (p.x - plarea.x0) / w * zoom_scroll_speed,
+					plarea.y0 + (p.y - plarea.y0) / h * zoom_scroll_speed,
+					plarea.x1 - (plarea.x1 - p.x) / w * zoom_scroll_speed,
+					plarea.y1 - (plarea.y1 - p.y) / h * zoom_scroll_speed
+				)
+			);
+		}
+
+		/**
+		 * Zooms out the ``Chart`` by event point (scrolling).
+		 * @param p event position.
+		 */
+		public virtual void zoom_scroll_out (Point p) {
+			var z = zoom.copy(), pa = plarea.copy();
+			var w = plarea.width, h = plarea.height;
+			if (w < 8 || h < 8) return;
+
+			zoom_out();
+
+			var x0 = plarea.x0 + plarea.width * z.x0;
+			var x1 = plarea.x0 + plarea.width * z.x1;
+			var y0 = plarea.y0 + plarea.height * z.y0;
+			var y1 = plarea.y0 + plarea.height * z.y1;
+
+			var dx0 = (p.x - pa.x0) / w * zoom_scroll_speed;
+			var dx1 = (pa.x1 - p.x) / w * zoom_scroll_speed;
+			var dy0 = (p.y - pa.y0) / h * zoom_scroll_speed;
+			var dy1 = (pa.y1 - p.y) / h * zoom_scroll_speed;
+
+			if (x0 - dx0 < plarea.x0) x0 = plarea.x0; else x0 -= dx0;
+			if (x1 + dx1 > plarea.x1) x1 = plarea.x1; else x1 += dx1;
+			if (y0 - dy0 < plarea.y0) y0 = plarea.y0; else y0 -= dy0;
+			if (y1 + dy1 > plarea.y1) y1 = plarea.y1; else y1 += dy1;
+
+			zoom_in (new Area.with_abs(x0, y0, x1, y1));
 		}
 
 		protected virtual void fix_evarea () {
