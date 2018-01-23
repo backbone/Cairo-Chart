@@ -510,6 +510,7 @@ namespace CairoChart {
 				var text_t = new Text(chart, text, font, color);
 				var tthv = title.text == "" ? 0 : title.height + font.vspacing;
 				var ttwh = title.text == "" ? 0 : title.width + font.hspacing;
+				var dtf = (date_format == "" ? 0 : text_t.height + font.vspacing);
 				switch (position) {
 				case Axis.Position.LOW:
 					if (is_x) {
@@ -520,7 +521,7 @@ namespace CairoChart {
 						case Axis.DType.DATE_TIME:
 							if (date_format != "") text_t.show();
 							var time_text_t = new Text(chart, time_text, font, color);
-							chart.ctx.move_to (compact_rec_pos (v, time_text_t), print_y - (date_format == "" ? 0 : text_t.height + font.vspacing));
+							chart.ctx.move_to (compact_rec_pos (v, time_text_t), print_y - dtf);
 							if (time_format != "") time_text_t.show();
 							break;
 						}
@@ -551,7 +552,7 @@ namespace CairoChart {
 						case Axis.DType.DATE_TIME:
 							if (date_format != "") text_t.show();
 							var time_text_t = new Text(chart, time_text, font, color);
-							chart.ctx.move_to (compact_rec_pos (v, time_text_t), print_y - (date_format == "" ? 0 : text_t.height + font.vspacing));
+							chart.ctx.move_to (compact_rec_pos (v, time_text_t), print_y - dtf);
 							if (time_format != "") time_text_t.show();
 							break;
 						}
