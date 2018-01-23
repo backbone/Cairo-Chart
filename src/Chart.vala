@@ -156,10 +156,7 @@ namespace CairoChart {
 
 			eval_plarea ();
 
-			draw_haxes ();
-			fix_evarea ();
-
-			draw_vaxes ();
+			draw_axes ();
 			fix_evarea ();
 
 			draw_plarea_border ();
@@ -372,13 +369,11 @@ namespace CairoChart {
 			ctx.move_to (area.width/2 - title.width/2, title.height + title.font.vspacing);
 			title.show();
 		}
-		protected virtual void draw_haxes () {
+		protected virtual void draw_axes () {
 			for (var si = series.length - 1, nskip = 0; si >=0; --si)
-				series[si].axis_x.draw_haxis (ref nskip);
-		}
-		protected virtual void draw_vaxes () {
+				series[si].axis_x.draw(ref nskip);
 			for (var si = series.length - 1, nskip = 0; si >=0; --si)
-				series[si].axis_y.draw_vaxis (ref nskip);
+				series[si].axis_y.draw(ref nskip);
 		}
 		protected virtual void draw_series () {
 			foreach (var s in series)
