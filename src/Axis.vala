@@ -501,12 +501,13 @@ namespace CairoChart {
 					ser.grid.style.color = Color(0, 0, 0, 0.5);
 				}
 				else chart.color = color;
-				string text = "", time_text = ""; var time_text_t = new Text(chart);
+				string text = "", time_text = ""; var time_text_t = new Text(chart); var crpt = 0.0;
 				switch (dtype) {
 				case Axis.DType.NUMBERS: text = format.printf((LongDouble)v); break;
 				case Axis.DType.DATE_TIME:
 					print_dt(v, out text, out time_text);
 					time_text_t = new Text(chart, time_text, font, color);
+					crpt = compact_rec_pos (v, time_text_t);
 					break;
 				}
 				var scr_v = scr_pos (v);
@@ -526,7 +527,7 @@ namespace CairoChart {
 						case Axis.DType.NUMBERS: text_t.show(); break;
 						case Axis.DType.DATE_TIME:
 							if (date_format != "") text_t.show();
-							chart.ctx.move_to (compact_rec_pos (v, time_text_t), print_y - dtf);
+							chart.ctx.move_to (crpt, print_y - dtf);
 							if (time_format != "") time_text_t.show();
 							break;
 						}
@@ -556,7 +557,7 @@ namespace CairoChart {
 						case Axis.DType.NUMBERS: text_t.show(); break;
 						case Axis.DType.DATE_TIME:
 							if (date_format != "") text_t.show();
-							chart.ctx.move_to (compact_rec_pos (v, time_text_t), print_y - dtf);
+							chart.ctx.move_to (crpt, print_y - dtf);
 							if (time_format != "") time_text_t.show();
 							break;
 						}
