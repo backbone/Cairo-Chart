@@ -1,7 +1,7 @@
 namespace CairoChart {
 
 	/**
-	 * ``LabelStyle`` Style.
+	 * ``Cursors`` values style.
 	 */
 	public class LabelStyle {
 
