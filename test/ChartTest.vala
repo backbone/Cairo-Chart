@@ -287,6 +287,7 @@ int main (string[] args) {
 	da.set_events ( Gdk.EventMask.BUTTON_PRESS_MASK
 	               |Gdk.EventMask.BUTTON_RELEASE_MASK
 	               |Gdk.EventMask.POINTER_MOTION_MASK
+	               |Gdk.EventMask.SCROLL_MASK
 	);
 
 	var chart = chart1;
@@ -571,11 +572,18 @@ int main (string[] args) {
 
 		return true; // return ret;
 	});
-	da.add_events(Gdk.EventMask.SCROLL_MASK);
 	da.scroll_event.connect((event) => {
+		switch (event.direction) {
+		case Gdk.ScrollDirection.UP:
+			chart.zoom_scroll_in(Point(event.x, event.y));
+			break;
+		case Gdk.ScrollDirection.DOWN:
+			chart.zoom_scroll_out(Point(event.x, event.y));
+			break;
+		}
+		da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
 
 		//var ret = chart.scroll_notify_event(event);
-
 		return true; // return ret;
 	});
 
