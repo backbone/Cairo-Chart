@@ -61,6 +61,11 @@ namespace CairoChart {
 		public Style style = Style();
 
 		/**
+		 * Value label style.
+		 */
+		public LabelStyle label_style = new LabelStyle();
+
+		/**
 		 * Has crossings.
 		 */
 		public bool has_crossings { get { return crossings.length != 0; } protected set {} }
@@ -82,6 +87,7 @@ namespace CairoChart {
 			c.active_cursor = active_cursor;
 			c.is_cursor_active = is_cursor_active;
 			c.style = style;
+			c.label_style = label_style.copy();
 			c.crossings = crossings;
 			return c;
 		}
@@ -340,9 +346,18 @@ namespace CairoChart {
 					var show_time = ccs[ci].show_time;
 					var show_y = ccs[ci].show_y;
 
-					chart.color = chart.bg_color;
+					// value label background
+					chart.color = label_style.bg_color;
 					chart.ctx.rectangle (svp.x - size.x / 2, svp.y - size.y / 2, size.x, size.y);
 					chart.ctx.fill();
+					// value label frame
+					label_style.frame_style.apply(chart);
+					chart.ctx.move_to (svp.x - size.x / 2, svp.y - size.y / 2);
+					chart.ctx.rel_line_to (size.x, 0);
+					chart.ctx.rel_line_to (0, size.y);
+					chart.ctx.rel_line_to (-size.x, 0);
+					chart.ctx.rel_line_to (0, -size.y);
+					chart.ctx.stroke();
 
 					if (show_x) {
 						chart.color = s.axis_x.color;
