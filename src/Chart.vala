@@ -380,13 +380,6 @@ namespace CairoChart {
 
 		protected virtual void eval_plarea () {
 			plarea = evarea.copy();
-			if (legend.show)
-				switch(legend.position) {
-				case Legend.Position.TOP: plarea.y0 += legend.spacing; break;
-				case Legend.Position.BOTTOM: plarea.y1 -= legend.spacing; break;
-				case Legend.Position.LEFT: plarea.x0 += legend.spacing; break;
-				case Legend.Position.RIGHT: plarea.x1 -= legend.spacing; break;
-				}
 
 			// Check for joint axes
 			joint_x = joint_y = true;

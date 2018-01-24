@@ -261,10 +261,10 @@ namespace CairoChart {
 			case ProcessType.CALC:
 				height = leg_height_sum;
 				switch (position) {
-					case Position.TOP: chart.evarea.y0 += height; break;
-					case Position.BOTTOM: chart.evarea.y1 -= height; break;
-					case Position.LEFT: chart.evarea.x0 += width; break;
-					case Position.RIGHT: chart.evarea.x1 -= width; break;
+					case Position.TOP: chart.evarea.y0 += height + spacing; break;
+					case Position.BOTTOM: chart.evarea.y1 -= height + spacing; break;
+					case Position.LEFT: chart.evarea.x0 += width + spacing; break;
+					case Position.RIGHT: chart.evarea.x1 -= width + spacing; break;
 				}
 				break;
 			}
