@@ -305,6 +305,40 @@ namespace CairoChart {
 					}
 				}
 
+			var max_rec_spacing = is_x ? font.vspacing : font.hspacing;
+			var max_title_width = title.text == "" ? 0 : title.width + font.hspacing;
+			var max_title_height = title.text == "" ? 0 : title.height + font.vspacing;
+
+			var dx = max_rec_width + max_rec_spacing + max_title_width;
+			var dy = max_rec_height + max_rec_spacing + max_title_height;
+			chart.evarea.x0 -= dx; chart.evarea.x1 += dx; chart.evarea.y0 -= dy; chart.evarea.y1 += dy;
+
+			if (nskip != 0)
+				--nskip;
+			else {
+				var max_rec_height_all = max_rec_height;
+				var max_rec_width_all = max_rec_width;
+				if (is_x)
+					join_rel_axes (si, true, ref max_rec_width_all, ref max_rec_height_all, ref max_rec_spacing, ref max_title_height, ref nskip);
+				else
+					join_rel_axes (si, true, ref max_rec_width_all, ref max_rec_height_all, ref max_rec_spacing, ref max_title_width, ref nskip);
+
+				if (is_x && (!chart.joint_x || si == chart.zoom_1st_idx)) {
+					var tmp = max_rec_height_all + max_rec_spacing + max_title_height;
+					switch (position) {
+					case Position.LOW: chart.evarea.y1 -= tmp; break;
+					case Position.HIGH: chart.evarea.y0 += tmp; break;
+					}
+				}
+				if (!is_x && (!chart.joint_y || si == chart.zoom_1st_idx)) {
+					var tmp = max_rec_width_all + max_rec_spacing + max_title_width;
+					switch (position) {
+					case Position.LOW: chart.evarea.x0 += tmp; break;
+					case Position.HIGH: chart.evarea.x1 -= tmp; break;
+					}
+				}
+			}
+
 			// 4.5. Draw Axis title
 			if (title.text != "") {
 				if (is_x) {
@@ -339,26 +373,9 @@ namespace CairoChart {
 			if (is_x) draw_recs (min, step, max_rec_height);
 			else draw_recs (min, step, max_rec_width);
 
+			chart.evarea.x0 += dx; chart.evarea.x1 -= dx; chart.evarea.y0 += dy; chart.evarea.y1 -= dy;
+
 			chart.ctx.stroke ();
-
-			var tmp1 = 0.0, tmp2 = 0.0, tmp3 = 0.0, tmp4 = 0.0;
-			join_rel_axes (si, false, ref tmp1, ref tmp2, ref tmp3, ref tmp4, ref nskip);
-
-			if (nskip != 0) {--nskip; return;}
-
-			var tmp = 0.0;
-			if (is_x) tmp = max_rec_height + font.vspacing + (title.text == "" ? 0 : title.height + font.vspacing);
-			else      tmp = max_rec_width + font.hspacing + (title.text == "" ? 0 : title.width + font.hspacing);
-			switch (position) {
-			case Position.LOW:
-				if (is_x) chart.evarea.y1 -= tmp;
-				else      chart.evarea.x0 += tmp;
-				break;
-			case Position.HIGH:
-				if (is_x) chart.evarea.y0 += tmp;
-				else      chart.evarea.x1 -= tmp;
-				break;
-			}
 		}
 
 		/**
