@@ -305,7 +305,7 @@ namespace CairoChart {
 					}
 				}
 
-			var max_rec_spacing = is_x ? font.vspacing : font.hspacing;
+			var max_rec_spacing = 2 * (is_x ? font.vspacing : font.hspacing);
 			var max_title_width = title.text == "" ? 0 : title.width + font.hspacing;
 			var max_title_height = title.text == "" ? 0 : title.height + font.vspacing;
 
@@ -387,7 +387,7 @@ namespace CairoChart {
 			if (nskip != 0) {--nskip; return;}
 			var max_rec_width = 0.0, max_rec_height = 0.0;
 			calc_rec_sizes (this, out max_rec_width, out max_rec_height, is_x);
-			var max_rec_spacing = is_x ? font.vspacing : font.hspacing;
+			var max_rec_spacing = 2 * (is_x ? font.vspacing : font.hspacing);
 			var max_title_width = title.text == "" ? 0 : title.width + font.hspacing;
 			var max_title_height = title.text == "" ? 0 : title.height + font.vspacing;
 
@@ -445,8 +445,8 @@ namespace CairoChart {
 				switch (axis.dtype) {
 				case DType.NUMBERS:
 					var text = new Text (chart, axis.format.printf((LongDouble)x) + (horizontal ? "_" : ""), axis.font);
-					max_rec_width = double.max (max_rec_width, text.width);
-					max_rec_height = double.max (max_rec_height, text.height);
+					max_rec_width = double.max (max_rec_width, text.width + (horizontal ? text.font.hspacing : 0));
+					max_rec_height = double.max (max_rec_height, text.height + (horizontal ? 0 : text.font.vspacing));
 					break;
 				case DType.DATE_TIME:
 					string date, time;
@@ -455,12 +455,12 @@ namespace CairoChart {
 					var h = 0.0;
 					if (axis.date_format != "") {
 						var text = new Text (chart, date + (horizontal ? "_" : ""), axis.font);
-						max_rec_width = double.max (max_rec_width, text.width);
+						max_rec_width = double.max (max_rec_width, text.width + text.font.hspacing);
 						h = text.height;
 					}
 					if (axis.time_format != "") {
 						var text = new Text (chart, time + (horizontal ? "_" : ""), axis.font);
-						max_rec_width = double.max (max_rec_width, text.width);
+						max_rec_width = double.max (max_rec_width, text.width + text.font.hspacing);
 						h += text.height;
 					}
 					max_rec_height = double.max (max_rec_height, h);
@@ -497,7 +497,7 @@ namespace CairoChart {
 						calc_rec_sizes (a2, out tmp_max_rec_width, out tmp_max_rec_height, is_x);
 						max_rec_width = double.max (max_rec_width, tmp_max_rec_width);
 						max_rec_height = double.max (max_rec_height, tmp_max_rec_height);
-						max_rec_spacing = double.max (max_rec_spacing, is_x ? a2.font.vspacing : a2.font.hspacing);
+						max_rec_spacing = double.max (max_rec_spacing, 2 * (is_x ? a2.font.vspacing : a2.font.hspacing));
 						max_title_size = double.max (
 						    max_title_size,
 						    a2.title.text == "" ? 0
