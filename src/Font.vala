@@ -34,12 +34,12 @@ namespace CairoChart {
 		/**
 		 * Vertical spacing.
 		 */
-		public double vspacing = 4;
+		public double vspacing = 2;
 
 		/**
 		 * Horizontal spacing.
 		 */
-		public double hspacing = 4;
+		public double hspacing = 2;
 
 		/**
 		 * Both vertical & horizontal spacing (set only).
@@ -51,7 +51,7 @@ namespace CairoChart {
 			set {
 				vspacing = hspacing = value;
 			}
-			default = 4;
+			default = 2;
 		}
 
 		/**
@@ -67,8 +67,8 @@ namespace CairoChart {
 		             Cairo.FontSlant slant = Cairo.FontSlant.NORMAL,
 		             Cairo.FontWeight weight = Cairo.FontWeight.NORMAL,
 		             Gtk.Orientation orient = Gtk.Orientation.HORIZONTAL,
-		             double vspacing = 4,
-		             double hspacing = 4
+		             double vspacing = 2,
+		             double hspacing = 2
 		) {
 			this.family = family;
 			this.size = size;

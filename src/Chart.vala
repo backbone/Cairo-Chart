@@ -413,9 +413,9 @@ namespace CairoChart {
 			title.show();
 		}
 		protected virtual void draw_axes () {
-			for (var si = series.length - 1, nskip = 0; si >=0; --si)
+			for (var si = series.length - 1, nskip = 0; si >= 0; --si)
 				series[si].axis_x.draw(ref nskip);
-			for (var si = series.length - 1, nskip = 0; si >=0; --si)
+			for (var si = series.length - 1, nskip = 0; si >= 0; --si)
 				series[si].axis_y.draw(ref nskip);
 		}
 		protected virtual void draw_series () {

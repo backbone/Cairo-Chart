@@ -180,8 +180,8 @@ namespace CairoChart {
 				switch (position) {
 				case Position.TOP:
 				case Position.BOTTOM:
-					var ser_title_width = s.title.width + line_length;
-					if (leg_width_sum + (leg_width_sum == 0 ? 0 : s.title.font.hspacing) + ser_title_width > chart.area.width) { // carry
+					var ser_title_width = line_length + s.title.width + s.title.font.hspacing * 2;
+					if (leg_width_sum + ser_title_width > chart.area.width) { // carry
 						leg_height_sum += max_font_h;
 						switch (process_type) {
 						case ProcessType.CALC:
@@ -200,43 +200,43 @@ namespace CairoChart {
 
 				switch (process_type) {
 				case ProcessType.DRAW:
-					var x = legend_x0 + leg_width_sum + (leg_width_sum == 0 ? 0 : s.title.font.hspacing);
-					var y = legend_y0 + leg_height_sum + mfh[heights_idx] / 2 + s.title.height / 2;
+					var x = legend_x0 + leg_width_sum + s.title.font.hspacing;
+					var y = legend_y0 + leg_height_sum + mfh[heights_idx] / 2;
 
 					// series title
-					chart.ctx.move_to (x + line_length, y);
+					chart.ctx.move_to (x + line_length, y + s.title.height / 2);
 					chart.color = s.title.color;
 					s.title.show();
 
 					// series line style
-					chart.ctx.move_to (x, y - s.title.height / 2);
+					chart.ctx.move_to (x, y);
 					s.line_style.apply(chart);
 					chart.ctx.rel_line_to (line_length, 0);
 					chart.ctx.stroke();
-					s.marker.draw_at_pos (Point(x + line_length / 2, y - s.title.height / 2));
+					s.marker.draw_at_pos (Point(x + line_length / 2, y));
 					break;
 				}
 
 				switch (position) {
 				case Position.TOP:
 				case Position.BOTTOM:
-					var ser_title_width = s.title.width + line_length;
-					leg_width_sum += (leg_width_sum == 0 ? 0 : s.title.font.hspacing) + ser_title_width;
-					max_font_h = double.max (max_font_h, s.title.height) + (leg_height_sum != 0 ? s.title.font.vspacing : 0);
+					var ser_title_width = line_length + s.title.width + s.title.font.hspacing * 2;
+					leg_width_sum += ser_title_width;
+					max_font_h = double.max (max_font_h, s.title.height + s.title.font.vspacing * 2);
 				break;
 
 				case Position.LEFT:
 				case Position.RIGHT:
 					switch (process_type) {
 					case ProcessType.CALC:
-						mfh += s.title.height + (leg_height_sum != 0 ? s.title.font.vspacing : 0);
-						width = double.max (width, s.title.width + line_length);
+						mfh += s.title.height + s.title.font.vspacing * 2;
+						width = double.max (width, s.title.font.hspacing * 2 + line_length + s.title.width);
 						break;
 					case ProcessType.DRAW:
 						heights_idx++;
 						break;
 					}
-					leg_height_sum += s.title.height + (leg_height_sum != 0 ? s.title.font.vspacing : 0);
+					leg_height_sum += s.title.height + s.title.font.vspacing * 2;
 				break;
 				}
 			}
