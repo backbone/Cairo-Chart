@@ -431,7 +431,7 @@ namespace CairoChart {
 							if (Math.vcross(s.scr_pnt(points[i]), s.scr_pnt(points[i+1]), rel2scr_x(c.x),
 							                chart.plarea.y0, chart.plarea.y1, out y)) {
 								var point = Point128(s.axis_x.axis_val(rel2scr_x(c.x)), s.axis_y.axis_val(y));
-								Point128 size; bool show_x, show_date, show_time, show_y;
+								Point size; bool show_x, show_date, show_time, show_y;
 								cross_what_to_show(s, out show_x, out show_time, out show_date, out show_y);
 								calc_cross_sizes (s, point, out size, show_x, show_time, show_date, show_y);
 								Cross cc = {si, point, size, show_x, show_date, show_time, show_y};
@@ -443,7 +443,7 @@ namespace CairoChart {
 							if (Math.hcross(s.scr_pnt(points[i]), s.scr_pnt(points[i+1]),
 							                chart.plarea.x0, chart.plarea.x1, rel2scr_y(c.y), out x)) {
 								var point = Point128(s.axis_x.axis_val(x), s.axis_y.axis_val(rel2scr_y(c.y)));
-								Point128 size; bool show_x, show_date, show_time, show_y;
+								Point size; bool show_x, show_date, show_time, show_y;
 								cross_what_to_show(s, out show_x, out show_time, out show_date, out show_y);
 								calc_cross_sizes (s, point, out size, show_x, show_time, show_date, show_y);
 								Cross cc = {si, point, size, show_x, show_date, show_time, show_y};
@@ -464,7 +464,7 @@ namespace CairoChart {
 		protected struct Cross {
 			uint series_index;
 			Point128 point;
-			Point128 size;
+			Point size;
 			bool show_x;
 			bool show_date;
 			bool show_time;
@@ -493,14 +493,90 @@ namespace CairoChart {
 			return all_cursors;
 		}
 
+		protected virtual void scr2cell (int m, int n, Point p, out int i, out int j) {
+			i = (int)((p.x - chart.plarea.x0) / chart.plarea.width * m);
+			j = (int)((p.y - chart.plarea.y0) / chart.plarea.height * n);
+		}
+
+		protected virtual void cell2scr (int m, int n, int i, int j, out Point p) {
+			p = Point(chart.plarea.x0 + chart.plarea.width * (i + 0.5) / m,
+			          chart.plarea.y0 + chart.plarea.height * (j + 0.5)/ n);
+		}
+
 		protected virtual void calc_cursors_value_positions () {
+			// 1. Find maximum width/height of cursors values.
+			var max_width = 1.0, max_height = 1.0;
 			for (var ccsi = 0, max_ccsi = crossings.length; ccsi < max_ccsi; ++ccsi) {
 				for (var cci = 0, max_cci = crossings[ccsi].crossings.length; cci < max_cci; ++cci) {
-					// TODO: Ticket #142: find smart algorithm of cursors values placements
+					unowned Cross[] cr = crossings[ccsi].crossings;
+					max_width = double.max(max_width, cr[cci].size.x
+					         + 4 * double.max(chart.series[cr[cci].series_index].axis_x.font.hspacing,
+					                          chart.series[cr[cci].series_index].axis_y.font.hspacing));
+					max_height = double.max(max_height, cr[cci].size.y
+					         + 4 * double.max(chart.series[cr[cci].series_index].axis_x.font.vspacing,
+					                          chart.series[cr[cci].series_index].axis_y.font.vspacing));
+				}
+			}
+
+			// 2. Calculate 2D-array sizes.
+			var m = (int.max(1, (int)(chart.plarea.width / max_width))),
+			    n = (int.max(1, (int)(chart.plarea.height / max_height)));
+
+			// 3. Create 2D-array of bool or links to cursors values.
+			var arr2d_e = new bool[m, n];
+
+			// 4. Set Busy/Cross Cells
+			for (var ccsi = 0, max_ccsi = crossings.length; ccsi < max_ccsi; ++ccsi) {
+				for (var cci = 0, max_cci = crossings[ccsi].crossings.length; cci < max_cci; ++cci) {
 					unowned Cross[] cr = crossings[ccsi].crossings;
 					cr[cci].scr_point = chart.series[cr[cci].series_index].scr_pnt (cr[cci].point);
-					var d_max = double.max (cr[cci].size.x / 1.5, cr[cci].size.y / 1.5);
-					cr[cci].scr_value_point = Point (cr[cci].scr_point.x + d_max, cr[cci].scr_point.y - d_max);
+					int i = 0, j = 0;
+					scr2cell(m, n, cr[cci].scr_point, out i, out j);
+					arr2d_e[i, j] = true;
+				}
+			}
+
+			// 5. Calculate positions.
+			for (var ccsi = 0, max_ccsi = crossings.length; ccsi < max_ccsi; ++ccsi) {
+				for (var cci = 0, max_cci = crossings[ccsi].crossings.length; cci < max_cci; ++cci) {
+					unowned Cross[] cr = crossings[ccsi].crossings;
+					int i = 0, j = 0;
+					scr2cell(m, n, cr[cci].scr_point, out i, out j);
+					for (var radius = 1; radius < int.max(m, n); ++radius) {
+						bool found = false;
+
+						// top, bottom
+						int[] ll = {int.max(0, j - radius), int.min(n - 1, j + radius)};
+						foreach (var l in ll) {
+							for (var k = int.max(0, i - radius); k <= int.min(m - 1, i + radius); ++k) {
+								if (k == i) continue;
+								if (!arr2d_e[k, l]) {
+									arr2d_e[k, l] = true;
+									cell2scr(m, n, k, l, out cr[cci].scr_value_point);
+									found = true;
+									break;
+								}
+							}
+							if (found) break;
+						}
+						if (found) break;
+
+						// left, right
+						int[] kk = {int.max(0, i - radius), int.min(m - 1, i + radius)};
+						foreach (var k in kk) {
+							for (var l = int.max(0, j - radius); l <= int.min(n - 1, j + radius); ++l) {
+								if (l == j) continue;
+								if (!arr2d_e[k, l]) {
+									arr2d_e[k, l] = true;
+									cell2scr(m, n, k, l, out cr[cci].scr_value_point);
+									found = true;
+									break;
+								}
+							}
+							if (found) break;
+						}
+						if (found) break;
+					}
 				}
 			}
 		}
@@ -533,12 +609,12 @@ namespace CairoChart {
 			}
 		}
 
-		protected virtual void calc_cross_sizes (Series s, Point128 p, out Point128 size,
+		protected virtual void calc_cross_sizes (Series s, Point128 p, out Point size,
 		                                         bool show_x = false, bool show_time = false,
 		                                         bool show_date = false, bool show_y = false) {
 			if (show_x == show_time == show_date == show_y == false)
 				cross_what_to_show(s, out show_x, out show_time, out show_date, out show_y);
-			size = Point128 ();
+			size = Point ();
 			string date, time;
 			s.axis_x.print_dt(p.x, out date, out time);
 			var date_t = new Text(chart, date, s.axis_x.font, s.axis_x.color);
@@ -550,8 +626,8 @@ namespace CairoChart {
 			if (show_date) { size.x = date_t.width; h_x = date_t.height; }
 			if (show_time) { size.x = double.max(size.x, time_t.width); h_x += time_t.height; }
 			if (show_y) { size.x += y_t.width; h_y = y_t.height; }
-			if ((show_x || show_date || show_time) && show_y) size.x += double.max(s.axis_x.font.hspacing, s.axis_y.font.hspacing);
-			if (show_date && show_time) h_x += s.axis_x.font.hspacing;
+			if ((show_x || show_date || show_time) && show_y) size.x += s.axis_x.font.hspacing + s.axis_y.font.hspacing;
+			if (show_date && show_time) h_x += s.axis_x.font.vspacing;
 			size.y = double.max (h_x, h_y);
 		}
 	}
