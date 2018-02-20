@@ -445,8 +445,8 @@ namespace CairoChart {
 				switch (axis.dtype) {
 				case DType.NUMBERS:
 					var text = new Text (chart, axis.format.printf((LongDouble)x) + (horizontal ? "_" : ""), axis.font);
-					max_rec_width = double.max (max_rec_width, text.width + (horizontal ? text.font.hspacing : 0));
-					max_rec_height = double.max (max_rec_height, text.height + (horizontal ? 0 : text.font.vspacing));
+					max_rec_width = double.max (max_rec_width, text.width + 2 * text.font.hspacing);
+					max_rec_height = double.max (max_rec_height, text.height + 2 * text.font.vspacing);
 					break;
 				case DType.DATE_TIME:
 					string date, time;
@@ -455,12 +455,12 @@ namespace CairoChart {
 					var h = 0.0;
 					if (axis.date_format != "") {
 						var text = new Text (chart, date + (horizontal ? "_" : ""), axis.font);
-						max_rec_width = double.max (max_rec_width, text.width + text.font.hspacing);
+						max_rec_width = double.max (max_rec_width, text.width + 2 * text.font.hspacing);
 						h = text.height;
 					}
 					if (axis.time_format != "") {
 						var text = new Text (chart, time + (horizontal ? "_" : ""), axis.font);
-						max_rec_width = double.max (max_rec_width, text.width + text.font.hspacing);
+						max_rec_width = double.max (max_rec_width, text.width + 2 * text.font.hspacing);
 						h += text.height;
 					}
 					max_rec_height = double.max (max_rec_height, h);
