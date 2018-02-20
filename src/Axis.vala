@@ -161,7 +161,7 @@ namespace CairoChart {
 		/**
 		 * Number of equally placed points to evaluate records sizes.
 		 */
-		public int nrecords = 128;
+		public int nrecords = 8;
 
 		/**
 		 * Constructs a new ``Axis``.
