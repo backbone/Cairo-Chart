@@ -1,1736 +1,427 @@
-namespace Gtk.CairoChart {
+namespace CairoChart {
+
+	/**
+	 * Cairo/GTK+ ``Chart``.
+	 */
 	public class Chart {
 
-		public double x_min = 0.0;
-		public double y_min = 0.0;
-		public double width = 0.0;
-		public double height = 0.0;
+		/**
+		 * ``Chart`` Position.
+		 */
+		public Area area = new Area();
 
-		public Cairo.Context context = null;
+		/**
+		 * ``Chart`` Title.
+		 */
+		public Text title;
 
-		public Color bg_color;
-		public bool show_legend = true;
-		public Text title = new Text ("Cairo Chart");
+		/**
+		 * Background ``Color``.
+		 */
+		public Color bg_color = Color(1, 1, 1);
+
+		/**
+		 * Border ``Color``.
+		 */
 		public Color border_color = Color(0, 0, 0, 0.3);
 
-
-		public Legend legend = new Legend ();
-
+		/**
+		 * ``Chart`` Series array.
+		 */
 		public Series[] series = {};
 
+		/**
+		 * Legend.
+		 */
+		public Legend legend;
+
+		/**
+		 * Joint/common {@link Axis} ``Color``.
+		 */
+		public Color joint_color = Color (0, 0, 0, 1);
+
+		/**
+		 * Selection line style.
+		 */
+		public LineStyle selection_style = LineStyle ();
+
+		/**
+		 * Zoom Scroll speed.
+		 */
+		public double zoom_scroll_speed = 64.0;
+
+		/**
+		 * Plot area bounds.
+		 */
+		public Area plarea = new Area();
+
+		/**
+		 * Zoom area limits (relative coordinates: 0-1).
+		 */
+		public Area zoom = new Area();
+
+		/**
+		 * Cairo ``Context`` of the Drawing Area.
+		 */
+		public Cairo.Context ctx = null;
+
+		/**
+		 * Current evaluated plot area.
+		 */
+		public Area evarea = new Area();
+
+		/**
+		 * ``Chart`` cursors.
+		 */
+		public virtual Cursors cursors { get; protected set; default = null; }
+
+		/**
+		 * Joint/common X axes or not.
+		 */
+		public virtual bool joint_x { get; protected set; default = false; }
+
+		/**
+		 * Joint/common Y axes or not.
+		 */
+		public virtual bool joint_y { get; protected set; default = false; }
+
+		/**
+		 * Index of the 1'st shown series in a zoomed area.
+		 */
+		public virtual int zoom_1st_idx { get; protected set; default = 0; }
+
+		/**
+		 * Set paint color for further drawing.
+		 */
+		public virtual Color color {
+			protected get { return Color(); }
+			set { ctx.set_source_rgba (value.red, value.green, value.blue, value.alpha); }
+			default = Color();
+		}
+
+		/**
+		 * Constructs a new ``Chart``.
+		 */
 		public Chart () {
-			bg_color = Color (1, 1, 1);
+			cursors = new Cursors (this);
+			title = new Text(this, "Cairo Chart");
+			legend = new Legend(this);
 		}
 
-		protected double cur_x_min = 0.0;
-		protected double cur_x_max = 1.0;
-		protected double cur_y_min = 0.0;
-		protected double cur_y_max = 1.0;
-
-		public virtual void check_cur_values () {
-			if (cur_x_min > cur_x_max)
-				cur_x_max = cur_x_min;
-			if (cur_y_min > cur_y_max)
-				cur_y_max = cur_y_min;
+		/**
+		 * Gets a copy of the ``Chart``.
+		 */
+		public virtual Chart copy () {
+			var chart = new Chart ();
+			chart.area = this.area.copy();
+			chart.bg_color = this.bg_color;
+			chart.border_color = this.border_color;
+			chart.ctx = this.ctx;
+			chart.cursors = this.cursors.copy();
+			chart.evarea = this.evarea.copy();
+			chart.joint_color = this.joint_color;
+			chart.joint_x = this.joint_x;
+			chart.joint_y = this.joint_y;
+			chart.legend = this.legend.copy();
+			chart.plarea = this.plarea.copy();
+			chart.selection_style = this.selection_style;
+			chart.series = this.series;
+			chart.title = this.title.copy();
+			chart.zoom = this.zoom.copy();
+			chart.zoom_1st_idx = this.zoom_1st_idx;
+			return chart;
 		}
 
+		/**
+		 * Clears the ``Chart`` with a {@link bg_color} background color.
+		 */
 		public virtual void clear () {
-			draw_background ();
+			if (ctx != null) {
+				color = bg_color;
+				ctx.paint();
+			}
 		}
 
+		/**
+		 * Draws the ``Chart``.
+		 */
 		public virtual bool draw () {
 
-			cur_x_min = x_min;
-			cur_y_min = y_min;
-			cur_x_max = x_min + width;
-			cur_y_max = y_min + height;
+			evarea = area.copy();
 
-			draw_chart_title ();
-			check_cur_values ();
+			draw_title ();
+			fix_evarea ();
 
-			draw_legend ();
-			check_cur_values ();
+			legend.draw ();
+			fix_evarea ();
 
-			set_vertical_axes_titles ();
+			rot_axes_titles ();
 
-			get_cursors_crossings();
+			cursors.eval_crossings();
 
-			calc_plot_area (); // Calculate plot area
+			eval_plarea ();
 
-			draw_horizontal_axis ();
-			check_cur_values ();
+			draw_axes ();
+			fix_evarea ();
 
-			draw_vertical_axis ();
-			check_cur_values ();
-
-			draw_plot_area_border ();
-			check_cur_values ();
+			draw_plarea_border ();
+			fix_evarea ();
 
 			draw_series ();
-			check_cur_values ();
+			fix_evarea ();
 
-			draw_cursors ();
-			check_cur_values ();
+			cursors.draw ();
+			fix_evarea ();
 
 			return true;
 		}
 
-		public virtual void set_source_rgba (Color color) {
-				context.set_source_rgba (color.red, color.green, color.blue, color.alpha);
+		/**
+		 * Draws selection with a {@link selection_style} line style.
+		 * @param area selection area.
+		 */
+		public virtual void draw_selection (Area area) {
+			selection_style.apply(this);
+			ctx.rectangle (area.x0, area.y0, area.width, area.height);
+			ctx.stroke();
 		}
 
-		protected virtual void draw_background () {
-			if (context != null) {
-				set_source_rgba (bg_color);
-				context.paint();
-				set_source_rgba (Color (0, 0, 0, 1));
-			}
-		}
-
-		protected double rel_zoom_x_min = 0.0;
-		protected double rel_zoom_x_max = 1.0;
-		protected double rel_zoom_y_min = 0.0;
-		protected double rel_zoom_y_max = 1.0;
-
-		int zoom_first_show = 0;
-
-		public virtual void zoom_in (double x0, double y0, double x1, double y1) {
-			for (var si = 0, max_i = series.length; si < max_i; ++si) {
-				var s = series[si];
+		/**
+		 * Zooms in the ``Chart``.
+		 * @param area selected zoom area.
+		 */
+		public virtual void zoom_in (Area area) {
+			foreach (var s in series) {
 				if (!s.zoom_show) continue;
-				var real_x0 = get_real_x (s, x0);
-				var real_x1 = get_real_x (s, x1);
-				var real_y0 = get_real_y (s, y0);
-				var real_y1 = get_real_y (s, y1);
+				var real_x0 = s.axis_x.axis_val (area.x0);
+				var real_x1 = s.axis_x.axis_val (area.x1);
+				var real_width = real_x1 - real_x0;
+				var real_y0 = s.axis_y.axis_val (area.y0);
+				var real_y1 = s.axis_y.axis_val (area.y1);
+				var real_height = real_y0 - real_y1;
 				// if selected square does not intersect with the series's square
-				if (   real_x1 <= s.axis_x.zoom_min || real_x0 >= s.axis_x.zoom_max
-					|| real_y0 <= s.axis_y.zoom_min || real_y1 >= s.axis_y.zoom_max) {
+				if (   real_x1 <= s.axis_x.range.zmin || real_x0 >= s.axis_x.range.zmax
+				    || real_y0 <= s.axis_y.range.zmin || real_y1 >= s.axis_y.range.zmax) {
 					s.zoom_show = false;
 					continue;
 				}
-				if (real_x0 >= s.axis_x.zoom_min) {
-					s.axis_x.zoom_min = real_x0;
-					s.place.zoom_x_low = 0.0;
+				if (real_x0 >= s.axis_x.range.zmin) {
+					s.axis_x.range.zmin = real_x0;
+					s.axis_x.place.zmin = 0;
 				} else {
-					s.place.zoom_x_low = (s.axis_x.zoom_min - real_x0) / (real_x1 - real_x0);
+					s.axis_x.place.zmin = (s.axis_x.range.zmin - real_x0) / real_width;
 				}
-				if (real_x1 <= s.axis_x.zoom_max) {
-					s.axis_x.zoom_max = real_x1;
-					s.place.zoom_x_high = 1.0;
+				if (real_x1 <= s.axis_x.range.zmax) {
+					s.axis_x.range.zmax = real_x1;
+					s.axis_x.place.zmax = 1;
 				} else {
-					s.place.zoom_x_high = (s.axis_x.zoom_max - real_x0) / (real_x1 - real_x0);
+					s.axis_x.place.zmax = (s.axis_x.range.zmax - real_x0) / real_width;
 				}
-				if (real_y1 >= s.axis_y.zoom_min) {
-					s.axis_y.zoom_min = real_y1;
-					s.place.zoom_y_low = 0.0;
+				if (real_y1 >= s.axis_y.range.zmin) {
+					s.axis_y.range.zmin = real_y1;
+					s.axis_y.place.zmin = 0;
 				} else {
-					s.place.zoom_y_low = (s.axis_y.zoom_min - real_y1) / (real_y0 - real_y1);
+					s.axis_y.place.zmin = (s.axis_y.range.zmin - real_y1) / real_height;
 				}
-				if (real_y0 <= s.axis_y.zoom_max) {
-					s.axis_y.zoom_max = real_y0;
-					s.place.zoom_y_high = 1.0;
+				if (real_y0 <= s.axis_y.range.zmax) {
+					s.axis_y.range.zmax = real_y0;
+					s.axis_y.place.zmax = 1;
 				} else {
-					s.place.zoom_y_high = (s.axis_y.zoom_max - real_y1) / (real_y0 - real_y1);
+					s.axis_y.place.zmax = (s.axis_y.range.zmax - real_y1) / real_height;
 				}
 			}
 
-			zoom_first_show = 0;
-			for (var si = 0, max_i = series.length; si < max_i; ++si)
+			zoom_1st_idx = 0;
+			for (var si = 0; si < series.length; ++si)
 				if (series[si].zoom_show) {
-					zoom_first_show = si;
+					zoom_1st_idx = si;
 					break;
 				}
-
-			var new_rel_zoom_x_min = rel_zoom_x_min + (x0 - plot_area_x_min) / (plot_area_x_max - plot_area_x_min) * (rel_zoom_x_max - rel_zoom_x_min);
-			var new_rel_zoom_x_max = rel_zoom_x_min + (x1 - plot_area_x_min) / (plot_area_x_max - plot_area_x_min) * (rel_zoom_x_max - rel_zoom_x_min);
-			var new_rel_zoom_y_min = rel_zoom_y_min + (y0 - plot_area_y_min) / (plot_area_y_max - plot_area_y_min) * (rel_zoom_y_max - rel_zoom_y_min);
-			var new_rel_zoom_y_max = rel_zoom_y_min + (y1 - plot_area_y_min) / (plot_area_y_max - plot_area_y_min) * (rel_zoom_y_max - rel_zoom_y_min);
-			rel_zoom_x_min = new_rel_zoom_x_min;
-			rel_zoom_x_max = new_rel_zoom_x_max;
-			rel_zoom_y_min = new_rel_zoom_y_min;
-			rel_zoom_y_max = new_rel_zoom_y_max;
+			var new_zoom = zoom.copy();
+			var rmpx = area.x0 - plarea.x0;
+			var zdpw = zoom.width / plarea.width;
+			new_zoom.x0 += rmpx * zdpw;
+			var x_max = zoom.x0 + (rmpx + area.width) * zdpw;
+			new_zoom.width = x_max - new_zoom.x0;
+			var rmpy = area.y0 - plarea.y0;
+			var zdph = zoom.height / plarea.height;
+			new_zoom.y0 += rmpy * zdph;
+			var y_max = zoom.y0 + (rmpy + area.height) * zdph;
+			new_zoom.height = y_max - new_zoom.y0;
+			zoom = new_zoom.copy();
 		}
 
+		/**
+		 * Zooms out the ``Chart``.
+		 */
 		public virtual void zoom_out () {
-			foreach (var s in series) {
-				s.zoom_show = true;
-				s.axis_x.zoom_min = s.axis_x.min;
-				s.axis_x.zoom_max = s.axis_x.max;
-				s.axis_y.zoom_min = s.axis_y.min;
-				s.axis_y.zoom_max = s.axis_y.max;
-				s.place.zoom_x_low = s.place.x_low;
-				s.place.zoom_x_high = s.place.x_high;
-				s.place.zoom_y_low = s.place.y_low;
-				s.place.zoom_y_high = s.place.y_high;
-			}
-			rel_zoom_x_min = 0;
-			rel_zoom_x_max = 1;
-			rel_zoom_y_min = 0;
-			rel_zoom_y_max = 1;
-
-			zoom_first_show = 0;
+			foreach (var s in series) s.zoom_out();
+			zoom = new Area.with_abs (0, 0, 1, 1);
+			zoom_1st_idx = 0;
 		}
 
-		public virtual void move (double delta_x, double delta_y) {
-			delta_x /= plot_area_x_max - plot_area_x_min; delta_x *= - 1.0;
-			delta_y /= plot_area_y_max - plot_area_y_min; delta_y *= - 1.0;
-			var rzxmin = rel_zoom_x_min, rzxmax = rel_zoom_x_max, rzymin = rel_zoom_y_min, rzymax = rel_zoom_y_max;
+		/**
+		 * Moves the ``Chart``.
+		 * @param delta delta Δ(x;y) value to move the ``Chart``.
+		 */
+		public virtual void move (Point delta) {
+			var d = delta;
+
+			if (plarea.width.abs() < 1 || plarea.height.abs() < 1) return;
+
+			d.x /= -plarea.width; d.y /= -plarea.height;
+
+			var z = zoom.copy();
+
 			zoom_out();
-			//draw(); // TODO: optimize here
-			delta_x *= plot_area_x_max - plot_area_x_min;
-			delta_y *= plot_area_y_max - plot_area_y_min;
-			var xmin = plot_area_x_min + (plot_area_x_max - plot_area_x_min) * rzxmin;
-			var xmax = plot_area_x_min + (plot_area_x_max - plot_area_x_min) * rzxmax;
-			var ymin = plot_area_y_min + (plot_area_y_max - plot_area_y_min) * rzymin;
-			var ymax = plot_area_y_min + (plot_area_y_max - plot_area_y_min) * rzymax;
 
-			delta_x *= rzxmax - rzxmin; delta_y *= rzymax - rzymin;
+			d.x *= plarea.width; d.y *= plarea.height;
 
-			if (xmin + delta_x < plot_area_x_min) delta_x = plot_area_x_min - xmin;
-			if (xmax + delta_x > plot_area_x_max) delta_x = plot_area_x_max - xmax;
-			if (ymin + delta_y < plot_area_y_min) delta_y = plot_area_y_min - ymin;
-			if (ymax + delta_y > plot_area_y_max) delta_y = plot_area_y_max - ymax;
+			var x0 = plarea.x0 + plarea.width * z.x0;
+			var x1 = plarea.x0 + plarea.width * z.x1;
+			var y0 = plarea.y0 + plarea.height * z.y0;
+			var y1 = plarea.y0 + plarea.height * z.y1;
 
-			zoom_in (xmin + delta_x, ymin + delta_y, xmax + delta_x, ymax + delta_y);
-			//draw(); // TODO: optimize here
+			d.x *= z.width; d.y *= z.height;
+
+			if (x0 + d.x < plarea.x0) d.x = plarea.x0 - x0;
+			if (x1 + d.x > plarea.x1) d.x = plarea.x1 - x1;
+			if (y0 + d.y < plarea.y0) d.y = plarea.y0 - y0;
+			if (y1 + d.y > plarea.y1) d.y = plarea.y1 - y1;
+
+			zoom_in(
+				new Area.with_rel(
+					x0 + d.x,
+					y0 + d.y,
+					plarea.width * z.width,
+					plarea.height * z.height
+				)
+			);
 		}
 
-		protected double title_width = 0.0;
-		protected double title_height = 0.0;
-
-		public double title_vindent = 4;
-
-		protected virtual void show_text(Text text) {
-			context.select_font_face(text.style.family,
-			                         text.style.slant,
-			                         text.style.weight);
-			context.set_font_size(text.style.size);
-			if (text.style.orientation == FontOrient.VERTICAL) {
-				context.rotate(- Math.PI / 2.0);
-				context.show_text(text.text);
-				context.rotate(Math.PI / 2.0);
-			} else {
-				context.show_text(text.text);
-			}
+		/**
+		 * Zooms in the ``Chart`` by event point (scrolling).
+		 * @param p event position.
+		 */
+		public virtual void zoom_scroll_in (Point p) {
+			var w = plarea.width, h = plarea.height;
+			if (w < 8 || h < 8) return;
+			zoom_in (
+				new Area.with_abs(
+					plarea.x0 + (p.x - plarea.x0) / w * zoom_scroll_speed,
+					plarea.y0 + (p.y - plarea.y0) / h * zoom_scroll_speed,
+					plarea.x1 - (plarea.x1 - p.x) / w * zoom_scroll_speed,
+					plarea.y1 - (plarea.y1 - p.y) / h * zoom_scroll_speed
+				)
+			);
 		}
 
-		protected virtual void draw_chart_title () {
-			var sz = title.size(context);
-			title_height = sz.height + (legend.position == Legend.Position.TOP ? title_vindent * 2 : title_vindent);
-			cur_y_min += title_height;
-			set_source_rgba(title.color);
-			context.move_to (width/2 - sz.width/2 - sz.x_bearing, sz.height + title_vindent);
-			show_text(title);
+		/**
+		 * Zooms out the ``Chart`` by event point (scrolling).
+		 * @param p event position.
+		 */
+		public virtual void zoom_scroll_out (Point p) {
+			var z = zoom.copy(), pa = plarea.copy();
+			var w = plarea.width, h = plarea.height;
+			if (w < 8 || h < 8) return;
+
+			zoom_out();
+
+			var x0 = plarea.x0 + plarea.width * z.x0;
+			var x1 = plarea.x0 + plarea.width * z.x1;
+			var y0 = plarea.y0 + plarea.height * z.y0;
+			var y1 = plarea.y0 + plarea.height * z.y1;
+
+			var dx0 = (p.x - pa.x0) / w * zoom_scroll_speed;
+			var dx1 = (pa.x1 - p.x) / w * zoom_scroll_speed;
+			var dy0 = (p.y - pa.y0) / h * zoom_scroll_speed;
+			var dy1 = (pa.y1 - p.y) / h * zoom_scroll_speed;
+
+			if (x0 - dx0 < plarea.x0) x0 = plarea.x0; else x0 -= dx0;
+			if (x1 + dx1 > plarea.x1) x1 = plarea.x1; else x1 += dx1;
+			if (y0 - dy0 < plarea.y0) y0 = plarea.y0; else y0 -= dy0;
+			if (y1 + dy1 > plarea.y1) y1 = plarea.y1; else y1 += dy1;
+
+			zoom_in (new Area.with_abs(x0, y0, x1, y1));
 		}
 
-		protected double legend_width = 0;
-		protected double legend_height = 0;
-
-		protected enum LegendProcessType {
-			CALC = 0, // default
-			DRAW
+		protected virtual void fix_evarea () {
+			if (evarea.width < 0) evarea.width = 0;
+			if (evarea.height < 0) evarea.height = 0;
+		}
+		protected virtual void rot_axes_titles () {
+			foreach (var s in series)
+				s.axis_y.title.font.orient = Gtk.Orientation.VERTICAL;
 		}
 
-		protected virtual void set_line_style (LineStyle style) {
-			set_source_rgba(style.color);
-			context.set_line_join(style.line_join);
-			context.set_line_cap(style.line_cap);
-			context.set_line_width(style.width);
-			context.set_dash(style.dashes, style.dash_offset);
-		}
-
-		protected virtual void draw_legend_rect (out double x0, out double y0) {
-			x0 = y0 = 0.0;
-			if (context != null) {
-				switch (legend.position) {
-				case Legend.Position.TOP:
-					x0 = (width - legend_width) / 2;
-					y0 = title_height;
-				break;
-
-				case Legend.Position.BOTTOM:
-					x0 = (width - legend_width) / 2;
-					y0 = height - legend_height;
-				break;
-
-				case Legend.Position.LEFT:
-					x0 = 0;
-					y0 = (height - legend_height) / 2;
-				break;
-
-				case Legend.Position.RIGHT:
-					x0 = width - legend_width;
-					y0 = (height - legend_height) / 2;
-				break;
-				}
-				set_source_rgba(legend.bg_color);
-				context.rectangle (x0, y0, legend_width, legend_height);
-				context.fill();
-				set_line_style(legend.border_style);
-				context.move_to (x0, y0);
-				context.rel_line_to (legend_width, 0);
-				context.rel_line_to (0, legend_height);
-				context.rel_line_to (-legend_width, 0);
-				context.rel_line_to (0, -legend_height);
-				context.stroke ();
-			}
-		}
-
-		public double legend_line_length = 30.0;
-		public double legend_text_hspace = 10.0;
-		public double legend_text_vspace = 2.0;
-		public double marker_size = 8.0;
-
-		protected virtual void draw_marker_at_pos (Series.MarkerType marker_type,
-		                                           double x, double y) {
-			context.move_to (x, y);
-			switch (marker_type) {
-			case Series.MarkerType.SQUARE:
-				context.rectangle (x - marker_size / 2, y - marker_size / 2,
-				                   marker_size, marker_size);
-				context.fill();
-				break;
-
-			case Series.MarkerType.CIRCLE:
-				context.arc (x, y, marker_size / 2, 0, 2*Math.PI);
-				context.fill();
-				break;
-
-			case Series.MarkerType.TRIANGLE:
-				context.move_to (x - marker_size / 2, y - marker_size / 2);
-				context.line_to (x + marker_size / 2, y - marker_size / 2);
-				context.line_to (x, y + marker_size / 2);
-				context.line_to (x - marker_size / 2, y - marker_size / 2);
-				context.fill();
-				break;
-
-			case Series.MarkerType.PRICLE_SQUARE:
-				context.rectangle (x - marker_size / 2, y - marker_size / 2,
-				                   marker_size, marker_size);
-				context.stroke();
-				break;
-
-			case Series.MarkerType.PRICLE_CIRCLE:
-				context.arc (x, y, marker_size / 2, 0, 2*Math.PI);
-				context.stroke();
-				break;
-
-			case Series.MarkerType.PRICLE_TRIANGLE:
-				context.move_to (x - marker_size / 2, y - marker_size / 2);
-				context.line_to (x + marker_size / 2, y - marker_size / 2);
-				context.line_to (x, y + marker_size / 2);
-				context.line_to (x - marker_size / 2, y - marker_size / 2);
-				context.stroke();
-				break;
-			}
-		}
-
-		double [] max_font_heights;
-		protected virtual void process_legend (LegendProcessType process_type) {
-			var legend_x0 = 0.0, legend_y0 = 0.0;
-			var heights_idx = 0;
-			var leg_width_sum = 0.0;
-			var leg_height_sum = 0.0;
-			double max_font_h = 0.0;
-
-			// prepare
-			switch (process_type) {
-			case LegendProcessType.CALC:
-				legend_width = 0.0;
-				legend_height = 0.0;
-				max_font_heights = {};
-				heights_idx = 0;
-				break;
-			case LegendProcessType.DRAW:
-				draw_legend_rect(out legend_x0, out legend_y0);
-				break;
-			}
-
-			foreach (var s in series) {
-
-				if (!s.zoom_show) continue;
-
-				var title_sz = s.title.size(context);
-
-				// carry
-				switch (legend.position) {
-				case Legend.Position.TOP:
-				case Legend.Position.BOTTOM:
-					var ser_title_width = title_sz.width + legend_line_length;
-					if (leg_width_sum + (leg_width_sum == 0 ? 0 : legend_text_hspace) + ser_title_width > width) { // carry
-						leg_height_sum += max_font_h;
-						switch (process_type) {
-						case LegendProcessType.CALC:
-							max_font_heights += max_font_h;
-							legend_width = double.max(legend_width, leg_width_sum);
-							break;
-						case LegendProcessType.DRAW:
-							heights_idx++;
-							break;
-						}
-						leg_width_sum = 0.0;
-						max_font_h = 0;
-					}
-					break;
-				}
-
-				switch (process_type) {
-				case LegendProcessType.DRAW:
-					var x = legend_x0 + leg_width_sum + (leg_width_sum == 0.0 ? 0.0 : legend_text_hspace);
-					var y = legend_y0 + leg_height_sum + max_font_heights[heights_idx];
-
-					// series title
-					context.move_to (x + legend_line_length - title_sz.x_bearing, y);
-					set_source_rgba (s.title.color);
-					show_text(s.title);
-
-					// series line style
-					context.move_to (x, y - title_sz.height / 2);
-					set_line_style(s.line_style);
-					context.rel_line_to (legend_line_length, 0);
-					context.stroke();
-					draw_marker_at_pos (s.marker_type, x + legend_line_length / 2, y - title_sz.height / 2);
-					break;
-				}
-
-				switch (legend.position) {
-				case Legend.Position.TOP:
-				case Legend.Position.BOTTOM:
-					var ser_title_width = title_sz.width + legend_line_length;
-					leg_width_sum += (leg_width_sum == 0 ? 0 : legend_text_hspace) + ser_title_width;
-					max_font_h = double.max (max_font_h, title_sz.height) + (leg_height_sum != 0 ? legend_text_vspace : 0);
-				break;
-
-				case Legend.Position.LEFT:
-				case Legend.Position.RIGHT:
-					switch (process_type) {
-					case LegendProcessType.CALC:
-						max_font_heights += title_sz.height + (leg_height_sum != 0 ? legend_text_vspace : 0);
-						legend_width = double.max (legend_width, title_sz.width + legend_line_length);
-						break;
-					case LegendProcessType.DRAW:
-						heights_idx++;
-						break;
-					}
-					leg_height_sum += title_sz.height + (leg_height_sum != 0 ? legend_text_vspace : 0);
-				break;
-				}
-			}
-
-			// TOP, BOTTOM
-			switch (legend.position) {
-			case Legend.Position.TOP:
-			case Legend.Position.BOTTOM:
-				if (leg_width_sum != 0) {
-					leg_height_sum += max_font_h;
-					switch (process_type) {
-						case LegendProcessType.CALC:
-							max_font_heights += max_font_h;
-							legend_width = double.max(legend_width, leg_width_sum);
-							break;
-					}
-				}
-				break;
-			}
-
-			switch (process_type) {
-			case LegendProcessType.CALC:
-				legend_height = leg_height_sum;
-				switch (legend.position) {
-					case Legend.Position.TOP:
-						cur_y_min += legend_height;
-						break;
-					case Legend.Position.BOTTOM:
-						cur_y_max -= legend_height;
-						break;
-					case Legend.Position.LEFT:
-						cur_x_min += legend_width;
-						break;
-					case Legend.Position.RIGHT:
-						cur_x_max -= legend_width;
-						break;
-				}
-				break;
-			}
-		}
-
-		protected virtual void draw_legend () {
-			process_legend (LegendProcessType.CALC);
-			process_legend (LegendProcessType.DRAW);
-		}
-
-		public LineStyle selection_style = LineStyle ();
-
-		public virtual void draw_selection (double x0, double y0, double x1, double y1) {
-			set_line_style (selection_style);
-			context.rectangle (x0, y0, x1 - x0, y1 - y0);
-			context.stroke();
-		}
-
-		protected int axis_rec_npoints = 128;
-
-		protected virtual void calc_axis_rec_sizes (Axis axis, out double max_rec_width, out double max_rec_height, bool is_horizontal = true) {
-			max_rec_width = max_rec_height = 0;
-			for (var i = 0; i < axis_rec_npoints; ++i) {
-				Float128 x = (int64)(axis.zoom_min + (axis.zoom_max - axis.zoom_min) / axis_rec_npoints * i) + 1.0/3.0;
-				switch (axis.type) {
-				case Axis.Type.NUMBERS:
-					var text = new Text (axis.format.printf((LongDouble)x) + (is_horizontal ? "_" : ""), axis.font_style);
-					var sz = text.size(context);
-					max_rec_width = double.max (max_rec_width, sz.width);
-					max_rec_height = double.max (max_rec_height, sz.height);
-					break;
-				case Axis.Type.DATE_TIME:
-					string date, time;
-					format_date_time(axis, x, out date, out time);
-
-					var h = 0.0;
-					if (axis.date_format != "") {
-						var text = new Text (date + (is_horizontal ? "_" : ""), axis.font_style);
-						var sz = text.size(context);
-						max_rec_width = double.max (max_rec_width, sz.width);
-						h = sz.height;
-					}
-					if (axis.time_format != "") {
-						var text = new Text (time + (is_horizontal ? "_" : ""), axis.font_style);
-						var sz = text.size(context);
-						max_rec_width = double.max (max_rec_width, sz.width);
-						h += sz.height;
-					}
-					max_rec_height = double.max (max_rec_height, h);
-					break;
-				}
-			}
-		}
-
-		protected virtual Float128 calc_round_step (Float128 aver_step, bool date_time = false) {
-			Float128 step = 1.0;
-
-			if (aver_step > 1.0) {
-				if (date_time) while (step < aver_step) step *= 60;
-				if (date_time) while (step < aver_step) step *= 60;
-				if (date_time) while (step < aver_step) step *= 24;
-				while (step < aver_step) step *= 10;
-				if (step / 5 > aver_step) step /= 5;
-				while (step / 2 > aver_step) step /= 2;
-			} else if (aver_step > 0) {
-				while (step / 10 > aver_step) step /= 10;
-				if (step / 5 > aver_step) step /= 5;
-				while (step / 2 > aver_step) step /= 2;
-			}
-
-			return step;
-		}
-
-		public double plot_area_x_min = 0;
-		public double plot_area_x_max = 0;
-		public double plot_area_y_min = 0;
-		public double plot_area_y_max = 0;
-
-		public bool common_x_axes { get; protected set; default = false; }
-		public bool common_y_axes { get; protected set; default = false; }
-		public Color common_axis_color = Color (0, 0, 0, 1);
-
-		bool are_intersect (double a_min, double a_max, double b_min, double b_max) {
-			if (   a_min < a_max <= b_min < b_max
-			    || b_min < b_max <= a_min < a_max)
+		protected virtual bool equal_x_axis (Series s1, Series s2) {
+			if (   s1.axis_x.position != s2.axis_x.position
+			    || s1.axis_x.range.zmin != s2.axis_x.range.zmin
+			    || s1.axis_x.range.zmax != s2.axis_x.range.zmax
+			    || s1.axis_x.place.zmin != s2.axis_x.place.zmin
+			    || s1.axis_x.place.zmax != s2.axis_x.place.zmax
+			    || s1.axis_x.dtype != s2.axis_x.dtype
+			)
 				return false;
 			return true;
 		}
 
-		protected virtual void set_vertical_axes_titles () {
-			for (var si = 0; si < series.length; ++si) {
-				var s = series[si];
-				s.axis_y.title.style.orientation = FontOrient.VERTICAL;
-			}
-		}
-
-		protected virtual void calc_plot_area () {
-			plot_area_x_min = cur_x_min + legend.indent;
-			plot_area_x_max = cur_x_max - legend.indent;
-			plot_area_y_min = cur_y_min + legend.indent;
-			plot_area_y_max = cur_y_max - legend.indent;
-
-			// Check for common axes
-			common_x_axes = common_y_axes = true;
-			int nzoom_series_show = 0;
-			for (var si = series.length - 1; si >=0; --si) {
-				var s = series[si];
-				if (!s.zoom_show) continue;
-				++nzoom_series_show;
-				if (   s.axis_x.position != series[0].axis_x.position
-				    || s.axis_x.zoom_min != series[0].axis_x.zoom_min
-				    || s.axis_x.zoom_max != series[0].axis_x.zoom_max
-				    || s.place.zoom_x_low != series[0].place.zoom_x_low
-				    || s.place.zoom_x_high != series[0].place.zoom_x_high
-				    || s.axis_x.type != series[0].axis_x.type)
-					common_x_axes = false;
-				if (   s.axis_y.position != series[0].axis_y.position
-				    || s.axis_y.zoom_min != series[0].axis_y.zoom_min
-				    || s.axis_y.zoom_max != series[0].axis_y.zoom_max
-				    || s.place.zoom_y_low != series[0].place.zoom_y_low
-				    || s.place.zoom_y_high != series[0].place.zoom_y_high)
-					common_y_axes = false;
-			}
-			if (nzoom_series_show == 1) common_x_axes = common_y_axes = false;
-
-			// Join and calc X-axes
-			for (var si = series.length - 1, nskip = 0; si >=0; --si) {
-				var s = series[si];
-				if (!s.zoom_show) continue;
-				if (nskip != 0) {--nskip; continue;}
-				double max_rec_width = 0; double max_rec_height = 0;
-				calc_axis_rec_sizes (s.axis_x, out max_rec_width, out max_rec_height, true);
-				var max_font_indent = s.axis_x.font_indent;
-				var max_axis_font_height = s.axis_x.title.text == "" ? 0 : s.axis_x.title.get_height(context) + s.axis_x.font_indent;
-
-				// join relative x-axes with non-intersect places
-				for (int sj = si - 1; sj >= 0; --sj) {
-					var s2 = series[sj];
-					if (!s2.zoom_show) continue;
-					bool has_intersection = false;
-					for (int sk = si; sk > sj; --sk) {
-						var s3 = series[sk];
-						if (!s3.zoom_show) continue;
-						if (are_intersect(s2.place.zoom_x_low, s2.place.zoom_x_high, s3.place.zoom_x_low, s3.place.zoom_x_high)
-						    || s2.axis_x.position != s3.axis_x.position
-						    || s2.axis_x.type != s3.axis_x.type) {
-							has_intersection = true;
-							break;
-						}
-					}
-					if (!has_intersection) {
-						double tmp_max_rec_width = 0; double tmp_max_rec_height = 0;
-						calc_axis_rec_sizes (s2.axis_x, out tmp_max_rec_width, out tmp_max_rec_height, true);
-						max_rec_width = double.max (max_rec_width, tmp_max_rec_width);
-						max_rec_height = double.max (max_rec_height, tmp_max_rec_height);
-						max_font_indent = double.max (max_font_indent, s2.axis_x.font_indent);
-						max_axis_font_height = double.max (max_axis_font_height, s2.axis_x.title.text == "" ? 0 :
-						                                   s2.axis_x.title.get_height(context) + s.axis_x.font_indent);
-						++nskip;
-					} else {
-						break;
-					}
-				}
-
-				// for 4.2. Cursor values for common X axis
-				if (common_x_axes && si == zoom_first_show && cursors_orientation == CursorOrientation.VERTICAL && cursors_crossings.length != 0) {
-					switch (s.axis_x.position) {
-					case Axis.Position.LOW: plot_area_y_max -= max_rec_height + s.axis_x.font_indent; break;
-					case Axis.Position.HIGH: plot_area_y_min += max_rec_height + s.axis_x.font_indent; break;
-					}
-				}
-
-				if (!common_x_axes || si == zoom_first_show)
-					switch (s.axis_x.position) {
-					case Axis.Position.LOW: plot_area_y_max -= max_rec_height + max_font_indent + max_axis_font_height; break;
-					case Axis.Position.HIGH: plot_area_y_min += max_rec_height + max_font_indent + max_axis_font_height; break;
-					}
-			}
-
-			// Join and calc Y-axes
-			for (var si = series.length - 1, nskip = 0; si >=0; --si) {
-				var s = series[si];
-				if (!s.zoom_show) continue;
-				if (nskip != 0) {--nskip; continue;}
-				double max_rec_width = 0; double max_rec_height = 0;
-				calc_axis_rec_sizes (s.axis_y, out max_rec_width, out max_rec_height, false);
-				var max_font_indent = s.axis_y.font_indent;
-				var max_axis_font_width = s.axis_y.title.text == "" ? 0 : s.axis_y.title.get_width(context) + s.axis_y.font_indent;
-
-				// join relative x-axes with non-intersect places
-				for (int sj = si - 1; sj >= 0; --sj) {
-					var s2 = series[sj];
-					if (!s2.zoom_show) continue;
-					bool has_intersection = false;
-					for (int sk = si; sk > sj; --sk) {
-						var s3 = series[sk];
-						if (!s3.zoom_show) continue;
-						if (are_intersect(s2.place.zoom_y_low, s2.place.zoom_y_high, s3.place.zoom_y_low, s3.place.zoom_y_high)
-						    || s2.axis_y.position != s3.axis_y.position
-						    || s2.axis_x.type != s3.axis_x.type) {
-							has_intersection = true;
-							break;
-						}
-					}
-					if (!has_intersection) {
-						double tmp_max_rec_width = 0; double tmp_max_rec_height = 0;
-						calc_axis_rec_sizes (s2.axis_y, out tmp_max_rec_width, out tmp_max_rec_height, false);
-						max_rec_width = double.max (max_rec_width, tmp_max_rec_width);
-						max_rec_height = double.max (max_rec_height, tmp_max_rec_height);
-						max_font_indent = double.max (max_font_indent, s2.axis_y.font_indent);
-						max_axis_font_width = double.max (max_axis_font_width, s2.axis_y.title.text == "" ? 0
-						                                   : s2.axis_y.title.get_width(context) + s.axis_y.font_indent);
-						++nskip;
-					} else {
-						break;
-					}
-				}
-
-				// for 4.2. Cursor values for common Y axis
-				if (common_y_axes && si == zoom_first_show && cursors_orientation == CursorOrientation.HORIZONTAL && cursors_crossings.length != 0) {
-					switch (s.axis_y.position) {
-					case Axis.Position.LOW: plot_area_x_min += max_rec_width + s.axis_y.font_indent; break;
-					case Axis.Position.HIGH: plot_area_x_max -= max_rec_width + s.axis_y.font_indent; break;
-					}
-				}
-
-				if (!common_y_axes || si == zoom_first_show)
-					switch (s.axis_y.position) {
-					case Axis.Position.LOW: plot_area_x_min += max_rec_width + max_font_indent + max_axis_font_width; break;
-					case Axis.Position.HIGH: plot_area_x_max -= max_rec_width + max_font_indent + max_axis_font_width; break;
-					}
-			}
-		}
-
-		bool point_belong (Float128 p, Float128 a, Float128 b) {
-			if (a > b) { Float128 tmp = a; a = b; b = tmp; }
-			if (a <= p <= b) return true;
-			return false;
-		}
-
-		protected virtual double compact_rec_x_pos (Series s, Float128 x, Text text) {
-			var sz = text.size(context);
-			return get_scr_x(s, x) - sz.width / 2.0 - sz.x_bearing
-			       - sz.width * (x - (s.axis_x.zoom_min + s.axis_x.zoom_max) / 2.0) / (s.axis_x.zoom_max - s.axis_x.zoom_min);
-		}
-
-		protected virtual double compact_rec_y_pos (Series s, Float128 y, Text text) {
-			var sz = text.size(context);
-			return get_scr_y(s, y) + sz.height / 2.0
-			       + sz.height * (y - (s.axis_y.zoom_min + s.axis_y.zoom_max) / 2.0) / (s.axis_y.zoom_max - s.axis_y.zoom_min);
-		}
-
-		protected virtual void format_date_time (Axis axis, Float128 x, out string date, out string time) {
-			date = time = "";
-			var dt = new DateTime.from_unix_utc((int64)x);
-			date = dt.format(axis.date_format);
-			var dsec_str =
-				("%."+(axis.dsec_signs.to_string())+"Lf").printf((LongDouble)(x - (int64)x)).offset(1);
-			time = dt.format(axis.time_format) + dsec_str;
-		}
-
-		protected virtual void draw_horizontal_axis () {
-			for (var si = series.length - 1, nskip = 0; si >=0; --si) {
-				var s = series[si];
-				if (!s.zoom_show) continue;
-				if (common_x_axes && si != zoom_first_show) continue;
-
-				// 1. Detect max record width/height by axis_rec_npoints equally selected points using format.
-				double max_rec_width, max_rec_height;
-				calc_axis_rec_sizes (s.axis_x, out max_rec_width, out max_rec_height, true);
-
-				// 2. Calculate maximal available number of records, take into account the space width.
-				long max_nrecs = (long) ((plot_area_x_max - plot_area_x_min) * (s.place.zoom_x_high - s.place.zoom_x_low) / max_rec_width);
-
-				// 3. Calculate grid step.
-				Float128 step = calc_round_step ((s.axis_x.zoom_max - s.axis_x.zoom_min) / max_nrecs, s.axis_x.type == Axis.Type.DATE_TIME);
-				if (step > s.axis_x.zoom_max - s.axis_x.zoom_min)
-					step = s.axis_x.zoom_max - s.axis_x.zoom_min;
-
-				// 4. Calculate x_min (s.axis_x.zoom_min / step, round, multiply on step, add step if < s.axis_x.zoom_min).
-				Float128 x_min = 0.0;
-				if (step >= 1) {
-					int64 x_min_nsteps = (int64) (s.axis_x.zoom_min / step);
-					x_min = x_min_nsteps * step;
-				} else {
-					int64 round_axis_x_min = (int64)s.axis_x.zoom_min;
-					int64 x_min_nsteps = (int64) ((s.axis_x.zoom_min - round_axis_x_min) / step);
-					x_min = round_axis_x_min + x_min_nsteps * step;
-				}
-				if (x_min < s.axis_x.zoom_min) x_min += step;
-
-				// 4.2. Cursor values for common X axis
-				if (common_x_axes && cursors_orientation == CursorOrientation.VERTICAL && cursors_crossings.length != 0) {
-					switch (s.axis_x.position) {
-					case Axis.Position.LOW: cur_y_max -= max_rec_height + s.axis_x.font_indent; break;
-					case Axis.Position.HIGH: cur_y_min += max_rec_height + s.axis_x.font_indent; break;
-					}
-				}
-
-				var sz = s.axis_x.title.size(context);
-
-				// 4.5. Draw Axis title
-				if (s.axis_x.title.text != "") {
-					var scr_x = plot_area_x_min + (plot_area_x_max - plot_area_x_min) * (s.place.zoom_x_low + s.place.zoom_x_high) / 2.0;
-					double scr_y = 0.0;
-					switch (s.axis_x.position) {
-					case Axis.Position.LOW: scr_y = cur_y_max - s.axis_x.font_indent; break;
-					case Axis.Position.HIGH: scr_y = cur_y_min + s.axis_x.font_indent + sz.height; break;
-					}
-					context.move_to(scr_x - sz.width / 2.0, scr_y);
-					set_source_rgba(s.axis_x.color);
-					if (common_x_axes) set_source_rgba(common_axis_color);
-					show_text(s.axis_x.title);
-				}
-
-				// 5. Draw records, update cur_{x,y}_{min,max}.
-				for (Float128 x = x_min, x_max = s.axis_x.zoom_max; point_belong (x, x_min, x_max); x += step) {
-					if (common_x_axes) set_source_rgba(common_axis_color);
-					else set_source_rgba(s.axis_x.color);
-					string text = "", time_text = "";
-					switch (s.axis_x.type) {
-					case Axis.Type.NUMBERS:
-						text = s.axis_x.format.printf((LongDouble)x);
-						break;
-					case Axis.Type.DATE_TIME:
-						format_date_time(s.axis_x, x, out text, out time_text);
-						break;
-					}
-					var scr_x = get_scr_x (s, x);
-					var text_t = new Text(text, s.axis_x.font_style, s.axis_x.color);
-					switch (s.axis_x.position) {
-					case Axis.Position.LOW:
-						var print_y = cur_y_max - s.axis_x.font_indent - (s.axis_x.title.text == "" ? 0 : sz.height + s.axis_x.font_indent);
-						var print_x = compact_rec_x_pos (s, x, text_t);
-						context.move_to (print_x, print_y);
-						switch (s.axis_x.type) {
-						case Axis.Type.NUMBERS:
-							show_text(text_t);
-							break;
-						case Axis.Type.DATE_TIME:
-							if (s.axis_x.date_format != "") show_text(text_t);
-							var time_text_t = new Text(time_text, s.axis_x.font_style, s.axis_x.color);
-							print_x = compact_rec_x_pos (s, x, time_text_t);
-							context.move_to (print_x, print_y - (s.axis_x.date_format == "" ? 0 : text_t.get_height(context) + s.axis_x.font_indent));
-							if (s.axis_x.time_format != "") show_text(time_text_t);
-							break;
-						}
-						// 6. Draw grid lines to the s.place.zoom_y_low.
-						var line_style = s.grid.line_style;
-						if (common_x_axes) line_style.color = Color(0, 0, 0, 0.5);
-						set_line_style(line_style);
-						double y = cur_y_max - max_rec_height - s.axis_x.font_indent - (s.axis_x.title.text == "" ? 0 : sz.height + s.axis_x.font_indent);
-						context.move_to (scr_x, y);
-						if (common_x_axes)
-							context.line_to (scr_x, plot_area_y_min);
-						else
-							context.line_to (scr_x, double.min (y, plot_area_y_max - (plot_area_y_max - plot_area_y_min) * s.place.zoom_y_high));
-						break;
-					case Axis.Position.HIGH:
-						var print_y = cur_y_min + max_rec_height + s.axis_x.font_indent + (s.axis_x.title.text == "" ? 0 : sz.height + s.axis_x.font_indent);
-						var print_x = compact_rec_x_pos (s, x, text_t);
-						context.move_to (print_x, print_y);
-
-						switch (s.axis_x.type) {
-						case Axis.Type.NUMBERS:
-							show_text(text_t);
-							break;
-						case Axis.Type.DATE_TIME:
-							if (s.axis_x.date_format != "") show_text(text_t);
-							var time_text_t = new Text(time_text, s.axis_x.font_style, s.axis_x.color);
-							print_x = compact_rec_x_pos (s, x, time_text_t);
-							context.move_to (print_x, print_y - (s.axis_x.date_format == "" ? 0 : text_t.get_height(context) + s.axis_x.font_indent));
-							if (s.axis_x.time_format != "") show_text(time_text_t);
-							break;
-						}
-						// 6. Draw grid lines to the s.place.zoom_y_high.
-						var line_style = s.grid.line_style;
-						if (common_x_axes) line_style.color = Color(0, 0, 0, 0.5);
-						set_line_style(line_style);
-						double y = cur_y_min + max_rec_height + s.axis_x.font_indent + (s.axis_x.title.text == "" ? 0 : sz.height + s.axis_x.font_indent);
-						context.move_to (scr_x, y);
-						if (common_x_axes)
-							context.line_to (scr_x, plot_area_y_max);
-						else
-							context.line_to (scr_x, double.max (y, plot_area_y_max - (plot_area_y_max - plot_area_y_min) * s.place.zoom_y_low));
-						break;
-					}
-				}
-				context.stroke ();
-
-				// join relative x-axes with non-intersect places
-				for (int sj = si - 1; sj >= 0; --sj) {
-					var s2 = series[sj];
-					if (!s2.zoom_show) continue;
-					bool has_intersection = false;
-					for (int sk = si; sk > sj; --sk) {
-						var s3 = series[sk];
-						if (!s3.zoom_show) continue;
-						if (are_intersect(s2.place.zoom_x_low, s2.place.zoom_x_high, s3.place.zoom_x_low, s3.place.zoom_x_high)
-						    || s2.axis_x.position != s3.axis_x.position
-						    || s2.axis_x.type != s3.axis_x.type) {
-							has_intersection = true;
-							break;
-						}
-					}
-					if (!has_intersection) {
-						++nskip;
-					} else {
-						break;
-					}
-				}
-
-				if (nskip != 0) {--nskip; continue;}
-
-				switch (s.axis_x.position) {
-				case Axis.Position.LOW:
-					cur_y_max -= max_rec_height + s.axis_x.font_indent
-					             + (s.axis_x.title.text == "" ? 0 : sz.height + s.axis_x.font_indent);
-					break;
-				case Axis.Position.HIGH:
-					cur_y_min += max_rec_height +  s.axis_x.font_indent
-					             + (s.axis_x.title.text == "" ? 0 : sz.height + s.axis_x.font_indent);
-					break;
-				}
-			}
-		}
-
-		protected virtual void draw_vertical_axis () {
-			for (var si = series.length - 1, nskip = 0; si >=0; --si) {
-				var s = series[si];
-				if (!s.zoom_show) continue;
-				if (common_y_axes && si != zoom_first_show) continue;
-				// 1. Detect max record width/height by axis_rec_npoints equally selected points using format.
-				double max_rec_width, max_rec_height;
-				calc_axis_rec_sizes (s.axis_y, out max_rec_width, out max_rec_height, false);
-
-				// 2. Calculate maximal available number of records, take into account the space width.
-				long max_nrecs = (long) ((plot_area_y_max - plot_area_y_min) * (s.place.zoom_y_high - s.place.zoom_y_low) / max_rec_height);
-
-				// 3. Calculate grid step.
-				Float128 step = calc_round_step ((s.axis_y.zoom_max - s.axis_y.zoom_min) / max_nrecs);
-				if (step > s.axis_y.zoom_max - s.axis_y.zoom_min)
-					step = s.axis_y.zoom_max - s.axis_y.zoom_min;
-
-				// 4. Calculate y_min (s.axis_y.zoom_min / step, round, multiply on step, add step if < s.axis_y.zoom_min).
-				Float128 y_min = 0.0;
-				if (step >= 1) {
-					int64 y_min_nsteps = (int64) (s.axis_y.zoom_min / step);
-					y_min = y_min_nsteps * step;
-				} else {
-					int64 round_axis_y_min = (int64)s.axis_y.zoom_min;
-					int64 y_min_nsteps = (int64) ((s.axis_y.zoom_min - round_axis_y_min) / step);
-					y_min = round_axis_y_min + y_min_nsteps * step;
-				}
-				if (y_min < s.axis_y.zoom_min) y_min += step;
-
-				// 4.2. Cursor values for common Y axis
-				if (common_y_axes && cursors_orientation == CursorOrientation.HORIZONTAL && cursors_crossings.length != 0) {
-					switch (s.axis_y.position) {
-					case Axis.Position.LOW: cur_x_min += max_rec_width + s.axis_y.font_indent; break;
-					case Axis.Position.HIGH: cur_x_max -= max_rec_width + s.axis_y.font_indent; break;
-					}
-				}
-
-				var sz = s.axis_y.title.size(context);
-
-				// 4.5. Draw Axis title
-				if (s.axis_y.title.text != "") {
-					var scr_y = plot_area_y_max - (plot_area_y_max - plot_area_y_min) * (s.place.zoom_y_low + s.place.zoom_y_high) / 2.0;
-					switch (s.axis_y.position) {
-					case Axis.Position.LOW:
-						var scr_x = cur_x_min + s.axis_y.font_indent + sz.width;
-						context.move_to(scr_x, scr_y + sz.height / 2.0);
-						break;
-					case Axis.Position.HIGH:
-						var scr_x = cur_x_max - s.axis_y.font_indent;
-						context.move_to(scr_x, scr_y + sz.height / 2.0);
-						break;
-					}
-					set_source_rgba(s.axis_y.color);
-					if (common_y_axes) set_source_rgba(common_axis_color);
-					show_text(s.axis_y.title);
-				}
-
-				// 5. Draw records, update cur_{x,y}_{min,max}.
-				for (Float128 y = y_min, y_max = s.axis_y.zoom_max; point_belong (y, y_min, y_max); y += step) {
-					if (common_y_axes) set_source_rgba(common_axis_color);
-					else set_source_rgba(s.axis_y.color);
-					var text = s.axis_y.format.printf((LongDouble)y);
-					var scr_y = get_scr_y (s, y);
-					var text_t = new Text(text, s.axis_y.font_style, s.axis_y.color);
-					var text_sz = text_t.size(context);
-					switch (s.axis_y.position) {
-					case Axis.Position.LOW:
-						context.move_to (cur_x_min + max_rec_width - text_sz.width + s.axis_y.font_indent - text_sz.x_bearing
-						                 + (s.axis_y.title.text == "" ? 0 : sz.width + s.axis_y.font_indent),
-						                 compact_rec_y_pos (s, y, text_t));
-						show_text(text_t);
-						// 6. Draw grid lines to the s.place.zoom_x_low.
-						var line_style = s.grid.line_style;
-						if (common_y_axes) line_style.color = Color(0, 0, 0, 0.5);
-						set_line_style(line_style);
-						double x = cur_x_min + max_rec_width + s.axis_y.font_indent + (s.axis_y.title.text == "" ? 0 : sz.width + s.axis_y.font_indent);
-						context.move_to (x, scr_y);
-						if (common_y_axes)
-							context.line_to (plot_area_x_max, scr_y);
-						else
-							context.line_to (double.max (x, plot_area_x_min + (plot_area_x_max - plot_area_x_min) * s.place.zoom_x_high), scr_y);
-						break;
-					case Axis.Position.HIGH:
-						context.move_to (cur_x_max - text_sz.width - s.axis_y.font_indent - text_sz.x_bearing
-						                 - (s.axis_y.title.text == "" ? 0 : sz.width + s.axis_y.font_indent),
-						                 compact_rec_y_pos (s, y, text_t));
-						show_text(text_t);
-						// 6. Draw grid lines to the s.place.zoom_x_high.
-						var line_style = s.grid.line_style;
-						if (common_y_axes) line_style.color = Color(0, 0, 0, 0.5);
-						set_line_style(line_style);
-						double x = cur_x_max - max_rec_width - s.axis_y.font_indent - (s.axis_y.title.text == "" ? 0 : sz.width + s.axis_y.font_indent);
-						context.move_to (x, scr_y);
-						if (common_y_axes)
-							context.line_to (plot_area_x_min, scr_y);
-						else
-							context.line_to (double.min (x, plot_area_x_min + (plot_area_x_max - plot_area_x_min) * s.place.zoom_x_low), scr_y);
-						break;
-					}
-				}
-				context.stroke ();
-
-				// join relative x-axes with non-intersect places
-				for (int sj = si - 1; sj >= 0; --sj) {
-					var s2 = series[sj];
-					if (!s2.zoom_show) continue;
-					bool has_intersection = false;
-					for (int sk = si; sk > sj; --sk) {
-						var s3 = series[sk];
-						if (!s3.zoom_show) continue;
-						if (are_intersect(s2.place.zoom_y_low, s2.place.zoom_y_high, s3.place.zoom_y_low, s3.place.zoom_y_high)
-						    || s2.axis_y.position != s3.axis_y.position) {
-							has_intersection = true;
-							break;
-						}
-					}
-					if (!has_intersection) {
-						++nskip;
-					} else {
-						break;
-					}
-				}
-
-				if (nskip != 0) {--nskip; continue;}
-
-				switch (s.axis_y.position) {
-				case Axis.Position.LOW:
-					cur_x_min += max_rec_width + s.axis_y.font_indent
-					             + (s.axis_y.title.text == "" ? 0 : sz.width + s.axis_y.font_indent); break;
-				case Axis.Position.HIGH:
-					cur_x_max -= max_rec_width + s.axis_y.font_indent
-					             + (s.axis_y.title.text == "" ? 0 : sz.width + s.axis_y.font_indent); break;
-				}
-			}
-		}
-
-		protected virtual void draw_plot_area_border () {
-			set_source_rgba (border_color);
-			context.set_dash(null, 0);
-			context.move_to (plot_area_x_min, plot_area_y_min);
-			context.line_to (plot_area_x_min, plot_area_y_max);
-			context.line_to (plot_area_x_max, plot_area_y_max);
-			context.line_to (plot_area_x_max, plot_area_y_min);
-			context.line_to (plot_area_x_min, plot_area_y_min);
-			context.stroke ();
-		}
-
-		protected virtual double get_scr_x (Series s, Float128 x) {
-			return plot_area_x_min + (plot_area_x_max - plot_area_x_min) * (s.place.zoom_x_low + (x - s.axis_x.zoom_min)
-			                         / (s.axis_x.zoom_max - s.axis_x.zoom_min) * (s.place.zoom_x_high - s.place.zoom_x_low));
-		}
-
-		protected virtual double get_scr_y (Series s, Float128 y) {
-			return plot_area_y_max - (plot_area_y_max - plot_area_y_min) * (s.place.zoom_y_low + (y - s.axis_y.zoom_min)
-			                         / (s.axis_y.zoom_max - s.axis_y.zoom_min) * (s.place.zoom_y_high - s.place.zoom_y_low));
-		}
-		protected virtual Point get_scr_point (Series s, Point p) {
-			return Point (get_scr_x(s, p.x), get_scr_y(s, p.y));
-		}
-
-		protected virtual Float128 get_real_x (Series s, double scr_x) {
-			return s.axis_x.zoom_min + ((scr_x - plot_area_x_min) / (plot_area_x_max - plot_area_x_min) - s.place.zoom_x_low)
-			       * (s.axis_x.zoom_max - s.axis_x.zoom_min) / (s.place.zoom_x_high - s.place.zoom_x_low);
-		}
-		protected virtual Float128 get_real_y (Series s, double scr_y) {
-			return s.axis_y.zoom_min + ((plot_area_y_max - scr_y) / (plot_area_y_max - plot_area_y_min) - s.place.zoom_y_low)
-			       * (s.axis_y.zoom_max - s.axis_y.zoom_min) / (s.place.zoom_y_high - s.place.zoom_y_low);
-		}
-		protected virtual Point get_real_point (Series s, Point p) {
-			return Point (get_real_x(s, p.x), get_real_y(s, p.y));
-		}
-
-		protected virtual bool x_in_range (double x, double x0, double x1) {
-			if (x0 <= x <= x1 || x1 <= x <= x0)
-				return true;
-			return false;
-		}
-
-		protected virtual bool y_in_range (double y, double y0, double y1) {
-			if (y0 <= y <= y1 || y1 <= y <= y0)
-				return true;
-			return false;
-		}
-
-		protected virtual bool x_in_plot_area (double x) {
-			if (x_in_range(x, plot_area_x_min, plot_area_x_max))
-				return true;
-			return false;
-		}
-
-		protected virtual bool y_in_plot_area (double y) {
-			if (y_in_range(y, plot_area_y_min, plot_area_y_max))
-				return true;
-			return false;
-		}
-
-		protected virtual bool point_in_rect (Point p, double x0, double x1, double y0, double y1) {
-			if (x_in_range(p.x, x0, x1) && y_in_range(p.y, y0, y1))
-				return true;
-			return false;
-		}
-
-		protected virtual bool point_in_plot_area (Point p) {
-			if (point_in_rect (p, plot_area_x_min, plot_area_x_max, plot_area_y_min, plot_area_y_max))
-				return true;
-			return false;
-		}
-
-		protected virtual bool hcross (Point a1, Point a2, Float128 h_x1, Float128 h_x2, Float128 h_y, out Float128 x) {
-			x = 0;
-			if (a1.y == a2.y) return false;
-			if (a1.y >= h_y && a2.y >= h_y || a1.y <= h_y && a2.y <= h_y) return false;
-			x = a1.x + (a2.x - a1.x) * (h_y - a1.y) / (a2.y - a1.y);
-			if (h_x1 <= x <= h_x2 || h_x2 <= x <= h_x1)
-				return true;
-			return false;
-		}
-
-		protected virtual bool vcross (Point a1, Point a2, Float128 v_x, Float128 v_y1, Float128 v_y2, out Float128 y) {
-			y = 0;
-			if (a1.x == a2.x) return false;
-			if (a1.x >= v_x && a2.x >= v_x || a1.x <= v_x && a2.x <= v_x) return false;
-			y = a1.y + (a2.y - a1.y) * (v_x - a1.x) / (a2.x - a1.x);
-			if (v_y1 <= y <= v_y2 || v_y2 <= y <= v_y1)
-				return true;
-			return false;
-		}
-
-		delegate int PointComparator(Point a, Point b);
-		void sort_points_delegate(Point[] points, PointComparator compare) {
-			for(var i = 0; i < points.length; ++i) {
-				for(var j = i + 1; j < points.length; ++j) {
-					if(compare(points[i], points[j]) > 0) {
-						var tmp = points[i];
-						points[i] = points[j];
-						points[j] = tmp;
-					}
-				}
-			}
-		}
-
-		protected virtual bool cut_line (Point a, Point b, out Point c, out Point d) {
-			int ncross = 0;
-			Float128 x = 0, y = 0;
-			Point pc[4];
-			if (hcross(a, b, plot_area_x_min, plot_area_x_max, plot_area_y_min, out x))
-				pc[ncross++] = Point(x, plot_area_y_min);
-			if (hcross(a, b, plot_area_x_min, plot_area_x_max, plot_area_y_max, out x))
-				pc[ncross++] = Point(x, plot_area_y_max);
-			if (vcross(a, b, plot_area_x_min, plot_area_y_min, plot_area_y_max, out y))
-				pc[ncross++] = Point(plot_area_x_min, y);
-			if (vcross(a, b, plot_area_x_max, plot_area_y_min, plot_area_y_max, out y))
-				pc[ncross++] = Point(plot_area_x_max, y);
-			c = a;
-			d = b;
-			if (ncross == 0) {
-				if (point_in_plot_area (a) && point_in_plot_area (b))
-					return true;
+		protected virtual bool equal_y_axis (Series s1, Series s2) {
+			if (   s1.axis_y.position != s2.axis_y.position
+			    || s1.axis_y.range.zmin != s2.axis_y.range.zmin
+			    || s1.axis_y.range.zmax != s2.axis_y.range.zmax
+			    || s1.axis_y.place.zmin != s2.axis_y.place.zmin
+			    || s1.axis_y.place.zmax != s2.axis_y.place.zmax
+			    || s1.axis_y.dtype != s2.axis_y.dtype
+			)
 				return false;
-			}
-			if (ncross >= 2) {
-				c = pc[0]; d = pc[1];
-				return true;
-			}
-			if (ncross == 1) {
-				if (point_in_plot_area (a)) {
-					c = a;
-					d = pc[0];
-					return true;
-				} else if (point_in_plot_area (b)) {
-					c = b;
-					d = pc[0];
-					return true;
-				}
-			}
-			return false;
+			return true;
 		}
 
-		protected virtual Point[] sort_points (Series s, Series.Sort sort) {
-			var points = s.points;
-			switch(sort) {
-			case Series.Sort.BY_X:
-				sort_points_delegate(points, (a, b) => {
-				    if (a.x < b.x) return -1;
-				    if (a.x > b.x) return 1;
-				    return 0;
-				});
-				break;
-			case Series.Sort.BY_Y:
-				sort_points_delegate(points, (a, b) => {
-				    if (a.y < b.y) return -1;
-				    if (a.y > b.y) return 1;
-				    return 0;
-				});
-				break;
-			}
-			return points;
-		}
+		protected virtual void eval_plarea () {
+			plarea = evarea.copy();
 
-		protected virtual void draw_series () {
-			for (var si = 0; si < series.length; ++si) {
-				var s = series[si];
+			// Check for joint axes
+			joint_x = joint_y = true;
+			int nshow = 0;
+			foreach (var s in series) {
 				if (!s.zoom_show) continue;
-				if (s.points.length == 0) continue;
-				var points = sort_points(s, s.sort);
-				set_line_style(s.line_style);
-				// draw series line
-				for (int i = 1; i < points.length; ++i) {
-					Point c, d;
-					if (cut_line (Point(get_scr_x(s, points[i - 1].x), get_scr_y(s, points[i - 1].y)),
-					              Point(get_scr_x(s, points[i].x), get_scr_y(s, points[i].y)),
-					              out c, out d)) {
-						context.move_to (c.x, c.y);
-						context.line_to (d.x, d.y);
-					}
-				}
-				context.stroke();
-				for (int i = 0; i < points.length; ++i) {
-					var x = get_scr_x(s, points[i].x);
-					var y = get_scr_y(s, points[i].y);
-					if (point_in_plot_area (Point (x, y)))
-						draw_marker_at_pos(s.marker_type, x, y);
-				}
+				if (!equal_x_axis(s, series[0])) joint_x = false;
+				if (!equal_y_axis(s, series[0])) joint_y = false;
+				++nshow;
 			}
+			if (nshow == 1) joint_x = joint_y = false;
+
+			for (var si = series.length - 1, nskip = 0; si >= 0; --si)
+				series[si].axis_x.join_axes(ref nskip);
+
+			for (var si = series.length - 1, nskip = 0; si >= 0; --si)
+				series[si].axis_y.join_axes(ref nskip);
 		}
 
-		protected List<Point?> cursors = new List<Point?> ();
-		protected Point active_cursor = Point ();
-		protected bool is_cursor_active = false;
-
-		public virtual void set_active_cursor (double x, double y, bool remove = false) {
-			active_cursor = Point (scr2rel_x(x), scr2rel_y(y));
-			is_cursor_active = ! remove;
+		protected virtual void draw_plarea_border () {
+			LineStyle().apply(this);
+			color = border_color;
+			ctx.rectangle(plarea.x0, plarea.y0, plarea.width, plarea.height);
+			ctx.stroke ();
 		}
-
-		public virtual void add_active_cursor () {
-			cursors.append (active_cursor);
-			is_cursor_active = false;
+		protected virtual void draw_title () {
+			var title_height = title.height + title.font.vspacing * 2;
+			evarea.y0 += title_height;
+			color = title.color;
+			ctx.move_to (area.width/2 - title.width/2, title.height + title.font.vspacing);
+			title.show();
 		}
-
-		public enum CursorOrientation {
-			VERTICAL = 0,  // default
-			HORIZONTAL
+		protected virtual void draw_axes () {
+			for (var si = series.length - 1, nskip = 0; si >= 0; --si)
+				series[si].axis_x.draw(ref nskip);
+			for (var si = series.length - 1, nskip = 0; si >= 0; --si)
+				series[si].axis_y.draw(ref nskip);
 		}
-
-		public CursorOrientation cursors_orientation = CursorOrientation.VERTICAL;
-
-		public double cursor_max_rm_distance = 32;
-
-		public virtual void remove_active_cursor () {
-			if (cursors.length() == 0) return;
-			var distance = width * width;
-			uint rm_indx = 0;
-			uint i = 0;
-			foreach (var c in cursors) {
-				double d = distance;
-				switch (cursors_orientation) {
-				case CursorOrientation.VERTICAL:
-					d = (rel2scr_x(c.x) - rel2scr_x(active_cursor.x)).abs();
-					break;
-				case CursorOrientation.HORIZONTAL:
-					d = (rel2scr_y(c.y) - rel2scr_y(active_cursor.y)).abs();
-					break;
-				}
-				if (d < distance) {
-					distance = d;
-					rm_indx = i;
-				}
-				++i;
-			}
-			if (distance < cursor_max_rm_distance)
-				cursors.delete_link(cursors.nth(rm_indx));
-			is_cursor_active = false;
-		}
-
-		protected virtual Float128 scr2rel_x (Float128 x) {
-			return rel_zoom_x_min + (x - plot_area_x_min) / (plot_area_x_max - plot_area_x_min) * (rel_zoom_x_max - rel_zoom_x_min);
-		}
-		protected virtual Float128 scr2rel_y (Float128 y) {
-			return rel_zoom_y_max - (plot_area_y_max - y) / (plot_area_y_max - plot_area_y_min) * (rel_zoom_y_max - rel_zoom_y_min);
-		}
-		protected virtual Point scr2rel_point (Point p) {
-			return Point (scr2rel_x(p.x), scr2rel_y(p.y));
-		}
-
-		protected virtual Float128 rel2scr_x(Float128 x) {
-			return plot_area_x_min + (plot_area_x_max - plot_area_x_min) * (x - rel_zoom_x_min) / (rel_zoom_x_max - rel_zoom_x_min);
-		}
-
-		protected virtual Float128 rel2scr_y(Float128 y) {
-			return plot_area_y_min + (plot_area_y_max - plot_area_y_min) * (y - rel_zoom_y_min) / (rel_zoom_y_max - rel_zoom_y_min);
-		}
-
-		protected virtual Point rel2scr_point (Point p) {
-			return Point (rel2scr_x(p.x), rel2scr_y(p.y));
-		}
-
-		public LineStyle cursor_line_style = LineStyle(Color(0.2, 0.2, 0.2, 0.8));
-
-		protected struct CursorCross {
-			uint series_index;
-			Point point;
-			Point size;
-			bool show_x;
-			bool show_date;
-			bool show_time;
-			bool show_y;
-			Point scr_point;
-			Point scr_value_point;
-		}
-		protected struct CursorCrossings {
-			uint cursor_index;
-			CursorCross[] crossings;
-		}
-
-		protected CursorCrossings[] cursors_crossings = {};
-
-		protected List<Point?> get_all_cursors () {
-			var all_cursors = cursors.copy_deep ((src) => { return src; });
-			if (is_cursor_active)
-				all_cursors.append(active_cursor);
-			return all_cursors;
-		}
-
-		protected void get_cursors_crossings () {
-			var all_cursors = get_all_cursors();
-
-			CursorCrossings[] local_cursor_crossings = {};
-
-			for (var ci = 0, max_ci = all_cursors.length(); ci < max_ci; ++ci) {
-				var c = all_cursors.nth_data(ci);
-				switch (cursors_orientation) {
-				case CursorOrientation.VERTICAL:
-					if (c.x <= rel_zoom_x_min || c.x >= rel_zoom_x_max) continue; break;
-				case CursorOrientation.HORIZONTAL:
-					if (c.y <= rel_zoom_y_min || c.y >= rel_zoom_y_max) continue; break;
-				}
-
-				CursorCross[] crossings = {};
-				for (var si = 0, max_si = series.length; si < max_si; ++si) {
-					var s = series[si];
-					if (!s.zoom_show) continue;
-
-					Point[] points = {};
-					switch (cursors_orientation) {
-					case CursorOrientation.VERTICAL:
-						points = sort_points (s, s.sort);
-						break;
-					case CursorOrientation.HORIZONTAL:
-						points = sort_points (s, s.sort);
-						break;
-					}
-
-					for (var i = 0; i + 1 < points.length; ++i) {
-						switch (cursors_orientation) {
-						case CursorOrientation.VERTICAL:
-							Float128 y = 0.0;
-							if (vcross(get_scr_point(s, points[i]), get_scr_point(s, points[i+1]), rel2scr_x(c.x),
-							           plot_area_y_min, plot_area_y_max, out y)) {
-								var point = Point(get_real_x(s, rel2scr_x(c.x)), get_real_y(s, y));
-								Point size; bool show_x, show_date, show_time, show_y;
-								cross_what_to_show(s, out show_x, out show_time, out show_date, out show_y);
-								calc_cross_sizes (s, point, out size, show_x, show_time, show_date, show_y);
-								CursorCross cc = {si, point, size, show_x, show_date, show_time, show_y};
-								crossings += cc;
-							}
-							break;
-						case CursorOrientation.HORIZONTAL:
-							Float128 x = 0.0;
-							if (hcross(get_scr_point(s, points[i]), get_scr_point(s, points[i+1]),
-							           plot_area_x_min, plot_area_x_max, rel2scr_y(c.y), out x)) {
-								var point = Point(get_real_x(s, x), get_real_y(s, rel2scr_y(c.y)));
-								Point size; bool show_x, show_date, show_time, show_y;
-								cross_what_to_show(s, out show_x, out show_time, out show_date, out show_y);
-								calc_cross_sizes (s, point, out size, show_x, show_time, show_date, show_y);
-								CursorCross cc = {si, point, size, show_x, show_date, show_time, show_y};
-								crossings += cc;
-							}
-							break;
-						}
-					}
-				}
-				if (crossings.length != 0) {
-					CursorCrossings ccs = {ci, crossings};
-					local_cursor_crossings += ccs;
-				}
-			}
-			cursors_crossings = local_cursor_crossings;
-		}
-
-		protected virtual void calc_cursors_value_positions () {
-			for (var ccsi = 0, max_ccsi = cursors_crossings.length; ccsi < max_ccsi; ++ccsi) {
-				for (var cci = 0, max_cci = cursors_crossings[ccsi].crossings.length; cci < max_cci; ++cci) {
-					// TODO: Ticket #142: find smart algorithm of cursors values placements
-					unowned CursorCross[] cr = cursors_crossings[ccsi].crossings;
-					cr[cci].scr_point = get_scr_point (series[cr[cci].series_index], cr[cci].point);
-					var d_max = double.max (cr[cci].size.x / 1.5, cr[cci].size.y / 1.5);
-					cr[cci].scr_value_point = Point (cr[cci].scr_point.x + d_max, cr[cci].scr_point.y - d_max);
-				}
-			}
-		}
-
-		protected virtual void cross_what_to_show (Series s, out bool show_x, out bool show_time,
-		                                                     out bool show_date, out bool show_y) {
-			show_x = show_time = show_date = show_y = false;
-			switch (cursors_orientation) {
-			case CursorOrientation.VERTICAL:
-				show_y = true;
-				if (!common_x_axes)
-					switch (s.axis_x.type) {
-					case Axis.Type.NUMBERS: show_x = true; break;
-					case Axis.Type.DATE_TIME:
-						if (s.axis_x.date_format != "") show_date = true;
-						if (s.axis_x.time_format != "") show_time = true;
-						break;
-					}
-				break;
-			case CursorOrientation.HORIZONTAL:
-				if (!common_y_axes) show_y = true;
-				switch (s.axis_x.type) {
-				case Axis.Type.NUMBERS: show_x = true; break;
-				case Axis.Type.DATE_TIME:
-					if (s.axis_x.date_format != "") show_date = true;
-					if (s.axis_x.time_format != "") show_time = true;
-					break;
-				}
-				break;
-			}
-		}
-
-		protected virtual void calc_cross_sizes (Series s, Point p, out Point size,
-		                                         bool show_x = false, bool show_time = false,
-		                                         bool show_date = false, bool show_y = false) {
-			if (show_x == show_time == show_date == show_y == false)
-				cross_what_to_show(s, out show_x, out show_time, out show_date, out show_y);
-			size = Point ();
-			string date, time;
-			format_date_time(s.axis_x, p.x, out date, out time);
-			var date_t = new Text (date, s.axis_x.font_style, s.axis_x.color);
-			var time_t = new Text (time, s.axis_x.font_style, s.axis_x.color);
-			var x_t = new Text (s.axis_x.format.printf((LongDouble)p.x), s.axis_x.font_style, s.axis_x.color);
-			var y_t = new Text (s.axis_y.format.printf((LongDouble)p.y), s.axis_y.font_style, s.axis_y.color);
-			double h_x = 0.0, h_y = 0.0;
-			if (show_x) { var sz = x_t.size(context); size.x = sz.width; h_x = sz.height; }
-			if (show_date) { var sz = date_t.size(context); size.x = sz.width; h_x = sz.height; }
-			if (show_time) { var sz = time_t.size(context); size.x = double.max(size.x, sz.width); h_x += sz.height; }
-			if (show_y) { var sz = y_t.size(context); size.x += sz.width; h_y = sz.height; }
-			if ((show_x || show_date || show_time) && show_y) size.x += double.max(s.axis_x.font_indent, s.axis_y.font_indent);
-			if (show_date && show_time) h_x += s.axis_x.font_indent;
-			size.y = double.max (h_x, h_y);
-		}
-
-		protected virtual void draw_cursors () {
-			if (series.length == 0) return;
-
-			var all_cursors = get_all_cursors();
-			calc_cursors_value_positions();
-
-			for (var cci = 0, max_cci = cursors_crossings.length; cci < max_cci; ++cci) {
-				var low = Point(plot_area_x_max, plot_area_y_max);  // low and high
-				var high = Point(plot_area_x_min, plot_area_y_min); //              points of the cursor
-				unowned CursorCross[] ccs = cursors_crossings[cci].crossings;
-				set_line_style(cursor_line_style);
-				for (var ci = 0, max_ci = ccs.length; ci < max_ci; ++ci) {
-					var si = ccs[ci].series_index;
-					var s = series[si];
-					var p = ccs[ci].point;
-					var scrx = get_scr_x(s, p.x);
-					var scry = get_scr_y(s, p.y);
-					if (scrx < low.x) low.x = scrx;
-					if (scry < low.y) low.y = scry;
-					if (scrx > high.x) high.x = scrx;
-					if (scry > high.y) high.y = scry;
-
-					if (common_x_axes) {
-						switch (s.axis_x.position) {
-						case Axis.Position.LOW: high.y = plot_area_y_max + s.axis_x.font_indent; break;
-						case Axis.Position.HIGH: low.y = plot_area_y_min - s.axis_x.font_indent; break;
-						case Axis.Position.BOTH:
-							high.y = plot_area_y_max + s.axis_x.font_indent;
-							low.y = plot_area_y_min - s.axis_x.font_indent;
-							break;
-						}
-					}
-					if (common_y_axes) {
-						switch (s.axis_y.position) {
-						case Axis.Position.LOW: low.x = plot_area_x_min - s.axis_y.font_indent; break;
-						case Axis.Position.HIGH: high.x = plot_area_x_max + s.axis_y.font_indent; break;
-						case Axis.Position.BOTH:
-							low.x = plot_area_x_min - s.axis_y.font_indent;
-							high.x = plot_area_x_max + s.axis_y.font_indent;
-							break;
-						}
-					}
-
-					context.move_to (ccs[ci].scr_point.x, ccs[ci].scr_point.y);
-					context.line_to (ccs[ci].scr_value_point.x, ccs[ci].scr_value_point.y);
-				}
-
-				var c = all_cursors.nth_data(cursors_crossings[cci].cursor_index);
-
-				switch (cursors_orientation) {
-				case CursorOrientation.VERTICAL:
-					if (low.y > high.y) continue;
-					context.move_to (rel2scr_x(c.x), low.y);
-					context.line_to (rel2scr_x(c.x), high.y);
-
-					// show common X value
-					if (common_x_axes) {
-						var s = series[zoom_first_show];
-						var x = get_real_x(s, rel2scr_x(c.x));
-						string text = "", time_text = "";
-						switch (s.axis_x.type) {
-						case Axis.Type.NUMBERS:
-							text = s.axis_x.format.printf((LongDouble)x);
-							break;
-						case Axis.Type.DATE_TIME:
-							format_date_time(s.axis_x, x, out text, out time_text);
-							break;
-						default:
-							break;
-						}
-						var text_t = new Text(text, s.axis_x.font_style, s.axis_x.color);
-						var sz = text_t.size(context);
-						var time_text_t = new Text(time_text, s.axis_x.font_style, s.axis_x.color);
-						var print_y = 0.0;
-						switch (s.axis_x.position) {
-							case Axis.Position.LOW: print_y = y_min + height - s.axis_x.font_indent
-								                    - (legend.position == Legend.Position.BOTTOM ? legend_height : 0);
-								break;
-							case Axis.Position.HIGH: print_y = y_min + title_height + s.axis_x.font_indent
-								                     + (legend.position == Legend.Position.TOP ? legend_height : 0);
-								switch (s.axis_x.type) {
-								case Axis.Type.NUMBERS:
-									print_y += sz.height;
-									break;
-								case Axis.Type.DATE_TIME:
-									print_y += (s.axis_x.date_format == "" ? 0 : sz.height)
-									           + (s.axis_x.time_format == "" ? 0 : time_text_t.get_height(context))
-									           + (s.axis_x.date_format == "" || s.axis_x.time_format == "" ? 0 : s.axis_x.font_indent);
-									break;
-								}
-								break;
-						}
-						var print_x = compact_rec_x_pos (s, x, text_t);
-						context.move_to (print_x, print_y);
-
-						switch (s.axis_x.type) {
-						case Axis.Type.NUMBERS:
-							show_text(text_t);
-							break;
-						case Axis.Type.DATE_TIME:
-							if (s.axis_x.date_format != "") show_text(text_t);
-							print_x = compact_rec_x_pos (s, x, time_text_t);
-							context.move_to (print_x, print_y - (s.axis_x.date_format == "" ? 0 : sz.height + s.axis_x.font_indent));
-							if (s.axis_x.time_format != "") show_text(time_text_t);
-							break;
-						}
-					}
-					break;
-				case CursorOrientation.HORIZONTAL:
-					if (low.x > high.x) continue;
-					context.move_to (low.x, rel2scr_y(c.y));
-					context.line_to (high.x, rel2scr_y(c.y));
-
-					// show common Y value
-					if (common_y_axes) {
-						var s = series[zoom_first_show];
-						var y = get_real_y(s, rel2scr_y(c.y));
-						var text_t = new Text(s.axis_y.format.printf((LongDouble)y, s.axis_y.font_style));
-						var print_y = compact_rec_y_pos (s, y, text_t);
-						var print_x = 0.0;
-						switch (s.axis_y.position) {
-						case Axis.Position.LOW:
-							print_x = x_min + s.axis_y.font_indent
-							          + (legend.position == Legend.Position.LEFT ? legend_width : 0);
-							break;
-						case Axis.Position.HIGH:
-							print_x = x_min + width - text_t.get_width(context) - s.axis_y.font_indent
-							          - (legend.position == Legend.Position.RIGHT ? legend_width : 0);
-							break;
-						}
-						context.move_to (print_x, print_y);
-						show_text(text_t);
-					}
-					break;
-				}
-				context.stroke ();
-
-				// show value (X, Y or [X;Y])
-				for (var ci = 0, max_ci = ccs.length; ci < max_ci; ++ci) {
-					var si = ccs[ci].series_index;
-					var s = series[si];
-					var point = ccs[ci].point;
-					var size = ccs[ci].size;
-					var svp = ccs[ci].scr_value_point;
-					var show_x = ccs[ci].show_x;
-					var show_date = ccs[ci].show_date;
-					var show_time = ccs[ci].show_time;
-					var show_y = ccs[ci].show_y;
-
-					set_source_rgba(bg_color);
-					context.rectangle (svp.x - size.x / 2, svp.y - size.y / 2, size.x, size.y);
-					context.fill();
-
-					if (show_x) {
-						set_source_rgba(s.axis_x.color);
-						var text_t = new Text(s.axis_x.format.printf((LongDouble)point.x), s.axis_x.font_style);
-						context.move_to (svp.x - size.x / 2, svp.y + text_t.get_height(context) / 2);
-						if (common_x_axes) set_source_rgba (common_axis_color);
-						show_text(text_t);
-					}
-
-					if (show_time) {
-						set_source_rgba(s.axis_x.color);
-						string date = "", time = "";
-						format_date_time(s.axis_x, point.x, out date, out time);
-						var text_t = new Text(time, s.axis_x.font_style);
-						var sz = text_t.size(context);
-						var y = svp.y + sz.height / 2;
-						if (show_date) y -= sz.height / 2 + s.axis_x.font_indent / 2;
-						context.move_to (svp.x - size.x / 2, y);
-						if (common_x_axes) set_source_rgba (common_axis_color);
-						show_text(text_t);
-					}
-
-					if (show_date) {
-						set_source_rgba(s.axis_x.color);
-						string date = "", time = "";
-						format_date_time(s.axis_x, point.x, out date, out time);
-						var text_t = new Text(date, s.axis_x.font_style);
-						var sz = text_t.size(context);
-						var y = svp.y + sz.height / 2;
-						if (show_time) y += sz.height / 2 + s.axis_x.font_indent / 2;
-						context.move_to (svp.x - size.x / 2, y);
-						if (common_x_axes) set_source_rgba (common_axis_color);
-						show_text(text_t);
-					}
-
-					if (show_y) {
-						set_source_rgba(s.axis_y.color);
-						var text_t = new Text(s.axis_y.format.printf((LongDouble)point.y), s.axis_y.font_style);
-						var sz = text_t.size(context);
-						context.move_to (svp.x + size.x / 2 - sz.width, svp.y + sz.height / 2);
-						if (common_y_axes) set_source_rgba (common_axis_color);
-						show_text(text_t);
-					}
-				}
-			}
-		}
-
-		public bool get_cursors_delta (out Float128 delta) {
-			delta = 0.0;
-			if (series.length == 0) return false;
-			if (cursors.length() + (is_cursor_active ? 1 : 0) != 2) return false;
-			if (common_x_axes && cursors_orientation == CursorOrientation.VERTICAL) {
-				Float128 val1 = get_real_x (series[zoom_first_show], rel2scr_x(cursors.nth_data(0).x));
-				Float128 val2 = 0;
-				if (is_cursor_active)
-					val2 = get_real_x (series[zoom_first_show], rel2scr_x(active_cursor.x));
-				else
-					val2 = get_real_x (series[zoom_first_show], rel2scr_x(cursors.nth_data(1).x));
-				if (val2 > val1)
-					delta = val2 - val1;
-				else
-					delta = val1 - val2;
-				return true;
-			}
-			if (common_y_axes && cursors_orientation == CursorOrientation.HORIZONTAL) {
-				Float128 val1 = get_real_y (series[zoom_first_show], rel2scr_y(cursors.nth_data(0).y));
-				Float128 val2 = 0;
-				if (is_cursor_active)
-					val2 = get_real_y (series[zoom_first_show], rel2scr_y(active_cursor.y));
-				else
-					val2 = get_real_y (series[zoom_first_show], rel2scr_y(cursors.nth_data(1).y));
-				if (val2 > val1)
-					delta = val2 - val1;
-				else
-					delta = val1 - val2;
-				return true;
-			}
-			return false;
-		}
-
-		public string get_cursors_delta_str () {
-			Float128 delta = 0.0;
-			if (!get_cursors_delta(out delta)) return "";
-			var str = "";
-			var s = series[zoom_first_show];
-			if (common_x_axes)
-				switch (s.axis_x.type) {
-				case Axis.Type.NUMBERS:
-					str = s.axis_x.format.printf((LongDouble)delta);
-					break;
-				case Axis.Type.DATE_TIME:
-					var date = "", time = "";
-					int64 days = (int64)(delta / 24 / 3600);
-					format_date_time(s.axis_x, delta, out date, out time);
-					str = days.to_string() + " + " + time;
-					break;
-				}
-			if (common_y_axes) {
-				str = s.axis_y.format.printf((LongDouble)delta);
-			}
-			return str;
-		}
-
-		public Chart copy () {
-			var chart = new Chart ();
-			chart.active_cursor = this.active_cursor;
-			chart.axis_rec_npoints = this.axis_rec_npoints;
-			chart.bg_color = this.bg_color;
-			chart.border_color = this.border_color;
-			chart.common_x_axes = this.common_x_axes;
-			chart.common_y_axes = this.common_y_axes;
-			chart.context = this.context;
-			chart.cur_x_max = this.cur_x_max;
-			chart.cur_x_min = this.cur_x_min;
-			chart.cur_y_max = this.cur_y_max;
-			chart.cur_y_min = this.cur_y_min;
-			chart.cursor_line_style = this.cursor_line_style;
-			chart.cursor_max_rm_distance = this.cursor_max_rm_distance;
-			chart.cursors = this.cursors.copy();
-			chart.cursors_crossings = this.cursors_crossings;
-			chart.cursors_orientation = this.cursors_orientation;
-			chart.height = this.height;
-			chart.is_cursor_active = this.is_cursor_active;
-			chart.legend = this.legend.copy();
-			chart.legend_height = this.legend_height;
-			chart.legend_line_length = this.legend_line_length;
-			chart.legend_text_hspace = this.legend_text_hspace;
-			chart.legend_text_vspace = this.legend_text_vspace;
-			chart.legend_width = this.legend_width;
-			chart.marker_size = this.marker_size;
-			chart.max_font_heights = this.max_font_heights;
-			chart.plot_area_x_max = this.plot_area_x_max;
-			chart.plot_area_x_min = this.plot_area_x_min;
-			chart.plot_area_y_max = this.plot_area_y_max;
-			chart.plot_area_y_min = this.plot_area_y_min;
-			chart.rel_zoom_x_min = this.rel_zoom_x_min;
-			chart.rel_zoom_x_max = this.rel_zoom_x_max;
-			chart.rel_zoom_y_min = this.rel_zoom_y_min;
-			chart.rel_zoom_y_max = this.rel_zoom_y_max;
-			chart.selection_style = this.selection_style;
-			chart.series = this.series;
-			chart.show_legend = this.show_legend;
-			chart.title = this.title.copy();
-			chart.title_height = this.title_height;
-			chart.title_vindent = this.title_vindent;
-			chart.title_width = this.title_width;
-			chart.width = this.width;
-			chart.x_min = this.x_min;
-			chart.y_min = this.y_min;
-			chart.zoom_first_show = this.zoom_first_show;
-			return chart;
+		protected virtual void draw_series () {
+			foreach (var s in series)
+				if (s.zoom_show && s.points.length != 0)
+					s.draw();
 		}
 	}
 }
