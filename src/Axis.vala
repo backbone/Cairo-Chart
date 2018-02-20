@@ -156,7 +156,7 @@ namespace CairoChart {
 		/**
 		 * ``Axis`` line style.
 		 */
-		public LineStyle grid_style = LineStyle (Color(), 1, {2, 3});
+		public LineStyle grid_style = LineStyle(Color(0, 0, 0, 0.25)); // Color(), 1, {2, 3});
 
 		/**
 		 * Number of equally placed points to evaluate records sizes.
@@ -516,8 +516,9 @@ namespace CairoChart {
 			for (Float128 v = min; Math.point_belong (v, min, range.zmax); v += step) {
 				if (is_x && chart.joint_x || !is_x && chart.joint_y) {
 					chart.color = chart.joint_color;
-					ser.axis_x.grid_style.color = Color(0, 0, 0, 0.5);
-					ser.axis_y.grid_style.color = Color(0, 0, 0, 0.5);
+					grid_style.color.red = chart.joint_color.red;
+					grid_style.color.green = chart.joint_color.green;
+					grid_style.color.blue = chart.joint_color.blue;
 				} else
 					chart.color = color;
 				string text = "", time_text = ""; var time_text_t = new Text(chart); var crpt = 0.0;
