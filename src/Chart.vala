@@ -400,8 +400,8 @@ namespace CairoChart {
 		}
 
 		protected virtual void draw_plarea_border () {
+			LineStyle().apply(this);
 			color = border_color;
-			ctx.set_dash(null, 0);
 			ctx.rectangle(plarea.x0, plarea.y0, plarea.width, plarea.height);
 			ctx.stroke ();
 		}
