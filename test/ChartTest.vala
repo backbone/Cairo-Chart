@@ -300,7 +300,7 @@ int main (string[] args) {
 	var radio_button8 = new RadioButton.with_label_from_widget (radio_button7, "Horizontal Cursors");
 
 	button1.clicked.connect (() => {
-			chart = chart1; da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
+			chart = chart1; da.queue_draw();
 			switch (chart.legend.position) {
 			case Legend.Position.TOP: radio_button1.set_active(true); break;
 			case Legend.Position.RIGHT: radio_button2.set_active(true); break;
@@ -313,7 +313,7 @@ int main (string[] args) {
 			}
 	});
 	button2.clicked.connect (() => {
-			chart = chart2; da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
+			chart = chart2; da.queue_draw();
 			switch (chart.legend.position) {
 			case Legend.Position.TOP: radio_button1.set_active(true); break;
 			case Legend.Position.RIGHT: radio_button2.set_active(true); break;
@@ -326,7 +326,7 @@ int main (string[] args) {
 			}
 	});
 	button3.clicked.connect (() => {
-			chart = chart3; da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
+			chart = chart3; da.queue_draw();
 			switch (chart.legend.position) {
 			case Legend.Position.TOP: radio_button1.set_active(true); break;
 			case Legend.Position.RIGHT: radio_button2.set_active(true); break;
@@ -339,7 +339,7 @@ int main (string[] args) {
 			}
 	});
 	button4.clicked.connect (() => {
-			chart = chart4; da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
+			chart = chart4; da.queue_draw();
 			switch (chart.legend.position) {
 			case Legend.Position.TOP: radio_button1.set_active(true); break;
 			case Legend.Position.RIGHT: radio_button2.set_active(true); break;
@@ -357,7 +357,7 @@ int main (string[] args) {
 				s.axis_x.title.text = "";
 				s.axis_y.title.text = "";
 			}
-			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
+			da.queue_draw();
 	});
 	button6.clicked.connect (() => {
 			for (var i = 0; i < chart.series.length; ++i) {
@@ -365,7 +365,7 @@ int main (string[] args) {
 				s.axis_x.date_format = "%Y.%m.%d";
 				s.axis_x.time_format = "";
 			}
-			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
+			da.queue_draw();
 	});
 
 	button7.clicked.connect (() => {
@@ -374,7 +374,7 @@ int main (string[] args) {
 				s.axis_x.date_format = "";
 				s.axis_x.time_format = "%H:%M:%S";
 			}
-			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
+			da.queue_draw();
 	});
 
 	button8.clicked.connect (() => {
@@ -383,32 +383,32 @@ int main (string[] args) {
 				s.axis_x.date_format = "%Y.%m.%d";
 				s.axis_x.time_format = "%H:%M:%S";
 			}
-			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
+			da.queue_draw();
 	});
 
 
 	radio_button1.toggled.connect ((button) => {
 		if (button.get_active()) {
 			chart.legend.position = Legend.Position.TOP;
-			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
+			da.queue_draw();
 		}
 	});
 	radio_button2.toggled.connect ((button) => {
 		if (button.get_active()) {
 			chart.legend.position = Legend.Position.RIGHT;
-			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
+			da.queue_draw();
 		}
 	});
 	radio_button3.toggled.connect ((button) => {
 		if (button.get_active()) {
 			chart.legend.position = Legend.Position.LEFT;
-			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
+			da.queue_draw();
 		}
 	});
 	radio_button4.toggled.connect ((button) => {
 		if (button.get_active()) {
 			chart.legend.position = Legend.Position.BOTTOM;
-			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
+			da.queue_draw();
 		}
 	});
 
@@ -418,26 +418,26 @@ int main (string[] args) {
 	radio_button5.toggled.connect ((button) => {
 		// TODO: set labels
 		if (button.get_active()) {
-			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
+			da.queue_draw();
 		}
 	});
 	radio_button6.toggled.connect ((button) => {
 		// TODO: set cursors
 		if (button.get_active()) {
-			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
+			da.queue_draw();
 		}
 	});*/
 
 	radio_button7.toggled.connect ((button) => {
 		if (button.get_active()) {
 			chart.cursors.style.orientation = Cursors.Orientation.VERTICAL;
-			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
+			da.queue_draw();
 		}
 	});
 	radio_button8.toggled.connect ((button) => {
 		if (button.get_active()) {
 			chart.cursors.style.orientation = Cursors.Orientation.HORIZONTAL;
-			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
+			da.queue_draw();
 		}
 	});
 
@@ -494,7 +494,7 @@ int main (string[] args) {
 				chart.cursors.set_active (Point(event.x, event.y));
 				mouse_state = MouseState.CURSOR_SELECTION;
 			}
-			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
+			da.queue_draw();
 			break;
 
 		case 2:  // start zoom area selection
@@ -520,7 +520,7 @@ int main (string[] args) {
 		case 1:  // start cursor position selection
 			if ((event.state & Gdk.ModifierType.SHIFT_MASK) != 0) { // remove cursor
 				//chart.remove_active ();
-				//da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
+				//da.queue_draw();
 				//mouse_state = MouseState.FREE;
 			} else { // add cursor
 				chart.cursors.add_active ();
@@ -535,7 +535,7 @@ int main (string[] args) {
 				chart.zoom_in (new Area.with_abs(sel_x0, sel_y0, sel_x1, sel_y1));
 			else
 				chart.zoom_out ();
-			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
+			da.queue_draw();
 			mouse_state = MouseState.FREE;
 			break;
 
@@ -553,7 +553,7 @@ int main (string[] args) {
 		case MouseState.DRAW_SELECTION:
 			sel_x1 = event.x;
 			sel_y1 = event.y;
-			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
+			da.queue_draw();
 			break;
 
 		case MouseState.MOVING_CHART:
@@ -561,12 +561,12 @@ int main (string[] args) {
 			chart.move (Point(){x = delta_x, y = delta_y});
 			mov_x0 = event.x;
 			mov_y0 = event.y;
-			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
+			da.queue_draw();
 			break;
 
 		case MouseState.CURSOR_SELECTION:
 			chart.cursors.set_active (Point(event.x, event.y));
-			da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
+			da.queue_draw();
 			break;
 		}
 
@@ -581,7 +581,7 @@ int main (string[] args) {
 			chart.zoom_scroll_out(Point(event.x, event.y));
 			break;
 		}
-		da.queue_draw_area(0, 0, da.get_allocated_width(), da.get_allocated_height());
+		da.queue_draw();
 
 		//var ret = chart.scroll_notify_event(event);
 		return true; // return ret;
