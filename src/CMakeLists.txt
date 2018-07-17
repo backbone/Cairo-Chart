@@ -9,8 +9,7 @@ CONFIGURE_FILE ( "${CMAKE_SOURCE_DIR}/cmake/backbone/templates/library_construct
 INCLUDE_DIRECTORIES ("${CMAKE_SOURCE_DIR}/src")
 SET (LibCustomVapis ${CMAKE_SOURCE_DIR}/src/cairo-chart-float128type.vapi)
 INCLUDE (ValaLibCommonRules)
-INSTALL (FILES ${CMAKE_CURRENT_SOURCE_DIR}/cairo-chart-float128type.h DESTINATION include
-         RENAME cairo-chart-float128type-${MAJOR}.h)
+INSTALL (FILES ${CMAKE_CURRENT_SOURCE_DIR}/cairo-chart-float128type-${MAJOR}.h DESTINATION include)
 INSTALL (FILES ${CMAKE_CURRENT_SOURCE_DIR}/cairo-chart-float128type.vapi DESTINATION share/vala/vapi
          RENAME cairo-chart-float128type-${MAJOR}.vapi)
 CONFIGURE_FILE (${CMAKE_CURRENT_SOURCE_DIR}/cairo-chart.deps.in
