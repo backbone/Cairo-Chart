@@ -102,7 +102,6 @@ namespace CairoChart {
 				// TODO: check format
 				_format = value;
 			}
-			default = "%.2Lf";
 		}
 
 		/**
@@ -114,7 +113,6 @@ namespace CairoChart {
 				// TODO: check format
 				_date_format = value;
 			}
-			default = "%Y.%m.%d";
 		}
 
 		/**
@@ -126,7 +124,6 @@ namespace CairoChart {
 				// TODO: check format
 				_time_format = value;
 			}
-			default = "%H:%M:%S";
 		}
 
 		/**
@@ -140,7 +137,6 @@ namespace CairoChart {
 				// TODO: check format
 				_dsec_signs = value;
 			}
-			default = 2;
 		}
 
 		/**

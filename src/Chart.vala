@@ -96,7 +96,6 @@ namespace CairoChart {
 		public virtual Color color {
 			protected get { return Color(); }
 			set { ctx.set_source_rgba (value.red, value.green, value.blue, value.alpha); }
-			default = Color();
 		}
 
 		/**

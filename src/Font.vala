@@ -51,7 +51,6 @@ namespace CairoChart {
 			set {
 				vspacing = hspacing = value;
 			}
-			default = 2;
 		}
 
 		/**

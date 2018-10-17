@@ -77,7 +77,6 @@ namespace CairoChart {
 				axis_x.grid_style.color.green = axis_y.grid_style.color.green = value.green;
 				axis_x.grid_style.color.blue = axis_y.grid_style.color.blue = value.blue;
 			}
-			default = Color (0, 0, 0, 1);
 		}
 
 		/**
