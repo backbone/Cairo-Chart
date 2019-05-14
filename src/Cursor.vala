@@ -83,7 +83,7 @@ namespace CairoChart {
 		 */
 		public Cursors copy () {
 			var c = new Cursors (chart);
-			c.list = list.copy();
+			//c.list = list.copy();
 			c.active_cursor = active_cursor;
 			c.is_cursor_active = is_cursor_active;
 			c.style = style;
