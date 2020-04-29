@@ -1,6 +1,6 @@
 [submodule "cmake/backbone"]
 	path = cmake/backbone
-	url = git@git.backbone.ws:kolan/cmake.backbone.git
+	url = https://git.backbone.ws/kolan/cmake.backbone.git
 [submodule "util/backbone-utils"]
 	path = util/backbone
-	url = git@git.backbone.ws:kolan/cmake.backbone-utils.git
+	url = https://git.backbone.ws/kolan/cmake.backbone-utils.git
